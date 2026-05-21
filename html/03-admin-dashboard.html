@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replyee — Admin Dashboard Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:     #07080f;
+    --bg2:    #0d1018;
+    --muted:  #0a0c14;
+    --border: #1a2035;
+    --prim:   #6366f1;
+    --accent: #22d3ee;
+    --green:  #4ade80;
+    --orange: #f97316;
+    --red:    #ef4444;
+    --text:   #e2e8f0;
+    --body:   #64748b;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  a { color: inherit; text-decoration: none; }
+
+  .shell { display: flex; min-height: 100vh; }
+  .sidebar { width: 240px; border-right: 1px solid var(--border); background: var(--bg2); display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; }
+  .main { margin-left: 240px; flex: 1; padding: 32px 40px; }
+
+  .sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); }
+  .logo-row { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 30px; height: 30px; background: var(--prim); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .logo-name { font-weight: 900; font-size: 16px; letter-spacing: -.5px; }
+  .admin-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(249,115,22,.12); border: 1px solid rgba(249,115,22,.25); border-radius: 6px; padding: 3px 8px; font-size: 10px; font-weight: 800; color: var(--orange); letter-spacing: .06em; margin-top: 8px; }
+
+  .nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--body); cursor: pointer; }
+  .nav-item:hover, .nav-item.active { background: rgba(99,102,241,.1); color: var(--text); }
+  .nav-item.active { color: var(--prim); }
+  .sidebar-user { padding: 16px 20px; border-top: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text); }
+  .sidebar-user-sub { font-size: 11px; color: var(--orange); font-weight: 700; margin-top: 2px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+  .page-title { font-size: 26px; font-weight: 900; letter-spacing: -1px; color: var(--text); }
+  .page-sub { font-size: 14px; color: var(--body); margin-top: 4px; }
+
+  .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 32px; }
+  .stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px; }
+  .stat-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .stat-label { font-size: 12px; color: var(--body); font-weight: 500; }
+  .stat-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+  .stat-val { font-size: 32px; font-weight: 900; letter-spacing: -1.5px; }
+  .stat-delta { font-size: 11px; margin-top: 6px; }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .card-title { font-size: 16px; font-weight: 700; color: var(--text); }
+  .card-link { font-size: 12px; color: var(--prim); cursor: pointer; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+  /* User table */
+  .table { width: 100%; border-collapse: collapse; }
+  .table th { font-size: 11px; font-weight: 700; color: var(--body); text-transform: uppercase; letter-spacing: .08em; text-align: left; padding: 0 12px 12px; border-bottom: 1px solid var(--border); }
+  .table td { font-size: 13px; padding: 14px 12px; border-bottom: 1px solid rgba(26,32,53,.5); vertical-align: middle; }
+  .table tr:last-child td { border-bottom: none; }
+  .table tr:hover td { background: rgba(99,102,241,.03); }
+
+  .plan-tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; }
+  .plan-tag.starter { background: rgba(100,116,139,.15); color: var(--body); }
+  .plan-tag.growth { background: rgba(99,102,241,.15); color: var(--prim); }
+  .plan-tag.agency { background: rgba(34,211,238,.15); color: var(--accent); }
+  .plan-tag.trial { background: rgba(249,115,22,.12); color: var(--orange); }
+
+  .status-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; }
+  .active-dot { background: var(--green); }
+  .trial-dot { background: var(--orange); }
+  .churned-dot { background: var(--red); }
+
+  .action-btn { font-size: 11px; padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--body); cursor: pointer; }
+  .action-btn:hover { border-color: var(--prim); color: var(--prim); }
+  .action-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+  /* Revenue chart */
+  .chart-placeholder { height: 180px; display: flex; align-items: flex-end; gap: 8px; padding: 0 4px; }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .bar { border-radius: 4px 4px 0 0; width: 100%; }
+  .bar-label { font-size: 10px; color: var(--body); }
+
+  .usage-track { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; margin-top: 4px; }
+  .usage-fill { height: 100%; border-radius: 99px; background: var(--prim); }
+
+  .search-input { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px 8px 34px; font-size: 13px; color: var(--text); outline: none; width: 240px; }
+  .search-wrap { position: relative; }
+  .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+  .alert-card { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 10px; margin-bottom: 10px; }
+  .alert-card.warn { background: rgba(249,115,22,.06); border: 1px solid rgba(249,115,22,.2); }
+  .alert-card.info { background: rgba(99,102,241,.06); border: 1px solid rgba(99,102,241,.2); }
+  .alert-card.err { background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.2); }
+
+  .form-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; font-size: 13px; color: var(--text); outline: none; }
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--prim); color: #fff; font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-row">
+        <div class="logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="logo-name">Replyee</span>
+      </div>
+      <div class="admin-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> BOOM MEDIA ADMIN</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" onclick="showView('overview')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" onclick="showView('users')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        All Users
+      </div>
+      <div class="nav-item" onclick="showView('bots')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        All Chatbots
+      </div>
+      <div class="nav-item" onclick="showView('revenue')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Revenue
+      </div>
+      <div class="nav-item" onclick="showView('usage')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        API Usage
+      </div>
+      <div class="nav-item" onclick="showView('alerts')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Alerts <span style="background:var(--orange);color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:99px;margin-left:4px">3</span>
+      </div>
+    </nav>
+    <div class="sidebar-user">
+      Eric Duffy
+      <div class="sidebar-user-sub">Super Admin</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ── OVERVIEW ── -->
+    <div id="view-overview" class="view active">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Admin Overview</div>
+          <div class="page-sub">Replyee platform — May 21, 2026</div>
+        </div>
+        <button class="btn-primary" style="background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Export Report
+        </button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-row">
+            <span class="stat-label">Total Users</span>
+            <div class="stat-icon" style="background:rgba(99,102,241,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          </div>
+          <div class="stat-val">142</div>
+          <div class="stat-delta" style="color:var(--green)">↑ 12 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row">
+            <span class="stat-label">MRR</span>
+            <div class="stat-icon" style="background:rgba(74,222,128,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          </div>
+          <div class="stat-val" style="color:var(--green)">$5,243</div>
+          <div class="stat-delta" style="color:var(--green)">↑ 8.4% vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row">
+            <span class="stat-label">Active Chatbots</span>
+            <div class="stat-icon" style="background:rgba(34,211,238,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          </div>
+          <div class="stat-val">387</div>
+          <div class="stat-delta" style="color:var(--green)">↑ 34 this month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row">
+            <span class="stat-label">Conversations / Day</span>
+            <div class="stat-icon" style="background:rgba(249,115,22,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          </div>
+          <div class="stat-val">2,841</div>
+          <div class="stat-delta" style="color:var(--green)">↑ 18% vs last month</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:24px">
+        <!-- MRR Chart -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Monthly Recurring Revenue</span><span style="font-size:13px;color:var(--green);font-weight:700">$5,243 MRR</span></div>
+          <div class="chart-placeholder">
+            <div class="bar-wrap"><div class="bar" style="height:40%;background:rgba(99,102,241,.4)"></div><div class="bar-label">Dec</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:48%;background:rgba(99,102,241,.4)"></div><div class="bar-label">Jan</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:52%;background:rgba(99,102,241,.4)"></div><div class="bar-label">Feb</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:60%;background:rgba(99,102,241,.4)"></div><div class="bar-label">Mar</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:72%;background:rgba(99,102,241,.4)"></div><div class="bar-label">Apr</div></div>
+            <div class="bar-wrap"><div class="bar" style="height:100%;background:var(--prim)"></div><div class="bar-label">May</div></div>
+          </div>
+        </div>
+
+        <!-- Plan mix -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Plan Distribution</span></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text)">Agency <span style="color:var(--accent)">$99/mo</span></span><span style="color:var(--body)">18 users · $1,782</span></div>
+              <div class="usage-track"><div class="usage-fill" style="width:34%;background:var(--accent)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text)">Growth <span style="color:var(--prim)">$49/mo</span></span><span style="color:var(--body)">62 users · $3,038</span></div>
+              <div class="usage-track"><div class="usage-fill" style="width:58%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text)">Starter <span style="color:var(--body)">$25/mo</span></span><span style="color:var(--body)">17 users · $425</span></div>
+              <div class="usage-track"><div class="usage-fill" style="width:8%;background:var(--body)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--text)">Trial</span><span style="color:var(--orange)">45 users</span></div>
+              <div class="usage-track"><div class="usage-fill" style="width:31%;background:var(--orange)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent signups -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Recent Signups</span><span class="card-link" onclick="showView('users')">View all →</span></div>
+        <table class="table">
+          <thead><tr><th>User</th><th>Plan</th><th>Bots</th><th>Joined</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:600">Sarah Johnson</div><div style="font-size:11px;color:var(--body)">sarah@acme.com</div></td><td><span class="plan-tag growth">Growth</span></td><td>3</td><td>May 18</td><td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td></tr>
+            <tr><td><div style="font-weight:600">Mike Torres</div><div style="font-size:11px;color:var(--body)">mike@techflow.io</div></td><td><span class="plan-tag trial">Trial</span></td><td>1</td><td>May 20</td><td><span class="status-dot trial-dot"></span><span style="font-size:12px;color:var(--orange)">Trial (4d left)</span></td></tr>
+            <tr><td><div style="font-weight:600">Amanda Clarke</div><div style="font-size:11px;color:var(--body)">amanda@bloom.co</div></td><td><span class="plan-tag agency">Agency</span></td><td>11</td><td>May 15</td><td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td></tr>
+            <tr><td><div style="font-weight:600">David Park</div><div style="font-size:11px;color:var(--body)">d.park@startup.com</div></td><td><span class="plan-tag trial">Trial</span></td><td>2</td><td>May 21</td><td><span class="status-dot trial-dot"></span><span style="font-size:12px;color:var(--orange)">Trial (13d left)</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ALL USERS ── -->
+    <div id="view-users" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Users</div>
+          <div class="page-sub">142 accounts · 45 on trial · 97 paying</div>
+        </div>
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" placeholder="Search users…" />
+        </div>
+      </div>
+      <div class="card">
+        <table class="table">
+          <thead><tr><th>User</th><th>Plan</th><th>Bots</th><th>Conversations</th><th>MRR</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="font-weight:600">Amanda Clarke</div><div style="font-size:11px;color:var(--body)">amanda@bloom.co</div></td>
+              <td><span class="plan-tag agency">Agency</span></td><td>11</td><td>8,420</td>
+              <td style="color:var(--green);font-weight:700">$99</td><td>Apr 3</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">Sarah Johnson</div><div style="font-size:11px;color:var(--body)">sarah@acme.com</div></td>
+              <td><span class="plan-tag growth">Growth</span></td><td>3</td><td>1,842</td>
+              <td style="color:var(--green);font-weight:700">$49</td><td>May 18</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">James Wu</div><div style="font-size:11px;color:var(--body)">james@retailco.com</div></td>
+              <td><span class="plan-tag starter">Starter</span></td><td>1</td><td>312</td>
+              <td style="color:var(--green);font-weight:700">$25</td><td>Mar 12</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">Mike Torres</div><div style="font-size:11px;color:var(--body)">mike@techflow.io</div></td>
+              <td><span class="plan-tag trial">Trial</span></td><td>1</td><td>47</td>
+              <td style="color:var(--body)">—</td><td>May 20</td>
+              <td><span class="status-dot trial-dot"></span><span style="font-size:12px;color:var(--orange)">Trial (4d left)</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">Rachel Kim</div><div style="font-size:11px;color:var(--body)">rachel@designstudio.co</div></td>
+              <td><span class="plan-tag growth">Growth</span></td><td>4</td><td>2,103</td>
+              <td style="color:var(--green);font-weight:700">$49</td><td>Feb 28</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Active</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">Tom Bradley</div><div style="font-size:11px;color:var(--body)">tom@oldco.com</div></td>
+              <td><span class="plan-tag starter">Starter</span></td><td>0</td><td>0</td>
+              <td style="color:var(--body)">—</td><td>Jan 10</td>
+              <td><span class="status-dot churned-dot"></span><span style="font-size:12px;color:var(--red)">Churned</span></td>
+              <td><button class="action-btn">View</button> <button class="action-btn danger">Delete</button></td>
+            </tr>
+            <tr>
+              <td><div style="font-weight:600">David Park</div><div style="font-size:11px;color:var(--body)">d.park@startup.com</div></td>
+              <td><span class="plan-tag trial">Trial</span></td><td>2</td><td>134</td>
+              <td style="color:var(--body)">—</td><td>May 21</td>
+              <td><span class="status-dot trial-dot"></span><span style="font-size:12px;color:var(--orange)">Trial (13d left)</span></td>
+              <td><button class="action-btn">View</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ALL BOTS ── -->
+    <div id="view-bots" class="view">
+      <div class="page-header">
+        <div>
+          <div class="page-title">All Chatbots</div>
+          <div class="page-sub">387 active bots across all accounts</div>
+        </div>
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" placeholder="Search bots…" />
+        </div>
+      </div>
+      <div class="card">
+        <table class="table">
+          <thead><tr><th>Bot Name</th><th>Owner</th><th>Chunks</th><th>Conversations</th><th>Leads</th><th>Created</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#6366f1;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span style="font-weight:600">Acme Corp Support</span></div></td>
+              <td style="color:var(--body)">sarah@acme.com</td><td>142</td><td>847</td><td>23</td><td>May 18</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Live</span></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#22d3ee;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span style="font-weight:600">TechFlow FAQ Bot</span></div></td>
+              <td style="color:var(--body)">mike@techflow.io</td><td>89</td><td>612</td><td>18</td><td>May 20</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Live</span></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#4ade80;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span style="font-weight:600">Bloom Boutique</span></div></td>
+              <td style="color:var(--body)">amanda@bloom.co</td><td>67</td><td>383</td><td>6</td><td>Apr 5</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Live</span></td>
+            </tr>
+            <tr>
+              <td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;background:#f97316;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><span style="font-weight:600">RetailCo Assistant</span></div></td>
+              <td style="color:var(--body)">james@retailco.com</td><td>31</td><td>312</td><td>14</td><td>Mar 14</td>
+              <td><span class="status-dot active-dot"></span><span style="font-size:12px;color:var(--green)">Live</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── REVENUE ── -->
+    <div id="view-revenue" class="view">
+      <div class="page-header">
+        <div><div class="page-title">Revenue</div><div class="page-sub">Stripe billing overview</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">MRR</span><div class="stat-icon" style="background:rgba(74,222,128,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div>
+          <div class="stat-val" style="color:var(--green)">$5,243</div>
+          <div class="stat-delta" style="color:var(--green)">↑ 8.4%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">ARR (projected)</span><div class="stat-icon" style="background:rgba(99,102,241,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div></div>
+          <div class="stat-val">$62,916</div>
+          <div class="stat-delta" style="color:var(--body)">Annualised</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">New MRR (May)</span><div class="stat-icon" style="background:rgba(34,211,238,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="stat-val" style="color:var(--accent)">+$637</div>
+          <div class="stat-delta" style="color:var(--green)">13 new paid</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">Churn</span><div class="stat-icon" style="background:rgba(239,68,68,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>
+          <div class="stat-val" style="color:var(--red)">2.1%</div>
+          <div class="stat-delta" style="color:var(--body)">3 cancels</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">MRR Growth</span></div>
+        <div style="height:200px;display:flex;align-items:flex-end;gap:12px;padding:0 8px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:rgba(99,102,241,.4);height:38%"></div><div style="font-size:11px;color:var(--body)">Dec</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:rgba(99,102,241,.4);height:46%"></div><div style="font-size:11px;color:var(--body)">Jan</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:rgba(99,102,241,.4);height:53%"></div><div style="font-size:11px;color:var(--body)">Feb</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:rgba(99,102,241,.4);height:63%"></div><div style="font-size:11px;color:var(--body)">Mar</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:rgba(99,102,241,.4);height:75%"></div><div style="font-size:11px;color:var(--body)">Apr</div></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:100%;border-radius:4px 4px 0 0;background:var(--prim);height:100%"></div><div style="font-size:11px;color:var(--body);font-weight:700;color:var(--text)">May</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── API USAGE ── -->
+    <div id="view-usage" class="view">
+      <div class="page-header">
+        <div><div class="page-title">API Usage</div><div class="page-sub">OpenAI embeddings + Anthropic Claude costs — May 2026</div></div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">Claude Haiku Calls</span><div class="stat-icon" style="background:rgba(99,102,241,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div></div>
+          <div class="stat-val">87,420</div>
+          <div class="stat-delta" style="color:var(--body)">Est. $34.10</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">Embedding Calls</span><div class="stat-icon" style="background:rgba(34,211,238,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div></div>
+          <div class="stat-val">124,800</div>
+          <div class="stat-delta" style="color:var(--body)">Est. $2.50</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">Total API Cost</span><div class="stat-icon" style="background:rgba(74,222,128,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div>
+          <div class="stat-val">$36.60</div>
+          <div class="stat-delta" style="color:var(--green)">0.7% of MRR ✓</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-row"><span class="stat-label">Gross Margin</span><div class="stat-icon" style="background:rgba(249,115,22,.15)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div></div>
+          <div class="stat-val" style="color:var(--green)">99.3%</div>
+          <div class="stat-delta" style="color:var(--green)">Excellent</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Top API Consumers This Month</span></div>
+        <table class="table">
+          <thead><tr><th>User</th><th>Plan</th><th>Conversations</th><th>Claude Calls</th><th>Embed Calls</th><th>Est. Cost</th></tr></thead>
+          <tbody>
+            <tr><td><div style="font-weight:600">Amanda Clarke</div><div style="font-size:11px;color:var(--body)">amanda@bloom.co</div></td><td><span class="plan-tag agency">Agency</span></td><td>8,420</td><td>25,260</td><td>36,140</td><td style="color:var(--body)">$10.58</td></tr>
+            <tr><td><div style="font-weight:600">Rachel Kim</div><div style="font-size:11px;color:var(--body)">rachel@designstudio.co</div></td><td><span class="plan-tag growth">Growth</span></td><td>2,103</td><td>6,309</td><td>9,031</td><td style="color:var(--body)">$2.64</td></tr>
+            <tr><td><div style="font-weight:600">Sarah Johnson</div><div style="font-size:11px;color:var(--body)">sarah@acme.com</div></td><td><span class="plan-tag growth">Growth</span></td><td>1,842</td><td>5,526</td><td>7,912</td><td style="color:var(--body)">$2.32</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ALERTS ── -->
+    <div id="view-alerts" class="view">
+      <div class="page-header">
+        <div><div class="page-title">Alerts</div><div class="page-sub">3 items need attention</div></div>
+      </div>
+      <div class="alert-card warn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Mike Torres — Trial expires in 4 days</div>
+          <div style="font-size:13px;color:var(--body);margin-bottom:8px">mike@techflow.io has been active (47 conversations) but hasn't added a payment method. Consider sending a conversion nudge email.</div>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px">Send Nudge Email</button>
+        </div>
+      </div>
+      <div class="alert-card err">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Payment failed — James Wu</div>
+          <div style="font-size:13px;color:var(--body);margin-bottom:8px">james@retailco.com Stripe charge failed. Card declined. Account will be suspended in 3 days unless resolved.</div>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px;background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)">View in Stripe</button>
+        </div>
+      </div>
+      <div class="alert-card info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">Amanda Clarke approaching conversation limit</div>
+          <div style="font-size:13px;color:var(--body)">amanda@bloom.co is at 8,420 of the Agency plan's unlimited cap — this is fine, just FYI for infrastructure planning. Her bots are very active.</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name)?.classList.add('active');
+  const map = { overview:0, users:1, bots:2, revenue:3, usage:4, alerts:5 };
+  if (map[name] !== undefined) document.querySelectorAll('.nav-item')[map[name]]?.classList.add('active');
+}
+</script>
+</body>
+</html>

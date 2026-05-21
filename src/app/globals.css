@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/* ── Replyee Design Tokens ── */
+:root {
+  /* Backgrounds */
+  --ry-bg:      #07080f;   /* deep dark navy — main page bg */
+  --ry-bg2:     #0d1018;   /* slightly lighter panels */
+  --ry-muted-bg:#0a0c14;   /* card/panel bg */
+
+  /* Brand */
+  --ry-primary: #6366f1;   /* indigo — CTA buttons, links */
+  --ry-accent:  #22d3ee;   /* cyan — secondary highlights */
+
+  /* Borders */
+  --ry-border:  #1a2035;   /* subtle navy border */
+
+  /* Text */
+  --ry-text:    #e2e8f0;   /* main body text */
+  --ry-muted:   #64748b;   /* secondary/label text */
+}
+
+@theme inline {
+  --color-background: var(--ry-bg);
+  --color-foreground: var(--ry-text);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--ry-bg);
+  color: var(--ry-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ── Animations ── */
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast-enter { animation: toast-slide-in 0.2s ease forwards; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.pulse-dot { animation: pulse-dot 2s infinite; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.4s ease forwards; }
+
+/* ── Shared Button Styles ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  border: none;
+  font-size: 14px;
+  padding: 10px 20px;
+}
+.btn-primary {
+  background: var(--ry-primary);
+  color: #fff;
+}
+.btn-primary:hover { background: #4f46e5; }
+.btn-ghost {
+  background: transparent;
+  color: var(--ry-muted);
+  border: 1px solid var(--ry-border);
+}
+.btn-ghost:hover { color: var(--ry-text); border-color: var(--ry-primary); }
+
+/* ── Form inputs ── */
+.input {
+  width: 100%;
+  background: var(--ry-bg2);
+  border: 1px solid var(--ry-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--ry-text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.input:focus { border-color: var(--ry-primary); }
+.input::placeholder { color: var(--ry-muted); }
+
+/* ── Card ── */
+.ry-card {
+  background: var(--ry-bg2);
+  border: 1px solid var(--ry-border);
+  border-radius: 14px;
+  padding: 24px;
+}

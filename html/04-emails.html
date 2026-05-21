@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replyee — Transactional Email Mockups</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0c14; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 40px 24px; }
+  h1 { font-size: 22px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+  .subtitle { font-size: 14px; color: #64748b; margin-bottom: 48px; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 40px; }
+  .tab { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; border: 1px solid #1a2035; background: #0d1018; }
+  .tab.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+
+  /* Email chrome */
+  .email-chrome { max-width: 640px; margin: 0 auto; }
+  .email-meta { background: #0d1018; border: 1px solid #1a2035; border-radius: 12px 12px 0 0; padding: 16px 20px; }
+  .meta-row { display: flex; gap: 8px; font-size: 12px; margin-bottom: 6px; color: #64748b; }
+  .meta-row:last-child { margin-bottom: 0; }
+  .meta-key { font-weight: 600; min-width: 50px; }
+  .meta-val { color: #e2e8f0; }
+
+  /* Email body */
+  .email-wrap { display: none; }
+  .email-wrap.active { display: block; }
+
+  .email-body {
+    background: #ffffff;
+    border: 1px solid #1a2035;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    color: #1a202c;
+  }
+
+  /* Email interior styles (all inline in the "email" context) */
+  .em-header { background: #07080f; padding: 28px 40px; display: flex; align-items: center; gap: 10px; }
+  .em-logo-icon { width: 30px; height: 30px; background: #6366f1; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .em-logo-name { font-weight: 900; font-size: 18px; color: #ffffff; letter-spacing: -0.5px; }
+  .em-logo-sub { font-size: 12px; color: #64748b; margin-left: 4px; }
+
+  .em-body { padding: 36px 40px; background: #ffffff; }
+  .em-h1 { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; color: #0f172a; margin-bottom: 16px; }
+  .em-p { font-size: 15px; line-height: 1.7; color: #334155; margin-bottom: 16px; }
+  .em-btn { display: inline-block; background: #6366f1; color: #ffffff !important; font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 8px; text-decoration: none; margin: 8px 0 24px; }
+  .em-divider { border: none; border-top: 1px solid #e2e8f0; margin: 28px 0; }
+  .em-small { font-size: 13px; color: #64748b; line-height: 1.6; }
+  .em-code { font-family: monospace; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px; font-size: 13px; color: #0f172a; word-break: break-all; margin: 16px 0; }
+  .em-highlight-box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 24px; margin: 20px 0; }
+  .em-highlight-box.lead { background: #fff7ed; border-color: #fed7aa; }
+  .em-highlight-box.success { background: #f0fdf4; border-color: #bbf7d0; }
+  .em-highlight-box.warning { background: #fffbeb; border-color: #fde68a; }
+  .em-kv { display: flex; gap: 12px; margin-bottom: 10px; font-size: 14px; }
+  .em-kv-key { font-weight: 600; color: #374151; min-width: 100px; }
+  .em-kv-val { color: #475569; }
+  .em-stat-row { display: flex; gap: 16px; margin: 20px 0; }
+  .em-stat { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; }
+  .em-stat-val { font-size: 28px; font-weight: 900; color: #6366f1; }
+  .em-stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+  .em-footer { background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 40px; text-align: center; }
+  .em-footer-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+  .em-footer-icon { width: 22px; height: 22px; background: #6366f1; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+  .em-footer p { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+  .em-footer a { color: #6366f1; }
+</style>
+</head>
+<body>
+
+<h1>Transactional Email Mockups</h1>
+<p class="subtitle">6 email templates for the Replyee platform — open each to preview</p>
+
+<div class="tabs">
+  <div class="tab active" onclick="show('welcome')">1. Welcome</div>
+  <div class="tab" onclick="show('lead')">2. Lead Alert</div>
+  <div class="tab" onclick="show('trial-expiry')">3. Trial Expiry</div>
+  <div class="tab" onclick="show('payment-failed')">4. Payment Failed</div>
+  <div class="tab" onclick="show('monthly-report')">5. Monthly Report</div>
+  <div class="tab" onclick="show('password-reset')">6. Password Reset</div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 1: WELCOME / SIGNUP CONFIRMATION
+════════════════════════════════════════ -->
+<div id="email-welcome" class="email-wrap active">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Replyee &lt;hello@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">sarah@acme.com</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">Welcome to Replyee — your first chatbot is waiting 👋</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div class="em-h1">You're in. Let's build your AI chatbot.</div>
+        <p class="em-p">Hi Sarah,</p>
+        <p class="em-p">Welcome to Replyee! Your 14-day free trial has started. No credit card required — you've got two weeks to explore everything.</p>
+        <p class="em-p">Here's how to get your first chatbot live in under 5 minutes:</p>
+        <div class="em-highlight-box">
+          <div class="em-kv"><span class="em-kv-key">Step 1</span><span class="em-kv-val">Create a chatbot from your dashboard</span></div>
+          <div class="em-kv"><span class="em-kv-key">Step 2</span><span class="em-kv-val">Upload a PDF or paste your website URL</span></div>
+          <div class="em-kv" style="margin-bottom:0"><span class="em-kv-key">Step 3</span><span class="em-kv-val">Copy your embed code and add it to your site</span></div>
+        </div>
+        <a href="#" class="em-btn">Open My Dashboard →</a>
+        <hr class="em-divider" />
+        <p class="em-p" style="font-size:14px">Your trial includes:</p>
+        <p class="em-small">✓ Up to 3 chatbots &nbsp; ✓ 500 conversations &nbsp; ✓ PDF + URL ingestion<br>✓ Custom branding &nbsp; ✓ Lead capture &nbsp; ✓ Email support</p>
+        <hr class="em-divider" />
+        <p class="em-small">Questions? Just reply to this email — we're a small team and we actually respond. Or book a quick onboarding call at <a href="#" style="color:#6366f1">replyee.online/call</a>.</p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>by Boom Media · <a href="#">Unsubscribe</a> · <a href="#">Privacy Policy</a><br>© 2026 Boom Media. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 2: LEAD CAPTURE ALERT
+════════════════════════════════════════ -->
+<div id="email-lead" class="email-wrap">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Replyee &lt;leads@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">support@acme.com</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">🔔 New lead from your Acme Corp Support chatbot</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div class="em-h1" style="font-size:20px">A visitor left their details for you</div>
+        <p class="em-p">Your chatbot <strong>Acme Corp Support</strong> couldn't fully answer a visitor's question, so they left their email for follow-up.</p>
+        <div class="em-highlight-box lead">
+          <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Lead Details</div>
+          <div class="em-kv"><span class="em-kv-key">Email</span><span class="em-kv-val" style="color:#6366f1;font-weight:600">jennifer.walsh@gmail.com</span></div>
+          <div class="em-kv"><span class="em-kv-key">Question</span><span class="em-kv-val">"Do you ship to Canada? I couldn't find info on international shipping."</span></div>
+          <div class="em-kv"><span class="em-kv-key">Chatbot</span><span class="em-kv-val">Acme Corp Support</span></div>
+          <div class="em-kv" style="margin-bottom:0"><span class="em-kv-key">Time</span><span class="em-kv-val">May 21, 2026 at 2:14 PM</span></div>
+        </div>
+        <a href="#" class="em-btn" style="background:#f97316">Reply to Jennifer →</a>
+        <p class="em-small" style="margin-top:8px">Or copy her email: <span style="font-family:monospace;background:#f1f5f9;padding:2px 6px;border-radius:4px;color:#0f172a">jennifer.walsh@gmail.com</span></p>
+        <hr class="em-divider" />
+        <p class="em-small">This notification was sent because your chatbot is set to forward unanswered questions to <strong>support@acme.com</strong>. <a href="#" style="color:#6366f1">Change notification settings →</a></p>
+        <p class="em-small" style="margin-top:8px"><a href="#" style="color:#6366f1">View all leads in your dashboard →</a></p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>by Boom Media · <a href="#">Unsubscribe from lead alerts</a> · <a href="#">Manage notifications</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 3: TRIAL EXPIRY WARNING
+════════════════════════════════════════ -->
+<div id="email-trial-expiry" class="email-wrap">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Eric at Replyee &lt;eric@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">mike@techflow.io</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">Your Replyee trial ends in 3 days — here's what happens next</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div class="em-h1">Your trial ends May 24. Keep the momentum going.</div>
+        <p class="em-p">Hey Mike,</p>
+        <p class="em-p">Just a heads-up — your 14-day Replyee trial ends in <strong>3 days</strong>. Your chatbot has handled <strong>47 conversations</strong> this week, which is a great start.</p>
+        <div class="em-highlight-box warning">
+          <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">What happens if you don't upgrade</div>
+          <p style="font-size:14px;color:#78350f;line-height:1.6">Your chatbot will be paused and visitors will no longer get AI responses. Your data and conversations are kept for 30 days — you can reactivate any time.</p>
+        </div>
+        <p class="em-p">To keep your bot live, pick a plan:</p>
+        <a href="#" class="em-btn">Choose a Plan →</a>
+        <hr class="em-divider" />
+        <p class="em-p" style="font-size:14px">Our most popular plan for your usage level:</p>
+        <div class="em-highlight-box success">
+          <div style="font-size:16px;font-weight:900;color:#6366f1;margin-bottom:4px">Starter — $25/month</div>
+          <div style="font-size:13px;color:#374151;line-height:1.6">1 chatbot · 500 conversations/month · PDF + URL ingestion · Custom branding · Lead capture</div>
+          <a href="#" style="display:inline-block;margin-top:12px;background:#6366f1;color:#fff;font-weight:700;font-size:13px;padding:10px 20px;border-radius:7px;text-decoration:none">Start Starter Plan →</a>
+        </div>
+        <hr class="em-divider" />
+        <p class="em-small">Questions about which plan is right for you? Reply to this email — I'll personally help you figure it out.<br><br>— Eric, Replyee / Boom Media</p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>by Boom Media · <a href="#">Unsubscribe</a> · <a href="#">Privacy Policy</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 4: PAYMENT FAILED
+════════════════════════════════════════ -->
+<div id="email-payment-failed" class="email-wrap">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Replyee Billing &lt;billing@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">james@retailco.com</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">Action required: payment failed for your Replyee subscription</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div style="width:48px;height:48px;background:#fef2f2;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="em-h1">We couldn't process your payment</div>
+        <p class="em-p">Hi James,</p>
+        <p class="em-p">Your Replyee Starter subscription payment of <strong>$25.00</strong> failed on May 21, 2026. Your card ending in <strong>4242</strong> was declined.</p>
+        <div class="em-highlight-box" style="background:#fef2f2;border-color:#fecaca">
+          <div class="em-kv"><span class="em-kv-key">Amount</span><span class="em-kv-val">$25.00</span></div>
+          <div class="em-kv"><span class="em-kv-key">Plan</span><span class="em-kv-val">Starter (monthly)</span></div>
+          <div class="em-kv"><span class="em-kv-key">Failed on</span><span class="em-kv-val">May 21, 2026</span></div>
+          <div class="em-kv" style="margin-bottom:0"><span class="em-kv-key">Reason</span><span class="em-kv-val" style="color:#ef4444">Card declined</span></div>
+        </div>
+        <p class="em-p">Your chatbot will remain active for the next <strong>3 days</strong> while we retry. Please update your payment method to avoid any interruption.</p>
+        <a href="#" class="em-btn" style="background:#ef4444">Update Payment Method →</a>
+        <hr class="em-divider" />
+        <p class="em-small">We'll automatically retry your card in 3 days. If payment still fails after 7 days, your chatbot will be paused.</p>
+        <p class="em-small" style="margin-top:8px">Need help? Reply to this email or <a href="#" style="color:#6366f1">contact support</a>.</p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>by Boom Media · This is a transactional billing email. <a href="#">View billing →</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 5: MONTHLY USAGE REPORT
+════════════════════════════════════════ -->
+<div id="email-monthly-report" class="email-wrap">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Replyee &lt;reports@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">sarah@acme.com</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">Your Replyee May 2026 summary — 1,842 conversations handled 🎉</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div class="em-h1">May 2026 — Your monthly summary</div>
+        <p class="em-p">Hi Sarah,</p>
+        <p class="em-p">Here's what your Replyee chatbots accomplished in May 2026.</p>
+
+        <div class="em-stat-row">
+          <div class="em-stat"><div class="em-stat-val">1,842</div><div class="em-stat-label">Conversations</div></div>
+          <div class="em-stat"><div class="em-stat-val" style="color:#4ade80">83%</div><div class="em-stat-label">Resolved by AI</div></div>
+          <div class="em-stat"><div class="em-stat-val" style="color:#f97316">47</div><div class="em-stat-label">Leads Captured</div></div>
+        </div>
+
+        <div class="em-highlight-box">
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:12px">Top questions your bots answered this month</div>
+          <div style="font-size:14px;color:#475569;line-height:1.9">
+            1. Return policy and timelines — <strong>234 times</strong><br>
+            2. Shipping costs and delivery estimates — <strong>187 times</strong><br>
+            3. Product availability and sizing — <strong>142 times</strong><br>
+            4. Contact hours and support options — <strong>98 times</strong><br>
+            5. International shipping — <strong>76 times</strong>
+          </div>
+        </div>
+
+        <div class="em-highlight-box" style="background:#fff7ed;border-color:#fed7aa">
+          <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">💡 Content gap detected</div>
+          <p style="font-size:14px;color:#78350f;line-height:1.6">47 visitors asked about international shipping and were not fully answered. Consider adding a page or PDF about your shipping countries to your knowledge base.</p>
+          <a href="#" style="display:inline-block;margin-top:10px;font-size:13px;font-weight:700;color:#6366f1">Add knowledge source →</a>
+        </div>
+
+        <a href="#" class="em-btn">View Full Analytics →</a>
+        <hr class="em-divider" />
+        <p class="em-small">Plan usage: <strong>1,842 / 3,000 conversations</strong> (61%) · <strong>3 / 5 chatbots</strong> active<br>Your Growth plan renews June 21, 2026 · <a href="#" style="color:#6366f1">Manage billing</a></p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>by Boom Media · <a href="#">Unsubscribe from monthly reports</a> · <a href="#">Privacy Policy</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+  EMAIL 6: PASSWORD RESET
+════════════════════════════════════════ -->
+<div id="email-password-reset" class="email-wrap">
+  <div class="email-chrome">
+    <div class="email-meta">
+      <div class="meta-row"><span class="meta-key">From:</span><span class="meta-val">Replyee &lt;auth@replyee.online&gt;</span></div>
+      <div class="meta-row"><span class="meta-key">To:</span><span class="meta-val">sarah@acme.com</span></div>
+      <div class="meta-row"><span class="meta-key">Subject:</span><span class="meta-val" style="font-weight:700">Reset your Replyee password</span></div>
+    </div>
+    <div class="email-body">
+      <div class="em-header">
+        <div class="em-logo-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <span class="em-logo-name">Replyee</span><span class="em-logo-sub">by Boom Media</span>
+      </div>
+      <div class="em-body">
+        <div style="width:48px;height:48px;background:#eef2ff;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="em-h1">Reset your password</div>
+        <p class="em-p">Hi Sarah,</p>
+        <p class="em-p">We received a request to reset the password for your Replyee account. Click the button below to choose a new password.</p>
+        <a href="#" class="em-btn">Reset Password →</a>
+        <hr class="em-divider" />
+        <p class="em-small">Or paste this link into your browser:</p>
+        <div class="em-code">https://replyee.online/auth/reset?token=abc123xyz789def456…</div>
+        <p class="em-small">This link expires in <strong>1 hour</strong>.</p>
+        <hr class="em-divider" />
+        <p class="em-small">If you didn't request a password reset, you can safely ignore this email. Your password will not be changed.</p>
+        <p class="em-small" style="margin-top:8px">For your security, this link can only be used once. If you need help, <a href="mailto:eric@boommedia.us" style="color:#6366f1">contact support</a>.</p>
+      </div>
+      <div class="em-footer">
+        <div class="em-footer-logo">
+          <div class="em-footer-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <span style="font-size:13px;font-weight:800;color:#374151">Replyee</span>
+        </div>
+        <p>This is a security email — it cannot be unsubscribed from.<br>© 2026 Boom Media. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function show(name) {
+  document.querySelectorAll('.email-wrap').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('email-' + name)?.classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

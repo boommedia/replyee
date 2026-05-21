@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Replyee — Marketing Website Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:     #07080f;
+    --bg2:    #0d1018;
+    --muted:  #0a0c14;
+    --border: #1a2035;
+    --prim:   #6366f1;
+    --accent: #22d3ee;
+    --text:   #e2e8f0;
+    --body:   #64748b;
+  }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .pulse { animation: pulse 2s infinite; }
+
+  /* ── Banner ── */
+  .banner { background:#050710; border-bottom:1px solid var(--border); padding:10px 20px; display:flex; align-items:center; justify-content:center; gap:12px; font-size:13px; flex-wrap:wrap; }
+  .banner-code { color:#fff; font-weight:900; font-family:monospace; background:var(--border); padding:2px 8px; border-radius:4px; }
+  .banner-bar { width:80px; height:5px; background:var(--border); border-radius:99px; overflow:hidden; }
+  .banner-fill { width:75%; height:100%; background:var(--prim); border-radius:99px; }
+  .banner-btn { background:var(--prim); color:#fff; font-weight:700; font-size:11px; padding:4px 14px; border-radius:99px; }
+
+  /* ── Nav ── */
+  nav { display:flex; align-items:center; justify-content:space-between; padding:14px 48px; border-bottom:1px solid var(--border); background:rgba(7,8,15,.9); backdrop-filter:blur(16px); position:sticky; top:0; z-index:50; }
+  .logo { display:flex; align-items:center; gap:8px; }
+  .logo-icon { width:28px; height:28px; background:var(--prim); border-radius:7px; display:flex; align-items:center; justify-content:center; }
+  .logo-icon svg { width:15px; height:15px; color:#fff; }
+  .logo-name { font-weight:900; font-size:17px; letter-spacing:-.5px; }
+  .logo-by { font-size:11px; color:var(--body); border-left:1px solid var(--border); padding-left:14px; }
+  .nav-links { display:flex; align-items:center; gap:28px; font-size:13px; color:var(--body); }
+  .nav-links a:hover { color:var(--text); }
+  .nav-cta { background:var(--prim); color:#fff; font-weight:700; font-size:13px; padding:9px 22px; border-radius:8px; }
+
+  /* ── Hero ── */
+  .hero { padding:100px 48px 80px; text-align:center; position:relative; overflow:hidden; }
+  .hero-glow { position:absolute; top:5%; left:50%; transform:translateX(-50%); width:800px; height:500px; border-radius:50%; background:radial-gradient(ellipse,rgba(99,102,241,.15) 0%,transparent 70%); pointer-events:none; }
+  .hero-badge { display:inline-flex; align-items:center; gap:8px; background:rgba(99,102,241,.1); border:1px solid rgba(99,102,241,.25); border-radius:20px; padding:5px 16px; font-size:12px; font-weight:700; color:var(--prim); margin-bottom:28px; letter-spacing:.06em; }
+  h1 { font-size:clamp(36px,6vw,68px); font-weight:900; line-height:1.05; letter-spacing:-2.5px; margin-bottom:24px; }
+  .gradient-text { background:linear-gradient(135deg,var(--prim),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:18px; color:var(--body); max-width:560px; margin:0 auto 40px; line-height:1.7; }
+  .hero-btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:56px; }
+  .btn-primary { background:var(--prim); color:#fff; font-weight:800; font-size:15px; padding:14px 32px; border-radius:10px; display:inline-flex; align-items:center; gap:8px; }
+  .btn-ghost { background:transparent; color:#fff; font-weight:700; font-size:15px; padding:14px 28px; border-radius:10px; border:1px solid var(--border); }
+
+  /* Browser mockup */
+  .browser { max-width:780px; margin:0 auto; }
+  .browser-frame { background:var(--bg2); border:1px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:0 0 80px rgba(99,102,241,.12); }
+  .browser-bar { background:var(--muted); border-bottom:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; gap:6px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .url-bar { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:3px 12px; font-size:11px; color:var(--body); font-family:monospace; margin-left:12px; }
+  .browser-content { padding:24px; position:relative; min-height:300px; }
+  .fake-page { display:flex; gap:16px; margin-bottom:20px; }
+  .fake-lines { flex:1; }
+  .fake-h { height:18px; background:var(--border); border-radius:4px; margin-bottom:10px; }
+  .fake-p { height:12px; background:var(--border); border-radius:3px; margin-bottom:7px; }
+  .fake-btn-el { height:36px; background:var(--prim); border-radius:7px; width:120px; margin-top:20px; }
+  .fake-img { width:180px; height:140px; background:var(--border); border-radius:10px; flex-shrink:0; }
+  .fake-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .fake-card { height:70px; background:var(--border); border-radius:8px; }
+  /* Chat widget */
+  .widget-wrap { position:absolute; bottom:20px; right:20px; }
+  .chat-window { background:#0f1420; border:1px solid var(--border); border-radius:14px; width:260px; margin-bottom:12px; overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,.5); }
+  .chat-header { background:var(--prim); padding:12px 14px; display:flex; align-items:center; gap:8px; }
+  .chat-avatar { width:28px; height:28px; background:rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  .chat-name { font-size:12px; font-weight:700; color:#fff; }
+  .chat-status { font-size:10px; color:rgba(255,255,255,.7); }
+  .chat-body { padding:12px; }
+  .msg-bot { background:rgba(99,102,241,.15); border-radius:8px 8px 8px 2px; padding:8px 12px; font-size:12px; color:#fff; margin-bottom:8px; }
+  .msg-user { background:var(--bg); border:1px solid var(--border); border-radius:8px 8px 2px 8px; padding:8px 12px; font-size:12px; color:#fff; margin-bottom:8px; margin-left:auto; width:fit-content; }
+  .chat-input { padding:8px 12px; border-top:1px solid var(--border); display:flex; gap:6px; }
+  .chat-field { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:6px 10px; font-size:11px; color:var(--body); }
+  .chat-send { background:var(--prim); border-radius:6px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; }
+  .chat-bubble { background:var(--prim); width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-left:auto; box-shadow:0 4px 20px rgba(99,102,241,.5); }
+  .embed-code { margin-top:16px; background:var(--muted); border:1px solid var(--border); border-radius:8px; padding:10px 16px; font-size:12px; font-family:monospace; color:var(--body); text-align:left; }
+
+  /* ── Trust bar ── */
+  .trust { border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:20px 48px; display:flex; align-items:center; justify-content:center; gap:48px; flex-wrap:wrap; }
+  .trust-item { display:flex; align-items:center; gap:8px; color:var(--body); font-size:13px; }
+  .trust-item svg { color:var(--prim); }
+
+  /* ── Section ── */
+  section { padding:80px 48px; }
+  .section-label { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--prim); margin-bottom:12px; }
+  .section-title { font-size:36px; font-weight:900; letter-spacing:-1.5px; margin-bottom:12px; }
+  .section-sub { color:var(--body); font-size:16px; max-width:520px; margin:0 auto; }
+  .section-center { text-align:center; margin-bottom:56px; }
+
+  /* ── Features ── */
+  .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; max-width:1100px; margin:0 auto; }
+  .feature-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:24px; }
+  .feature-icon { width:40px; height:40px; background:rgba(99,102,241,.15); border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; color:var(--prim); }
+  .feature-title { font-size:16px; font-weight:700; margin-bottom:8px; }
+  .feature-desc { font-size:14px; color:var(--body); line-height:1.6; }
+
+  /* ── Steps ── */
+  .steps { max-width:800px; margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+  .step { display:flex; gap:24px; align-items:flex-start; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:28px; }
+  .step-num { min-width:48px; height:48px; background:rgba(99,102,241,.15); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:900; color:var(--prim); flex-shrink:0; }
+
+  /* ── Sources ── */
+  .sources { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .source-pill { display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; padding:10px 18px; font-size:13px; }
+
+  /* ── Pricing ── */
+  .pricing-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; max-width:1000px; margin:0 auto; }
+  .plan-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:28px; position:relative; display:flex; flex-direction:column; }
+  .plan-card.highlight { background:rgba(99,102,241,.08); border-color:rgba(99,102,241,.4); }
+  .plan-badge { position:absolute; top:-13px; left:50%; transform:translateX(-50%); background:var(--prim); color:#fff; font-size:11px; font-weight:800; padding:3px 14px; border-radius:20px; white-space:nowrap; }
+  .plan-name { font-size:18px; font-weight:800; margin-bottom:4px; }
+  .plan-desc { font-size:13px; color:var(--body); margin-bottom:16px; }
+  .plan-price { font-size:40px; font-weight:900; letter-spacing:-2px; }
+  .plan-period { font-size:14px; color:var(--body); }
+  .plan-features { flex:1; display:flex; flex-direction:column; gap:10px; margin:20px 0 24px; }
+  .plan-feat { display:flex; gap:10px; align-items:center; font-size:14px; }
+  .check { color:var(--prim); flex-shrink:0; }
+  .plan-cta { display:block; text-align:center; font-weight:700; font-size:14px; padding:12px; border-radius:8px; border:1px solid var(--border); }
+  .plan-cta.solid { background:var(--prim); color:#fff; border-color:var(--prim); }
+
+  /* ── FAQ ── */
+  .faq { max-width:700px; margin:0 auto; }
+  .faq-item { border-bottom:1px solid var(--border); }
+  .faq-q { width:100%; padding:18px 0; display:flex; align-items:center; justify-content:space-between; background:transparent; border:none; color:#fff; cursor:pointer; font-size:15px; font-weight:600; gap:16px; text-align:left; }
+  .faq-a { color:var(--body); font-size:14px; line-height:1.7; padding-bottom:18px; }
+
+  /* ── CTA ── */
+  .final-cta { text-align:center; padding:80px 48px; border-top:1px solid var(--border); }
+
+  /* ── Footer ── */
+  footer { border-top:1px solid var(--border); padding:32px 48px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  .footer-links { display:flex; gap:24px; font-size:13px; color:var(--body); }
+</style>
+</head>
+<body>
+
+<!-- Banner -->
+<div class="banner">
+  <span style="color:var(--accent);font-weight:800">✦ Early Access Open</span>
+  <span style="color:var(--body)">— 50% off for life · Code:</span>
+  <span class="banner-code">REPLY50</span>
+  <div style="display:flex;align-items:center;gap:6px">
+    <div class="banner-bar"><div class="banner-fill"></div></div>
+    <span style="color:var(--body);font-size:11px">15/20 spots left</span>
+  </div>
+  <a href="#" class="banner-btn">Claim Spot →</a>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <span class="logo-name">Replyee</span>
+    </div>
+    <span class="logo-by">by Boom Media</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#">Sign In</a>
+  </div>
+  <a href="#" class="nav-cta">Start Free →</a>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-badge">
+    <span class="pulse" style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block"></span>
+    AI-POWERED · KNOWLEDGE-GROUNDED · EMBEDDABLE IN 60 SECONDS
+  </div>
+  <h1>Your AI support team,<br><span class="gradient-text">ready in 60 seconds.</span></h1>
+  <p class="hero-sub">Train a chatbot on your content. Embed it on your website. Let AI answer customer questions 24/7 — while you focus on the work that matters.</p>
+  <div class="hero-btns">
+    <a href="#" class="btn-primary">Start Free — No Card Needed <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+    <a href="#how-it-works" class="btn-ghost">See How It Works</a>
+  </div>
+  <!-- Browser mockup -->
+  <div class="browser">
+    <div class="browser-frame">
+      <div class="browser-bar">
+        <span class="dot" style="background:#ff5f57"></span>
+        <span class="dot" style="background:#febc2e;margin-left:4px"></span>
+        <span class="dot" style="background:#29c941;margin-left:4px"></span>
+        <div class="url-bar">yourclientsite.com</div>
+      </div>
+      <div class="browser-content">
+        <div class="fake-page">
+          <div class="fake-lines">
+            <div class="fake-h" style="width:60%"></div>
+            <div class="fake-p" style="width:85%"></div>
+            <div class="fake-p" style="width:70%"></div>
+            <div class="fake-p" style="width:80%"></div>
+            <div class="fake-btn-el"></div>
+          </div>
+          <div class="fake-img"></div>
+        </div>
+        <div class="fake-cards">
+          <div class="fake-card"></div>
+          <div class="fake-card"></div>
+          <div class="fake-card"></div>
+        </div>
+        <!-- Widget -->
+        <div class="widget-wrap">
+          <div class="chat-window">
+            <div class="chat-header">
+              <div class="chat-avatar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <div class="chat-name">Acme Support</div>
+                <div class="chat-status">● Online</div>
+              </div>
+            </div>
+            <div class="chat-body">
+              <div class="msg-bot">👋 Hi! I know everything about Acme. What can I help you with?</div>
+              <div class="msg-user">What's your return policy?</div>
+              <div class="msg-bot">We offer 30-day returns on all items. Just email returns@acme.com with your order number...</div>
+            </div>
+            <div class="chat-input">
+              <div class="chat-field">Ask a question…</div>
+              <div class="chat-send">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="chat-bubble">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="embed-code">
+      <span style="color:#f97316">&lt;script</span>
+      <span style="color:var(--accent)"> src</span>
+      <span style="color:#fff">="https://replyee.online/widget.js"</span>
+      <span style="color:var(--accent)"> data-bot-id</span>
+      <span style="color:#fff">="abc123"</span>
+      <span style="color:#f97316">&gt;&lt;/script&gt;</span>
+    </div>
+  </div>
+</section>
+
+<!-- Trust bar -->
+<div class="trust">
+  <div class="trust-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    Works on any site
+  </div>
+  <div class="trust-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    No hallucinations
+  </div>
+  <div class="trust-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    Instant setup
+  </div>
+  <div class="trust-item">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Agency-ready
+  </div>
+</div>
+
+<!-- Features -->
+<section id="features">
+  <div class="section-center" style="max-width:1100px;margin:0 auto 56px">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything you need to automate support</h2>
+    <p class="section-sub">No live agents. No ticket queues. Just AI that knows your business inside out.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+      <div class="feature-title">Train on Your Content</div>
+      <div class="feature-desc">Upload PDFs, paste URLs, or type text. Replyee chunks, embeds, and indexes everything automatically.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <div class="feature-title">Smart AI Responses</div>
+      <div class="feature-desc">Powered by Claude AI + semantic search. Answers are accurate, on-brand, and grounded in your actual content.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <div class="feature-title">One-Line Embed</div>
+      <div class="feature-desc">Copy a single script tag. Works on WordPress, Webflow, Squarespace, Shopify — any website.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+      <div class="feature-title">Lead Capture &amp; Handoff</div>
+      <div class="feature-desc">When the bot can't answer, it captures the visitor's email and question and emails you instantly.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <div class="feature-title">Conversation Analytics</div>
+      <div class="feature-desc">See what visitors ask most. Track resolved vs unresolved. Know exactly where your content has gaps.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="feature-title">Custom Branding</div>
+      <div class="feature-desc">Your colours, your name, your logo. No "Powered by" badge. Looks native to your site.</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how-it-works" style="border-top:1px solid var(--border)">
+  <div class="section-center">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Live in 3 steps. Seriously.</h2>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Add Your Content</h3>
+        <p style="color:var(--body);font-size:15px;line-height:1.6">Upload PDFs, paste your website URL, or type FAQs. Replyee processes it all in seconds.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Customise Your Bot</h3>
+        <p style="color:var(--body);font-size:15px;line-height:1.6">Set your brand colours, bot name, greeting message, and fallback behaviour.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Copy &amp; Paste</h3>
+        <p style="color:var(--body);font-size:15px;line-height:1.6">Grab your one-line script tag and drop it into your website. Done. The bot is live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sources -->
+<section style="text-align:center;border-top:1px solid var(--border)">
+  <p style="font-size:13px;font-weight:700;color:var(--body);text-transform:uppercase;letter-spacing:.1em;margin-bottom:24px">Train from any source</p>
+  <div class="sources">
+    <div class="source-pill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDFs &amp; Docs</div>
+    <div class="source-pill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Website URLs</div>
+    <div class="source-pill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> FAQ Text</div>
+    <div class="source-pill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Sitemap Crawl</div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" style="border-top:1px solid var(--border)">
+  <div class="section-center">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, transparent pricing</h2>
+    <p style="color:var(--body)">14-day free trial on all plans. No credit card required.</p>
+  </div>
+  <div class="pricing-grid">
+    <!-- Starter -->
+    <div class="plan-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-desc">Perfect for a single website.</div>
+      <div style="display:flex;align-items:baseline;gap:2px">
+        <span class="plan-price">$25</span><span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-features">
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">1 chatbot</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">500 conversations/mo</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">PDF + URL ingestion</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Custom branding</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Email lead handoff</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Basic analytics</span></div>
+      </div>
+      <a href="#" class="plan-cta">Start Free Trial</a>
+    </div>
+    <!-- Growth (highlight) -->
+    <div class="plan-card highlight">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Growth</div>
+      <div class="plan-desc">For agencies managing multiple clients.</div>
+      <div style="display:flex;align-items:baseline;gap:2px">
+        <span class="plan-price" style="color:var(--prim)">$49</span><span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-features">
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">5 chatbots</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">3,000 conversations/mo</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Everything in Starter</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Priority support</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Conversation export</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Webhook integration</span></div>
+      </div>
+      <a href="#" class="plan-cta solid">Start Free Trial</a>
+    </div>
+    <!-- Agency -->
+    <div class="plan-card">
+      <div class="plan-name">Agency</div>
+      <div class="plan-desc">Unlimited bots. Unlimited clients.</div>
+      <div style="display:flex;align-items:baseline;gap:2px">
+        <span class="plan-price">$99</span><span class="plan-period">/mo</span>
+      </div>
+      <div class="plan-features">
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Unlimited chatbots</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Unlimited conversations</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Everything in Growth</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">White-label (no Replyee badge)</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">API access</span></div>
+        <div class="plan-feat"><svg class="check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span style="color:#d1d5db">Dedicated onboarding</span></div>
+      </div>
+      <a href="#" class="plan-cta">Talk to Us</a>
+    </div>
+  </div>
+  <p style="text-align:center;color:var(--body);font-size:13px;margin-top:24px">Need more? <a href="#" style="color:var(--prim)">Contact us</a> for custom volume pricing.</p>
+</section>
+
+<!-- FAQ -->
+<section style="border-top:1px solid var(--border)">
+  <div style="text-align:center;margin-bottom:40px">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title" style="font-size:32px">Frequently asked questions</h2>
+  </div>
+  <div class="faq">
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">What file types can I upload? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="faq-a">PDFs, plain text files (.txt), and any public URL. We extract the text, chunk it into segments, and embed it all automatically.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">How accurate are the answers? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="faq-a" style="display:none">Replyee uses RAG (Retrieval-Augmented Generation) — it searches your actual content before generating a response. It only answers based on what you've trained it on, so there's no hallucination about your business.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Does it work on any website? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="faq-a" style="display:none">Yes. The widget is a single vanilla JS script tag with no dependencies. It works on WordPress, Webflow, Shopify, Squarespace, Wix, or any custom HTML site.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">What happens when the bot doesn't know the answer? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="faq-a" style="display:none">It tells the visitor honestly and offers to capture their email and question. You get an instant email notification via Resend so you can follow up.</div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">Is there a free trial? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--body)" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <div class="faq-a" style="display:none">Yes — 14 days free on any plan, no credit card required. Your first chatbot is ready in minutes.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Final CTA -->
+<div class="final-cta">
+  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--prim)" stroke-width="1.5" style="margin:0 auto 12px;display:block"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+  <h2 style="font-size:36px;font-weight:900;letter-spacing:-1.5px;margin-bottom:12px">Start your free trial today</h2>
+  <p style="color:var(--body);margin-bottom:32px;font-size:16px">Your first chatbot is live in 60 seconds. No technical setup required.</p>
+  <a href="#" class="btn-primary" style="font-size:16px;padding:16px 40px">Get Started Free <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="logo">
+    <div class="logo-icon" style="width:22px;height:22px;border-radius:5px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:11px;height:11px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <span style="font-weight:800;font-size:14px">Replyee</span>
+    <span style="font-size:12px;color:var(--body);margin-left:8px">by Boom Media</span>
+  </div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="mailto:eric@boommedia.us">Contact</a>
+  </div>
+  <p style="font-size:12px;color:var(--body)">© 2026 Boom Media. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
