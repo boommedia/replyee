@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
     await supabase.rpc('replyee_increment_lead_count', { bot_id: botId })
 
-    const ownerProfile = bot.replyee_profiles as { email: string; full_name: string } | null
+    const ownerProfile = bot.replyee_profiles as unknown as { email: string; full_name: string } | null
     if (ownerProfile?.email) {
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'noreply@replyee.online',
