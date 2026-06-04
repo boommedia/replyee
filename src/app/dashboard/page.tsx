@@ -7,8 +7,8 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   const [{ data: bots }, { data: recentConvos }] = await Promise.all([
-    supabase.from('chatbots').select('id, name, accent_color, conversation_count, lead_count').eq('user_id', user!.id).order('created_at', { ascending: false }),
-    supabase.from('conversations').select('id, chatbot_id, created_at, chatbots(name)').eq('chatbots.user_id', user!.id).order('created_at', { ascending: false }).limit(5),
+    supabase.from('replyee_chatbots').select('id, name, accent_color, conversation_count, lead_count').eq('user_id', user!.id).order('created_at', { ascending: false }),
+    supabase.from('replyee_conversations').select('id, chatbot_id, created_at, replyee_chatbots(name)').eq('replyee_chatbots.user_id', user!.id).order('created_at', { ascending: false }).limit(5),
   ])
 
   const totalConvos = bots?.reduce((sum, b) => sum + (b.conversation_count ?? 0), 0) ?? 0
@@ -32,7 +32,6 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
         {STATS.map(({ label, value, icon: Icon, color }) => (
           <div key={label} style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }}>
@@ -48,7 +47,6 @@ export default async function DashboardPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-        {/* Bots list */}
         <div style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#e2e8f0' }}>Your Chatbots</h2>
@@ -80,7 +78,6 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Recent conversations */}
         <div style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: '#e2e8f0' }}>Recent Conversations</h2>
@@ -93,7 +90,7 @@ export default async function DashboardPage() {
                   <MessageCircle size={14} style={{ color: '#22d3ee', flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 500 }}>
-                      {(c.chatbots as { name: string } | null)?.name ?? 'Unknown bot'}
+                      {(c.replyee_chatbots as { name: string } | null)?.name ?? 'Unknown bot'}
                     </div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>
                       {new Date(c.created_at).toLocaleDateString()}

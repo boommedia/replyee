@@ -35,7 +35,7 @@ export default function NewBotPage() {
     if (!user) { router.push('/login'); return }
 
     const { data, error: err } = await supabase
-      .from('chatbots')
+      .from('replyee_chatbots')
       .insert({ ...form, user_id: user.id })
       .select('id')
       .single()

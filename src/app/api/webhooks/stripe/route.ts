@@ -34,9 +34,9 @@ export async function POST(req: Request) {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session
-      const customerId  = session.customer as string
-      const email       = session.customer_email ?? session.customer_details?.email ?? null
-      const priceId     = session.line_items
+      const customerId = session.customer as string
+      const email      = session.customer_email ?? session.customer_details?.email ?? null
+      const priceId    = session.line_items
         ? (await stripe.checkout.sessions.listLineItems(session.id)).data[0]?.price?.id
         : null
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
       if (email) {
         await admin
-          .from('profiles')
+          .from('replyee_profiles')
           .update({ plan, bot_limit: botLimit, stripe_customer_id: customerId })
           .eq('email', email)
       }
@@ -53,14 +53,14 @@ export async function POST(req: Request) {
     }
 
     case 'customer.subscription.updated': {
-      const sub       = event.data.object as Stripe.Subscription
-      const priceId   = sub.items.data[0]?.price?.id
-      const plan      = (priceId && PRICE_TO_PLAN[priceId]) || 'starter'
-      const botLimit  = PLAN_BOT_LIMITS[plan] ?? 1
+      const sub        = event.data.object as Stripe.Subscription
+      const priceId    = sub.items.data[0]?.price?.id
+      const plan       = (priceId && PRICE_TO_PLAN[priceId]) || 'starter'
+      const botLimit   = PLAN_BOT_LIMITS[plan] ?? 1
       const customerId = sub.customer as string
 
       await admin
-        .from('profiles')
+        .from('replyee_profiles')
         .update({ plan, bot_limit: botLimit })
         .eq('stripe_customer_id', customerId)
       break
@@ -71,16 +71,14 @@ export async function POST(req: Request) {
       const customerId = sub.customer as string
 
       await admin
-        .from('profiles')
+        .from('replyee_profiles')
         .update({ plan: 'starter_trial', bot_limit: 1 })
         .eq('stripe_customer_id', customerId)
       break
     }
 
-    case 'invoice.payment_failed': {
-      // Optional: trigger a payment-failed email here when email util is wired up
+    case 'invoice.payment_failed':
       break
-    }
   }
 
   return new Response('ok', { status: 200 })

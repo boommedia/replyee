@@ -18,9 +18,9 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     { data: allBots },
     { data: recentProfiles },
   ] = await Promise.all([
-    admin.from('profiles').select('id, full_name, email, plan, bot_limit, created_at').order('created_at', { ascending: false }),
-    admin.from('chatbots').select('id, name, accent_color, user_id, conversation_count, lead_count, chunk_count, created_at, is_active').order('created_at', { ascending: false }),
-    admin.from('profiles').select('id, full_name, email, plan, created_at').order('created_at', { ascending: false }).limit(10),
+    admin.from('replyee_profiles').select('id, full_name, email, plan, bot_limit, created_at').order('created_at', { ascending: false }),
+    admin.from('replyee_chatbots').select('id, name, accent_color, user_id, conversation_count, lead_count, chunk_count, created_at, is_active').order('created_at', { ascending: false }),
+    admin.from('replyee_profiles').select('id, full_name, email, plan, created_at').order('created_at', { ascending: false }).limit(10),
   ])
 
   const totalUsers  = profiles?.length ?? 0

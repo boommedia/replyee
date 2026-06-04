@@ -1,40 +1,42 @@
 -- ============================================================
 -- Replyee — Initial Database Migration
--- Run this in your Supabase SQL editor
+-- Shared Supabase: https://db.boommedia.us
+-- All tables prefixed replyee_ to avoid collisions
+-- Run in Supabase Studio: https://studio.boommedia.us
 -- ============================================================
 
--- Enable pgvector extension (required for embeddings)
 create extension if not exists vector;
 
--- ── Profiles (extends auth.users) ────────────────────────────
-create table if not exists profiles (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  full_name   text,
-  email       text,
-  plan        text not null default 'starter',  -- starter | growth | agency
-  bot_limit   int  not null default 1,
-  created_at  timestamptz not null default now()
+-- ── Profiles ──────────────────────────────────────────────────
+create table if not exists replyee_profiles (
+  id                  uuid primary key references auth.users(id) on delete cascade,
+  full_name           text,
+  email               text,
+  plan                text not null default 'starter_trial',
+  bot_limit           int  not null default 1,
+  stripe_customer_id  text,
+  created_at          timestamptz not null default now()
 );
 
--- Auto-create profile on user signup
-create or replace function handle_new_user()
+create or replace function replyee_handle_new_user()
 returns trigger language plpgsql security definer as $$
 begin
-  insert into profiles (id, full_name, email)
-  values (new.id, new.raw_user_meta_data->>'full_name', new.email);
+  insert into replyee_profiles (id, full_name, email)
+  values (new.id, new.raw_user_meta_data->>'full_name', new.email)
+  on conflict (id) do nothing;
   return new;
 end;
 $$;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
+drop trigger if exists replyee_on_auth_user_created on auth.users;
+create trigger replyee_on_auth_user_created
   after insert on auth.users
-  for each row execute function handle_new_user();
+  for each row execute function replyee_handle_new_user();
 
 -- ── Chatbots ──────────────────────────────────────────────────
-create table if not exists chatbots (
+create table if not exists replyee_chatbots (
   id                 uuid primary key default gen_random_uuid(),
-  user_id            uuid not null references profiles(id) on delete cascade,
+  user_id            uuid not null references replyee_profiles(id) on delete cascade,
   name               text not null,
   website_url        text,
   accent_color       text not null default '#6366f1',
@@ -50,49 +52,48 @@ create table if not exists chatbots (
   updated_at         timestamptz not null default now()
 );
 
--- ── Knowledge Chunks (RAG vectors) ───────────────────────────
-create table if not exists knowledge_chunks (
+-- ── Knowledge Chunks ──────────────────────────────────────────
+create table if not exists replyee_knowledge_chunks (
   id           uuid primary key default gen_random_uuid(),
-  chatbot_id   uuid not null references chatbots(id) on delete cascade,
+  chatbot_id   uuid not null references replyee_chatbots(id) on delete cascade,
   content      text not null,
-  embedding    vector(1536),          -- OpenAI text-embedding-3-small
-  source_type  text not null,         -- 'url' | 'file' | 'text'
-  source_name  text,                  -- URL string or filename
+  embedding    vector(1536),
+  source_type  text not null,
+  source_name  text,
   created_at   timestamptz not null default now()
 );
 
--- pgvector index for fast cosine similarity search
-create index if not exists knowledge_chunks_embedding_idx
-  on knowledge_chunks using ivfflat (embedding vector_cosine_ops)
+create index if not exists replyee_knowledge_chunks_embedding_idx
+  on replyee_knowledge_chunks using ivfflat (embedding vector_cosine_ops)
   with (lists = 100);
 
 -- ── Messages ──────────────────────────────────────────────────
-create table if not exists messages (
+create table if not exists replyee_messages (
   id           uuid primary key default gen_random_uuid(),
   session_id   uuid not null,
-  chatbot_id   uuid not null references chatbots(id) on delete cascade,
+  chatbot_id   uuid not null references replyee_chatbots(id) on delete cascade,
   role         text not null check (role in ('user', 'assistant')),
   content      text not null,
   created_at   timestamptz not null default now()
 );
 
-create index if not exists messages_session_idx on messages(session_id);
-create index if not exists messages_chatbot_idx on messages(chatbot_id);
+create index if not exists replyee_messages_session_idx on replyee_messages(session_id);
+create index if not exists replyee_messages_chatbot_idx on replyee_messages(chatbot_id);
 
--- ── Conversations (session view) ──────────────────────────────
-create table if not exists conversations (
-  id           uuid primary key default gen_random_uuid(),
-  session_id   uuid not null unique,
-  chatbot_id   uuid not null references chatbots(id) on delete cascade,
+-- ── Conversations ─────────────────────────────────────────────
+create table if not exists replyee_conversations (
+  id            uuid primary key default gen_random_uuid(),
+  session_id    uuid not null unique,
+  chatbot_id    uuid not null references replyee_chatbots(id) on delete cascade,
   visitor_email text,
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
 
 -- ── Leads ─────────────────────────────────────────────────────
-create table if not exists leads (
+create table if not exists replyee_leads (
   id             uuid primary key default gen_random_uuid(),
-  chatbot_id     uuid not null references chatbots(id) on delete cascade,
+  chatbot_id     uuid not null references replyee_chatbots(id) on delete cascade,
   visitor_email  text not null,
   question       text,
   session_id     uuid,
@@ -101,16 +102,15 @@ create table if not exists leads (
 
 -- ── Helper RPCs ───────────────────────────────────────────────
 
--- Vector similarity search (called from /api/chat)
-create or replace function match_chunks(
+create or replace function replyee_match_chunks(
   query_embedding vector(1536),
   chatbot_id      uuid,
   match_count     int     default 5,
   match_threshold float   default 0.5
 )
 returns table (
-  id       uuid,
-  content  text,
+  id         uuid,
+  content    text,
   similarity float
 )
 language plpgsql as $$
@@ -120,57 +120,45 @@ begin
     kc.id,
     kc.content,
     1 - (kc.embedding <=> query_embedding) as similarity
-  from knowledge_chunks kc
+  from replyee_knowledge_chunks kc
   where
-    kc.chatbot_id = match_chunks.chatbot_id
+    kc.chatbot_id = replyee_match_chunks.chatbot_id
     and 1 - (kc.embedding <=> query_embedding) > match_threshold
   order by kc.embedding <=> query_embedding
   limit match_count;
 end;
 $$;
 
--- Increment helpers (avoids race conditions vs SELECT+UPDATE)
-create or replace function increment_conversation_count(bot_id uuid)
+create or replace function replyee_increment_conversation_count(bot_id uuid)
 returns void language sql as $$
-  update chatbots set conversation_count = conversation_count + 1 where id = bot_id;
+  update replyee_chatbots set conversation_count = conversation_count + 1 where id = bot_id;
 $$;
 
-create or replace function increment_lead_count(bot_id uuid)
+create or replace function replyee_increment_lead_count(bot_id uuid)
 returns void language sql as $$
-  update chatbots set lead_count = lead_count + 1 where id = bot_id;
+  update replyee_chatbots set lead_count = lead_count + 1 where id = bot_id;
 $$;
 
-create or replace function increment_chunk_count(bot_id uuid, amount int)
+create or replace function replyee_increment_chunk_count(bot_id uuid, amount int)
 returns void language sql as $$
-  update chatbots set chunk_count = chunk_count + amount where id = bot_id;
+  update replyee_chatbots set chunk_count = chunk_count + amount where id = bot_id;
 $$;
 
--- ── Row Level Security ─────────────────────────────────────────
-alter table profiles          enable row level security;
-alter table chatbots          enable row level security;
-alter table knowledge_chunks  enable row level security;
-alter table messages          enable row level security;
-alter table conversations     enable row level security;
-alter table leads             enable row level security;
+-- ── Row Level Security ────────────────────────────────────────
+alter table replyee_profiles         enable row level security;
+alter table replyee_chatbots         enable row level security;
+alter table replyee_knowledge_chunks enable row level security;
+alter table replyee_messages         enable row level security;
+alter table replyee_conversations    enable row level security;
+alter table replyee_leads            enable row level security;
 
--- Profiles: users see only their own
-create policy "profiles_own" on profiles for all using (auth.uid() = id);
-
--- Chatbots: users see only their own
-create policy "chatbots_own" on chatbots for all using (auth.uid() = user_id);
-
--- Knowledge chunks: users see only chunks for their bots
-create policy "chunks_own" on knowledge_chunks for all
-  using (chatbot_id in (select id from chatbots where user_id = auth.uid()));
-
--- Messages: users see only messages for their bots
-create policy "messages_own" on messages for all
-  using (chatbot_id in (select id from chatbots where user_id = auth.uid()));
-
--- Conversations: users see only their own
-create policy "conversations_own" on conversations for all
-  using (chatbot_id in (select id from chatbots where user_id = auth.uid()));
-
--- Leads: users see only their own
-create policy "leads_own" on leads for all
-  using (chatbot_id in (select id from chatbots where user_id = auth.uid()));
+create policy "replyee_profiles_own"    on replyee_profiles    for all using (auth.uid() = id);
+create policy "replyee_chatbots_own"    on replyee_chatbots    for all using (auth.uid() = user_id);
+create policy "replyee_chunks_own"      on replyee_knowledge_chunks for all
+  using (chatbot_id in (select id from replyee_chatbots where user_id = auth.uid()));
+create policy "replyee_messages_own"    on replyee_messages    for all
+  using (chatbot_id in (select id from replyee_chatbots where user_id = auth.uid()));
+create policy "replyee_conversations_own" on replyee_conversations for all
+  using (chatbot_id in (select id from replyee_chatbots where user_id = auth.uid()));
+create policy "replyee_leads_own"       on replyee_leads       for all
+  using (chatbot_id in (select id from replyee_chatbots where user_id = auth.uid()));

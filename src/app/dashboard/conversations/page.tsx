@@ -15,18 +15,18 @@ export default async function ConversationsPage({ searchParams }: { searchParams
   if (!user) redirect('/login')
 
   const { data: bots } = await supabase
-    .from('chatbots')
+    .from('replyee_chatbots')
     .select('id, name')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
   let query = supabase
-    .from('conversations')
+    .from('replyee_conversations')
     .select(`
       id, session_id, created_at, updated_at, visitor_email,
-      chatbots!inner(id, name, user_id)
+      replyee_chatbots!inner(id, name, user_id)
     `)
-    .eq('chatbots.user_id', user.id)
+    .eq('replyee_chatbots.user_id', user.id)
     .order('updated_at', { ascending: false })
     .limit(100)
 
@@ -36,9 +36,8 @@ export default async function ConversationsPage({ searchParams }: { searchParams
 
   const { data: conversations } = await query
 
-  // For each conversation get the first message as preview
   const { data: firstMessages } = await supabase
-    .from('messages')
+    .from('replyee_messages')
     .select('session_id, content')
     .eq('role', 'user')
     .in('session_id', (conversations ?? []).map(c => c.session_id))
@@ -49,9 +48,8 @@ export default async function ConversationsPage({ searchParams }: { searchParams
     if (!previewMap.has(m.session_id)) previewMap.set(m.session_id, m.content)
   }
 
-  // Get message counts per session
   const { data: msgCounts } = await supabase
-    .from('messages')
+    .from('replyee_messages')
     .select('session_id')
     .in('session_id', (conversations ?? []).map(c => c.session_id))
 
@@ -67,7 +65,6 @@ export default async function ConversationsPage({ searchParams }: { searchParams
           <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Conversations</h1>
           <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Full history of all chatbot interactions.</p>
         </div>
-        {/* Bot filter */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Link
             href="/dashboard/conversations"
@@ -96,14 +93,14 @@ export default async function ConversationsPage({ searchParams }: { searchParams
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {conversations.map(c => {
-            const bot = c.chatbots as { id: string; name: string } | null
+            const bot = c.replyee_chatbots as { id: string; name: string } | null
             const preview = previewMap.get(c.session_id)
             const msgCount = countMap.get(c.session_id) ?? 0
             return (
               <Link
                 key={c.id}
                 href={`/dashboard/conversations/${c.id}`}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#0d1018', border: '1px solid #1a2035', borderRadius: 10, textDecoration: 'none', transition: 'border-color .15s' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#0d1018', border: '1px solid #1a2035', borderRadius: 10, textDecoration: 'none' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
                   <MessageCircle size={16} style={{ color: '#22d3ee', flexShrink: 0 }} />

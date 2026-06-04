@@ -12,18 +12,18 @@ export default async function ConversationDetailPage({ params }: Props) {
   if (!user) redirect('/login')
 
   const { data: conversation } = await supabase
-    .from('conversations')
-    .select('*, chatbots!inner(id, name, accent_color, user_id)')
+    .from('replyee_conversations')
+    .select('*, replyee_chatbots!inner(id, name, accent_color, user_id)')
     .eq('id', id)
     .single()
 
   if (!conversation) notFound()
 
-  const bot = conversation.chatbots as { id: string; name: string; accent_color: string; user_id: string }
+  const bot = conversation.replyee_chatbots as { id: string; name: string; accent_color: string; user_id: string }
   if (bot.user_id !== user.id) notFound()
 
   const { data: messages } = await supabase
-    .from('messages')
+    .from('replyee_messages')
     .select('*')
     .eq('session_id', conversation.session_id)
     .order('created_at', { ascending: true })
@@ -36,7 +36,6 @@ export default async function ConversationDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Header */}
       <div style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: '16px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{ width: 36, height: 36, background: bot.accent_color, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Bot size={17} color="#fff" />
@@ -53,7 +52,6 @@ export default async function ConversationDetailPage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Message thread */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {messages?.map(msg => (
           <div key={msg.id} style={{ display: 'flex', gap: 10, justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
@@ -64,7 +62,7 @@ export default async function ConversationDetailPage({ params }: Props) {
             )}
             <div style={{
               maxWidth: '72%',
-              background: msg.role === 'user' ? '#0d1018' : `rgba(99,102,241,.12)`,
+              background: msg.role === 'user' ? '#0d1018' : 'rgba(99,102,241,.12)',
               border: `1px solid ${msg.role === 'user' ? '#1a2035' : 'rgba(99,102,241,.2)'}`,
               borderRadius: msg.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
               padding: '10px 14px',

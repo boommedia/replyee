@@ -10,7 +10,7 @@ export default async function AnalyticsPage() {
   if (!user) redirect('/login')
 
   const { data: bots } = await supabase
-    .from('chatbots')
+    .from('replyee_chatbots')
     .select('id, name, accent_color, conversation_count, lead_count')
     .eq('user_id', user.id)
 
@@ -20,7 +20,7 @@ export default async function AnalyticsPage() {
   // Conversations by day (last 30 days)
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
   const { data: recentConvos } = await supabase
-    .from('conversations')
+    .from('replyee_conversations')
     .select('created_at, chatbot_id')
     .in('chatbot_id', (bots ?? []).map(b => b.id))
     .gte('created_at', since)
@@ -42,7 +42,7 @@ export default async function AnalyticsPage() {
   // Top questions (first user message per conversation)
   const botIds = (bots ?? []).map(b => b.id)
   const { data: topMsgs } = await supabase
-    .from('messages')
+    .from('replyee_messages')
     .select('content')
     .eq('role', 'user')
     .in('chatbot_id', botIds)

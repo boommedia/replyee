@@ -4,7 +4,6 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Public endpoint — widget calls this when visitor submits their email
 export async function POST(req: NextRequest) {
   try {
     const { botId, email, question, sessionId } = await req.json()
@@ -12,28 +11,24 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Get bot + owner info
     const { data: bot } = await supabase
-      .from('chatbots')
-      .select('name, user_id, profiles(email, full_name)')
+      .from('replyee_chatbots')
+      .select('name, user_id, replyee_profiles(email, full_name)')
       .eq('id', botId)
       .single()
 
     if (!bot) return NextResponse.json({ error: 'Bot not found' }, { status: 404 })
 
-    // Store lead
-    await supabase.from('leads').insert({
+    await supabase.from('replyee_leads').insert({
       chatbot_id: botId,
       visitor_email: email,
       question: question ?? null,
       session_id: sessionId ?? null,
     })
 
-    // Increment lead count
-    await supabase.rpc('increment_lead_count', { bot_id: botId })
+    await supabase.rpc('replyee_increment_lead_count', { bot_id: botId })
 
-    // Email notification to bot owner
-    const ownerProfile = bot.profiles as { email: string; full_name: string } | null
+    const ownerProfile = bot.replyee_profiles as { email: string; full_name: string } | null
     if (ownerProfile?.email) {
       await resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL ?? 'noreply@replyee.online',

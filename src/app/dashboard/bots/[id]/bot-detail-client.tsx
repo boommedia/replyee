@@ -12,13 +12,6 @@ interface Chatbot {
   chunk_count: number; conversation_count: number; lead_count: number; is_active: boolean
 }
 
-const TABS = [
-  { id: 'kb',       label: 'Knowledge Base' },
-  { id: 'embed',    label: 'Embed Code' },
-  { id: 'settings', label: 'Settings' },
-  { id: 'leads',    label: '' }, // label set dynamically
-]
-
 const S = {
   card: { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 },
   label: { fontSize: 13, fontWeight: 600 as const, color: '#cbd5e1', display: 'block' as const, marginBottom: 6 },
@@ -52,7 +45,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
   const [settingsMsg, setSettingsMsg] = useState('')
   const [, startTransition] = useTransition()
 
-  const embedCode = `<script src="${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://replyee.online'}/widget.js" data-bot-id="${bot.id}" async></script>`
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.replyee.online'
+  const embedCode = `<script src="${siteUrl}/widget.js" data-bot-id="${bot.id}" async></script>`
 
   function switchTab(t: string) {
     setTab(t)
@@ -109,7 +103,7 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
 
   async function deleteSource(sourceName: string) {
     const supabase = createClient()
-    await supabase.from('knowledge_chunks').delete().eq('chatbot_id', bot.id).eq('source_name', sourceName)
+    await supabase.from('replyee_knowledge_chunks').delete().eq('chatbot_id', bot.id).eq('source_name', sourceName)
     router.refresh()
   }
 
@@ -118,7 +112,7 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
     setSettingsSaving(true)
     setSettingsMsg('')
     const supabase = createClient()
-    const { error } = await supabase.from('chatbots').update(settings).eq('id', bot.id)
+    const { error } = await supabase.from('replyee_chatbots').update(settings).eq('id', bot.id)
     setSettingsSaving(false)
     setSettingsMsg(error ? error.message : 'Saved!')
     if (!error) router.refresh()
@@ -126,7 +120,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
 
   return (
     <div>
-      {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 44, height: 44, background: bot.accent_color, borderRadius: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -139,13 +132,12 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             </p>
           </div>
         </div>
-        <a href={`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://replyee.online'}/preview/${bot.id}`} target="_blank" rel="noreferrer"
+        <a href={`${siteUrl}/preview/${bot.id}`} target="_blank" rel="noreferrer"
           style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(99,102,241,.12)', color: '#6366f1', border: '1px solid rgba(99,102,241,.3)', fontWeight: 600, fontSize: 13, padding: '9px 16px', borderRadius: 8, textDecoration: 'none' }}>
           <ExternalLink size={13} /> Preview Widget
         </a>
       </div>
 
-      {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, background: '#0d1018', border: '1px solid #1a2035', padding: 4, borderRadius: 10, width: 'fit-content', marginBottom: 28 }}>
         {[
           { id: 'kb', label: 'Knowledge Base' },
@@ -167,7 +159,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
         ))}
       </div>
 
-      {/* ── Knowledge Base ── */}
       {tab === 'kb' && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
@@ -176,7 +167,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
               <div style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>{bot.chunk_count} chunks indexed</div>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              {/* URL input */}
               <input
                 value={urlInput} onChange={e => setUrlInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && ingestUrl()}
@@ -227,7 +217,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
         </div>
       )}
 
-      {/* ── Embed Code ── */}
       {tab === 'embed' && (
         <div style={{ maxWidth: 680 }}>
           <div style={S.card}>
@@ -253,7 +242,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
         </div>
       )}
 
-      {/* ── Settings ── */}
       {tab === 'settings' && (
         <div style={{ maxWidth: 560 }}>
           <form onSubmit={saveSettings} style={S.card}>
@@ -295,7 +283,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             </div>
           </form>
 
-          {/* Danger zone */}
           <div style={{ ...S.card, marginTop: 20, borderColor: 'rgba(239,68,68,.2)' }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>Danger Zone</div>
             <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Permanently delete this chatbot and all its data.</p>
@@ -304,7 +291,6 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
         </div>
       )}
 
-      {/* ── Leads ── */}
       {tab === 'leads' && (
         <div>
           {leads.length === 0 ? (
@@ -344,7 +330,7 @@ function DeleteBotButton({ botId }: { botId: string }) {
   async function doDelete() {
     setDeleting(true)
     const supabase = createClient()
-    await supabase.from('chatbots').delete().eq('id', botId)
+    await supabase.from('replyee_chatbots').delete().eq('id', botId)
     router.push('/dashboard/bots')
   }
 

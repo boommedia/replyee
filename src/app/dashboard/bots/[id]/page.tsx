@@ -12,7 +12,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { id } = await params
   const supabase = await createClient()
-  const { data } = await supabase.from('chatbots').select('name').eq('id', id).single()
+  const { data } = await supabase.from('replyee_chatbots').select('name').eq('id', id).single()
   return { title: data?.name ?? 'Bot Detail' }
 }
 
@@ -25,7 +25,7 @@ export default async function BotDetailPage({ params, searchParams }: Props) {
   if (!user) redirect('/login')
 
   const { data: bot } = await supabase
-    .from('chatbots')
+    .from('replyee_chatbots')
     .select('*')
     .eq('id', id)
     .eq('user_id', user.id)
@@ -33,22 +33,20 @@ export default async function BotDetailPage({ params, searchParams }: Props) {
 
   if (!bot) notFound()
 
-  // Fetch tab-specific data
   const [{ data: sources }, { data: leads }] = await Promise.all([
     supabase
-      .from('knowledge_chunks')
+      .from('replyee_knowledge_chunks')
       .select('source_name, source_type, created_at')
       .eq('chatbot_id', id)
       .order('created_at', { ascending: false }),
     supabase
-      .from('leads')
+      .from('replyee_leads')
       .select('*')
       .eq('chatbot_id', id)
       .order('created_at', { ascending: false })
       .limit(50),
   ])
 
-  // Group chunks by source
   const sourceMap = new Map<string, { name: string; type: string; count: number; createdAt: string }>()
   for (const chunk of sources ?? []) {
     const key = `${chunk.source_type}:${chunk.source_name}`

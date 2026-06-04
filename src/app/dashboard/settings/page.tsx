@@ -20,12 +20,12 @@ export default function SettingsPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
-      const { data: p } = await supabase.from('profiles').select('full_name, plan, bot_limit').eq('id', user.id).single()
+      const { data: p } = await supabase.from('replyee_profiles').select('full_name, plan, bot_limit').eq('id', user.id).single()
       if (p) {
         setProfile({ full_name: p.full_name ?? '', email: user.email ?? '', plan: p.plan })
         setBotLimit(p.bot_limit ?? 1)
       }
-      const { data: bots } = await supabase.from('chatbots').select('conversation_count').eq('user_id', user.id)
+      const { data: bots } = await supabase.from('replyee_chatbots').select('conversation_count').eq('user_id', user.id)
       setBotCount(bots?.length ?? 0)
       setConvoCount(bots?.reduce((s, b) => s + (b.conversation_count ?? 0), 0) ?? 0)
     }
@@ -39,7 +39,7 @@ export default function SettingsPage() {
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { error } = await supabase.from('profiles').update({ full_name: profile.full_name }).eq('id', user.id)
+    const { error } = await supabase.from('replyee_profiles').update({ full_name: profile.full_name }).eq('id', user.id)
     setSaving(false)
     setMsg(error ? error.message : 'Saved!')
   }

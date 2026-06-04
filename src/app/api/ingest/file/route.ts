@@ -15,8 +15,7 @@ export async function POST(req: NextRequest) {
 
   if (!botId || !file) return NextResponse.json({ error: 'Missing botId or file' }, { status: 400 })
 
-  // Verify bot belongs to user
-  const { data: bot } = await supabase.from('chatbots').select('id').eq('id', botId).eq('user_id', user.id).single()
+  const { data: bot } = await supabase.from('replyee_chatbots').select('id').eq('id', botId).eq('user_id', user.id).single()
   if (!bot) return NextResponse.json({ error: 'Chatbot not found' }, { status: 404 })
 
   try {
@@ -37,7 +36,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Could not extract text from file' }, { status: 400 })
     }
 
-    // Chunk + embed
     const chunks = chunkText(text)
     const embeddings = await embedBatch(chunks)
 
@@ -50,10 +48,10 @@ export async function POST(req: NextRequest) {
       source_name: file.name,
     }))
 
-    const { error } = await admin.from('knowledge_chunks').insert(rows)
+    const { error } = await admin.from('replyee_knowledge_chunks').insert(rows)
     if (error) throw error
 
-    await admin.rpc('increment_chunk_count', { bot_id: botId, amount: rows.length })
+    await admin.rpc('replyee_increment_chunk_count', { bot_id: botId, amount: rows.length })
 
     return NextResponse.json({ success: true, chunksAdded: rows.length })
   } catch (err) {
