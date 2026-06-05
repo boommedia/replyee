@@ -1,11 +1,11 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 const FROM = 'Replyee <hello@replyee.online>'
+const getResend = () => new Resend(process.env.RESEND_API_KEY)
 
 // ── Welcome email after signup ────────────────────────────────
 export async function sendWelcomeEmail(to: string, name: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM,
     to,
     subject: 'Welcome to Replyee — your first chatbot is waiting 👋',
@@ -20,7 +20,7 @@ export async function sendLeadAlert(opts: {
   visitorEmail: string
   question: string
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'Replyee <leads@replyee.online>',
     to: opts.to,
     subject: `🔔 New lead from your ${opts.botName} chatbot`,
@@ -30,7 +30,7 @@ export async function sendLeadAlert(opts: {
 
 // ── Trial expiry warning (3 days before) ─────────────────────
 export async function sendTrialExpiryEmail(to: string, name: string, daysLeft: number) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'Eric at Replyee <eric@replyee.online>',
     to,
     subject: `Your Replyee trial ends in ${daysLeft} days — here's what happens next`,
@@ -40,7 +40,7 @@ export async function sendTrialExpiryEmail(to: string, name: string, daysLeft: n
 
 // ── Payment failed ────────────────────────────────────────────
 export async function sendPaymentFailedEmail(to: string, name: string, amount: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'Replyee Billing <billing@replyee.online>',
     to,
     subject: 'Action required: payment failed for your Replyee subscription',
@@ -57,7 +57,7 @@ export async function sendMonthlyReport(opts: {
   resolutionRate: number
   leadsCount: number
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'Replyee <reports@replyee.online>',
     to: opts.to,
     subject: `Your Replyee ${opts.month} summary — ${opts.conversations.toLocaleString()} conversations handled 🎉`,
@@ -67,7 +67,7 @@ export async function sendMonthlyReport(opts: {
 
 // ── Password reset ────────────────────────────────────────────
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: 'Replyee <auth@replyee.online>',
     to,
     subject: 'Reset your Replyee password',

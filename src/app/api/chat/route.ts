@@ -3,9 +3,8 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { embedText } from '@/lib/rag/embed'
 
-const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
 export async function POST(req: NextRequest) {
+  const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   try {
     const { botId, message, sessionId } = await req.json()
 
