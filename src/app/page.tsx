@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import Logo from '@/components/Logo'
 import {
   MessageSquare, Upload, Globe, Zap, BarChart3, Mail,
   Check, ArrowRight, Sparkles, Shield, Users, Code2,
@@ -115,15 +116,7 @@ export default function Home() {
 
       {/* ── Nav ── */}
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 48px', borderBottom: `1px solid ${BORDER}`, background: 'rgba(7,8,15,0.9)', backdropFilter: 'blur(16px)', position: 'sticky', top: 0, zIndex: 50 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 28, height: 28, background: PRIMARY, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MessageSquare size={15} color="#fff" />
-            </div>
-            <span style={{ fontWeight: 900, fontSize: 17, letterSpacing: '-0.5px' }}>Replyee</span>
-          </div>
-          <span style={{ fontSize: 11, color: BODY, borderLeft: `1px solid ${BORDER}`, paddingLeft: 14 }}>by Boom Media</span>
-        </div>
+        <Logo />
         <div style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 13, color: BODY }}>
           <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
           <a href="#how-it-works" style={{ color: 'inherit', textDecoration: 'none' }}>How it works</a>
@@ -392,13 +385,7 @@ export default function Home() {
 
       {/* ── Footer ── */}
       <footer style={{ borderTop: `1px solid ${BORDER}`, padding: '32px 48px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 22, height: 22, background: PRIMARY, borderRadius: 5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <MessageSquare size={11} color="#fff" />
-          </div>
-          <span style={{ fontWeight: 800, fontSize: 14 }}>Replyee</span>
-          <span style={{ fontSize: 12, color: BODY, marginLeft: 8 }}>by Boom Media</span>
-        </div>
+        <Logo />
         <div style={{ display: 'flex', gap: 24, fontSize: 13, color: BODY }}>
           <Link href="/privacy" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</Link>
           <Link href="/terms" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</Link>
