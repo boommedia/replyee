@@ -236,7 +236,6 @@ export default function Home() {
       <div style={{ borderTop: `1px solid ${BORDER}`, borderBottom: `1px solid ${BORDER}`, padding: '20px 48px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 48, flexWrap: 'wrap' }}>
         {[['Works on any site', Globe], ['No hallucinations', Shield], ['Instant setup', Zap], ['Agency-ready', Users]].map(([label, Icon]) => (
           <div key={label as string} style={{ display: 'flex', alignItems: 'center', gap: 8, color: BODY, fontSize: 13 }}>
-            {/* @ts-expect-error dynamic icon */}
             <Icon size={16} style={{ color: PRIMARY }} />
             <span>{label as string}</span>
           </div>
@@ -296,7 +295,6 @@ export default function Home() {
             [Link2, 'Sitemap Crawl'],
           ].map(([Icon, label]) => (
             <div key={label as string} style={{ display: 'flex', alignItems: 'center', gap: 8, background: BG2, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '10px 18px', fontSize: 13, color: '#fff' }}>
-              {/* @ts-expect-error dynamic icon */}
               <Icon size={15} style={{ color: ACCENT }} />
               {label as string}
             </div>
