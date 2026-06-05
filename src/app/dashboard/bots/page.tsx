@@ -44,7 +44,6 @@ export default async function BotsPage() {
                   [Code2, bot.chunk_count ?? 0, 'Chunks'],
                 ].map(([Icon, val, lbl]) => (
                   <div key={lbl as string} style={{ background: '#07080f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
-                    {/* @ts-expect-error dynamic */}
                     <Icon size={14} style={{ color: '#6366f1', margin: '0 auto 4px' }} />
                     <div style={{ fontSize: 18, fontWeight: 800, color: '#e2e8f0' }}>{String(val)}</div>
                     <div style={{ fontSize: 10, color: '#64748b' }}>{String(lbl)}</div>
