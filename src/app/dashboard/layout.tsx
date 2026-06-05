@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import Logo from '@/components/Logo'
 import { MessageSquare, LogOut } from 'lucide-react'
 import { NavLinks } from '@/components/nav-links'
 
@@ -23,13 +24,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <aside style={{ width: 240, borderRight: '1px solid #1a2035', background: '#0d1018', display: 'flex', flexDirection: 'column', position: 'fixed', top: 0, bottom: 0, left: 0 }}>
         {/* Logo */}
         <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid #1a2035' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 30, height: 30, background: '#6366f1', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MessageSquare size={15} color="#fff" />
-            </div>
-            <span style={{ fontWeight: 900, fontSize: 16, color: '#fff', letterSpacing: '-0.5px' }}>Replyee</span>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <Logo />
           </Link>
-          <div style={{ fontSize: 11, color: '#64748b', marginTop: 4, paddingLeft: 40 }}>by Boom Media</div>
         </div>
 
         <NavLinks isAdmin={isAdmin} />

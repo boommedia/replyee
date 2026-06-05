@@ -90,7 +90,7 @@ export default async function DashboardPage() {
                   <MessageCircle size={14} style={{ color: '#22d3ee', flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 500 }}>
-                      {(c.replyee_chatbots as { name: string } | null)?.name ?? 'Unknown bot'}
+                      {(c.replyee_chatbots as unknown as { name: string } | null)?.name ?? 'Unknown bot'}
                     </div>
                     <div style={{ fontSize: 11, color: '#64748b' }}>
                       {new Date(c.created_at).toLocaleDateString()}

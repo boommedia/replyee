@@ -19,7 +19,7 @@ export default async function ConversationDetailPage({ params }: Props) {
 
   if (!conversation) notFound()
 
-  const bot = conversation.replyee_chatbots as { id: string; name: string; accent_color: string; user_id: string }
+  const bot = conversation.replyee_chatbots as unknown as { id: string; name: string; accent_color: string; user_id: string }
   if (bot.user_id !== user.id) notFound()
 
   const { data: messages } = await supabase

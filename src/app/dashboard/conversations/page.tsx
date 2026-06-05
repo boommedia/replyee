@@ -93,7 +93,7 @@ export default async function ConversationsPage({ searchParams }: { searchParams
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {conversations.map(c => {
-            const bot = c.replyee_chatbots as { id: string; name: string } | null
+            const bot = c.replyee_chatbots as unknown as { id: string; name: string } | null
             const preview = previewMap.get(c.session_id)
             const msgCount = countMap.get(c.session_id) ?? 0
             return (
