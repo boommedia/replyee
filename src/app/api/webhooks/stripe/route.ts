@@ -2,7 +2,7 @@ import Stripe from 'stripe'
 import { headers } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-05-27.dahlia' })
+export const dynamic = 'force-dynamic'
 
 const PRICE_TO_PLAN: Record<string, string> = {
   [process.env.STRIPE_PRICE_STARTER ?? '']: 'starter',
@@ -17,6 +17,7 @@ const PLAN_BOT_LIMITS: Record<string, number> = {
 }
 
 export async function POST(req: Request) {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-05-27.dahlia' })
   const body = await req.text()
   const sig  = (await headers()).get('stripe-signature')
 

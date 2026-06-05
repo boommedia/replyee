@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
+  const resend = new Resend(process.env.RESEND_API_KEY)
   try {
     const { botId, email, question, sessionId } = await req.json()
     if (!botId || !email) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
