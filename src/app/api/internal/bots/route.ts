@@ -32,14 +32,13 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const {
-      userId,          // Replyee user UUID (restaurant owner's Replyee account)
-      restaurantName,
-      accentColor = '#6366f1',
-      greetingMessage,
-      systemPrompt,
-      categories = [] as MenuCategory[],
-    } = await req.json()
+    const body = await req.json()
+    const userId: string         = body.userId
+    const restaurantName: string = body.restaurantName
+    const accentColor: string    = body.accentColor    ?? '#6366f1'
+    const greetingMessage: string | undefined = body.greetingMessage
+    const systemPrompt: string | undefined    = body.systemPrompt
+    const categories: MenuCategory[]          = body.categories ?? []
 
     if (!userId || !restaurantName) {
       return NextResponse.json({ error: 'Missing userId or restaurantName' }, { status: 400 })
@@ -108,7 +107,9 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const { botId, categories = [] as MenuCategory[] } = await req.json()
+    const body = await req.json()
+    const botId: string          = body.botId
+    const categories: MenuCategory[] = body.categories ?? []
     if (!botId) return NextResponse.json({ error: 'Missing botId' }, { status: 400 })
 
     const supabase = createAdminClient()
