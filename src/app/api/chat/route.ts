@@ -6,7 +6,7 @@ import { embedText } from '@/lib/rag/embed'
 export async function POST(req: NextRequest) {
   const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   try {
-    const { botId, message, sessionId } = await req.json()
+    const { botId, message, sessionId, orderContext } = await req.json()
 
     if (!botId || !message || typeof message !== 'string') {
       return NextResponse.json({ error: 'Missing botId or message' }, { status: 400 })
@@ -63,9 +63,23 @@ export async function POST(req: NextRequest) {
     const systemPrompt = bot.system_prompt ??
       `You are a helpful AI assistant for ${bot.name}. Answer questions based only on the provided context. If the answer is not in the context, say so honestly and offer to connect the user with the team.`
 
+    // Append live order context from the BOO widget (cart/order data for this visitor)
+    const orderContextSection = orderContext
+      ? `\n\nCurrent visitor order context (from the ordering platform):\n${
+          [
+            orderContext.orderId    ? `Order ID: ${orderContext.orderId}` : null,
+            orderContext.status     ? `Status: ${orderContext.status}`    : null,
+            Array.isArray(orderContext.items) && orderContext.items.length
+              ? `Items in order: ${orderContext.items.join(', ')}` : null,
+            orderContext.total      ? `Total: $${Number(orderContext.total).toFixed(2)}` : null,
+            orderContext.customerEmail ? `Customer email: ${orderContext.customerEmail}` : null,
+          ].filter(Boolean).join('\n')
+        }`
+      : ''
+
     const fullSystem = context
-      ? `${systemPrompt}\n\nKnowledge base context:\n---\n${context}\n---\nOnly answer based on this context. If unsure, say you don't have that information.`
-      : `${systemPrompt}\n\nNote: No specific knowledge base content found for this question.`
+      ? `${systemPrompt}\n\nKnowledge base context:\n---\n${context}\n---\nOnly answer based on this context. If unsure, say you don't have that information.${orderContextSection}`
+      : `${systemPrompt}\n\nNote: No specific knowledge base content found for this question.${orderContextSection}`
 
     let history: { role: 'user' | 'assistant'; content: string }[] = []
     if (sessionId) {

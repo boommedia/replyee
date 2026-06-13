@@ -19,6 +19,7 @@
   var leadCaptured = false
   var humanMode    = false
   var sbChannel    = null
+  var orderContext = null   // set by BOO via window.Replyee.setOrderContext()
   var config       = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false }
 
   function makeSessionId() {
@@ -274,6 +275,34 @@
 
   humanBtn.addEventListener('click', requestHuman)
 
+  // ── Public API (called by BOO ordering page) ───────────────
+  // BOO calls this whenever cart/order state changes so the bot
+  // and Live Inbox agents always have the latest order context.
+  //
+  //   window.Replyee.setOrderContext({
+  //     orderId: 'abc123',
+  //     status:  'confirmed',
+  //     items:   ['Burrito Bowl', 'Horchata'],
+  //     total:   45.20,
+  //     customerEmail: 'pat@example.com',
+  //   })
+  window.Replyee = {
+    setOrderContext: function (ctx) {
+      orderContext = ctx || null
+      // If the visitor is actively in human-mode chat, broadcast the updated
+      // context so the agent's inbox reflects the latest cart/order state.
+      if (sbChannel && humanMode && ctx) {
+        sbChannel.send({
+          type: 'broadcast',
+          event: 'order_context',
+          payload: ctx,
+        })
+      }
+    },
+    open:  openChat,
+    close: closeChat,
+  }
+
   // ── Send message ───────────────────────────────────────────
   function sendMessage() {
     var text = input.value.trim()
@@ -287,7 +316,7 @@
     fetch(API_BASE + '/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ botId: BOT_ID, message: text, sessionId: sessionId }),
+      body: JSON.stringify({ botId: BOT_ID, message: text, sessionId: sessionId, orderContext: orderContext }),
     })
       .then(function (r) { return r.json() })
       .then(function (data) {
