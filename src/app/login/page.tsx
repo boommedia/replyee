@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import Logo from '@/components/Logo'
 import { MessageSquare } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -32,13 +33,8 @@ export default function LoginPage() {
     <main style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div style={{ width: '100%', maxWidth: 400 }}>
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-            <div style={{ width: 36, height: 36, background: PRIMARY, borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <MessageSquare size={18} color="#fff" />
-            </div>
-            <span style={{ fontWeight: 900, fontSize: 20, color: '#fff', letterSpacing: '-0.5px' }}>Replyee</span>
-          </Link>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 32 }}>
+          <Link href="/" style={{ textDecoration: 'none' }}><Logo /></Link>
         </div>
 
         <div style={{ background: BG2, border: `1px solid ${BORDER}`, borderRadius: 16, padding: 32 }}>

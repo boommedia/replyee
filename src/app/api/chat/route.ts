@@ -27,6 +27,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Chatbot is inactive' }, { status: 403 })
     }
 
+    // Live chat: if a human agent owns this conversation, store the message
+    // and stay silent — the agent replies via the Live Inbox (Realtime).
+    if (sessionId) {
+      const { data: convo } = await supabase
+        .from('replyee_conversations')
+        .select('mode, unread_by_agent')
+        .eq('session_id', sessionId)
+        .maybeSingle()
+
+      if (convo?.mode === 'human') {
+        await supabase.from('replyee_messages').insert(
+          { session_id: sessionId, chatbot_id: botId, role: 'user', content: message }
+        )
+        await supabase.from('replyee_conversations').update({
+          last_message_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          unread_by_agent: (convo.unread_by_agent ?? 0) + 1,
+        }).eq('session_id', sessionId)
+        return NextResponse.json({ human: true, sessionId })
+      }
+    }
+
     const queryEmbedding = await embedText(message)
 
     const { data: chunks } = await supabase.rpc('replyee_match_chunks', {
@@ -75,6 +97,17 @@ export async function POST(req: NextRequest) {
     ]).then(() => {
       supabase.rpc('replyee_increment_conversation_count', { bot_id: botId })
     })
+
+    // Keep the conversations row in sync (powers Conversations list + Live Inbox)
+    supabase.from('replyee_conversations').upsert(
+      {
+        session_id: conversationId,
+        chatbot_id: botId,
+        last_message_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'session_id' }
+    ).then(() => {})
 
     return NextResponse.json({ answer, sessionId: conversationId })
 

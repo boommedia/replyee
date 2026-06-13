@@ -17,7 +17,17 @@
   var isOpen       = false
   var isLoading    = false
   var leadCaptured = false
-  var config       = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?" }
+  var humanMode    = false
+  var sbChannel    = null
+  var config       = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false }
+
+  function makeSessionId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID()
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = Math.random() * 16 | 0
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
+    })
+  }
 
   // ── Styles ─────────────────────────────────────────────────
   var style = document.createElement('style')
@@ -49,6 +59,10 @@
     '#ry-lead-btn{width:100%;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer}',
     '#ry-branding{text-align:center;font-size:10px;color:rgba(255,255,255,0.25);padding:6px;flex-shrink:0}',
     '#ry-branding a{color:inherit;text-decoration:none}',
+    '.ry-agent{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#e2e8f0;border-radius:12px 12px 12px 3px;align-self:flex-start}',
+    '.ry-agent-label{font-size:10px;color:#4ade80;font-weight:700;margin-bottom:3px}',
+    '#ry-human-btn{background:transparent;border:none;color:rgba(255,255,255,0.45);font-size:11px;cursor:pointer;padding:4px 0;text-decoration:underline;align-self:center;flex-shrink:0}',
+    '#ry-human-btn:hover{color:#fff}',
     '@keyframes ry-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}',
     '@keyframes ry-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}',
   ].join('')
@@ -93,6 +107,7 @@
     '  <button id="ry-close" style="margin-left:auto;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:4px;">' + svgClose() + '</button>',
     '</div>',
     '<div id="ry-messages"></div>',
+    '<button id="ry-human-btn" style="display:none">Talk to a human</button>',
     '<div id="ry-input-row">',
     '  <input id="ry-input" placeholder="Ask a question…" rows="1" />',
     '  <button id="ry-send" style="background:' + config.accentColor + ';color:#fff;">' + svgSend() + '</button>',
@@ -105,10 +120,12 @@
   document.body.appendChild(widget)
 
   // ── References ────────────────────────────────────────────
-  var msgs   = win.querySelector('#ry-messages')
-  var input  = win.querySelector('#ry-input')
-  var send   = win.querySelector('#ry-send')
-  var close  = win.querySelector('#ry-close')
+  var msgs     = win.querySelector('#ry-messages')
+  var input    = win.querySelector('#ry-input')
+  var send     = win.querySelector('#ry-send')
+  var close    = win.querySelector('#ry-close')
+  var humanBtn = win.querySelector('#ry-human-btn')
+  var statusEl = win.querySelector('#ry-status')
 
   // ── Load bot config ────────────────────────────────────────
   fetch(API_BASE + '/api/bot-config?id=' + BOT_ID)
@@ -120,6 +137,7 @@
       win.querySelector('#ry-avatar').style.background = config.accentColor
       win.querySelector('#ry-send').style.background   = config.accentColor
       win.querySelector('#ry-bot-name').textContent    = config.name
+      if (config.handoff) humanBtn.style.display = 'block'
       addBotMsg(config.greeting)
     })
     .catch(function () { addBotMsg(config.greeting) })
@@ -176,6 +194,86 @@
     msgs.scrollTop = msgs.scrollHeight
   }
 
+  function addAgentMsg(text) {
+    var el = document.createElement('div')
+    el.className = 'ry-msg ry-agent'
+    el.innerHTML = '<div class="ry-agent-label">Team member</div>'
+    var body = document.createElement('div')
+    body.textContent = text
+    el.appendChild(body)
+    msgs.appendChild(el)
+    scrollToBottom()
+  }
+
+  // ── Live chat (human takeover via Supabase Realtime broadcast) ──
+  function loadSupabase(cb) {
+    if (window.supabase && window.supabase.createClient) return cb()
+    var s = document.createElement('script')
+    s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+    s.onload = cb
+    s.onerror = function () { console.warn('[Replyee] Could not load realtime library') }
+    document.head.appendChild(s)
+  }
+
+  function joinSessionChannel() {
+    if (!config.supabaseUrl || !config.supabaseAnonKey || sbChannel) return
+    loadSupabase(function () {
+      try {
+        var client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey)
+        sbChannel = client.channel('replyee-session-' + sessionId)
+        sbChannel
+          .on('broadcast', { event: 'agent_message' }, function (e) {
+            var typing = document.getElementById('ry-typing')
+            if (typing) typing.remove()
+            addAgentMsg(e.payload.content)
+            setStatus('human')
+          })
+          .on('broadcast', { event: 'mode' }, function (e) {
+            if (e.payload.mode === 'bot') {
+              humanMode = false
+              setStatus('bot')
+              addBotMsg("I'm back! Ask me anything.")
+            } else if (e.payload.mode === 'closed') {
+              humanMode = false
+              setStatus('bot')
+            } else {
+              setStatus('human')
+            }
+          })
+          .subscribe()
+      } catch (err) {
+        console.warn('[Replyee] realtime unavailable', err)
+      }
+    })
+  }
+
+  function setStatus(mode) {
+    if (!statusEl) return
+    if (mode === 'waiting') statusEl.innerHTML = '&#9679; Connecting you with the team…'
+    else if (mode === 'human') statusEl.innerHTML = '&#9679; Live with a team member'
+    else statusEl.innerHTML = '&#9679; Online'
+  }
+
+  function requestHuman() {
+    if (humanMode) return
+    if (!sessionId) sessionId = makeSessionId()
+    humanMode = true
+    humanBtn.style.display = 'none'
+    setStatus('waiting')
+    addBotMsg("You're being connected with a team member. Feel free to keep typing — they'll see your messages.")
+    joinSessionChannel()
+    fetch(API_BASE + '/api/handoff', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ botId: BOT_ID, sessionId: sessionId }),
+    }).catch(function () {
+      addBotMsg('Sorry, I couldn’t reach the team right now. You can leave your email instead.')
+      showLeadForm()
+    })
+  }
+
+  humanBtn.addEventListener('click', requestHuman)
+
   // ── Send message ───────────────────────────────────────────
   function sendMessage() {
     var text = input.value.trim()
@@ -184,7 +282,7 @@
     addUserMsg(text)
     isLoading = true
     send.disabled = true
-    var typing = addTyping()
+    var typing = humanMode ? null : addTyping()
 
     fetch(API_BASE + '/api/chat', {
       method: 'POST',
@@ -193,9 +291,12 @@
     })
       .then(function (r) { return r.json() })
       .then(function (data) {
-        typing.remove()
+        if (typing) typing.remove()
         if (data.sessionId) sessionId = data.sessionId
-        if (data.answer) {
+        if (data.human) {
+          // A human agent owns this chat — replies arrive over realtime
+          if (!humanMode) { humanMode = true; setStatus('human'); joinSessionChannel() }
+        } else if (data.answer) {
           addBotMsg(data.answer)
           // Show lead capture if answer suggests it can't help
           if (!leadCaptured && /don't have|not sure|can't find|contact|email/i.test(data.answer)) {
@@ -207,7 +308,7 @@
         }
       })
       .catch(function () {
-        typing.remove()
+        if (typing) typing.remove()
         addBotMsg('Sorry, something went wrong. Please try again.')
       })
       .finally(function () {

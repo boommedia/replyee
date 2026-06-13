@@ -28,6 +28,20 @@ export async function sendLeadAlert(opts: {
   })
 }
 
+// ── Live chat: visitor requested a human ─────────────────────
+export async function sendHandoffAlert(opts: {
+  to: string
+  botName: string
+  lastQuestion: string
+}) {
+  return getResend().emails.send({
+    from: 'Replyee <leads@replyee.online>',
+    to: opts.to,
+    subject: `💬 A visitor is waiting for a human reply — ${opts.botName}`,
+    html: handoffAlertHtml(opts),
+  })
+}
+
 // ── Trial expiry warning (3 days before) ─────────────────────
 export async function sendTrialExpiryEmail(to: string, name: string, daysLeft: number) {
   return getResend().emails.send({
@@ -150,6 +164,29 @@ function leadAlertHtml(opts: { botName: string; visitorEmail: string; question: 
       </a>
       <br><br>
       <a href="https://replyee.online/dashboard/bots" style="font-size:13px;color:#6366f1">View all leads in dashboard →</a>
+    </div>
+    ${footerHtml}
+  </body></html>`
+}
+
+function handoffAlertHtml(opts: { botName: string; lastQuestion: string }) {
+  return `<!DOCTYPE html><html><body style="${baseStyle}">
+    ${headerHtml}
+    <div style="padding:36px 40px">
+      <h1 style="font-size:20px;font-weight:800;color:#0f172a;margin:0 0 16px">
+        A visitor wants to talk to a human — right now
+      </h1>
+      <p style="font-size:15px;line-height:1.7;color:#334155;margin:0 0 20px">
+        Someone chatting with <strong>${opts.botName}</strong> asked for a team member.
+        Jump into the Live Inbox to reply while they're still on the site.
+      </p>
+      <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:20px 24px;margin:0 0 24px">
+        <div style="font-size:13px;font-weight:700;color:#3730a3;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Their last message</div>
+        <div style="font-size:14px;color:#334155">"${opts.lastQuestion}"</div>
+      </div>
+      <a href="https://replyee.online/dashboard/inbox" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
+        Open Live Inbox →
+      </a>
     </div>
     ${footerHtml}
   </body></html>`
