@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import Script from 'next/script'
 import Logo from '@/components/Logo'
 import {
   MessageSquare, Upload, Globe, Zap, BarChart3, Mail,
@@ -391,6 +392,17 @@ export default function Home() {
         </div>
         <p style={{ fontSize: 12, color: BODY }}>© 2026 Boom Media. All rights reserved.</p>
       </footer>
+
+      {/* Replyee widget — dog-food our own product on the landing page.
+          Set NEXT_PUBLIC_REPLYEE_BOT_ID in Vercel env to activate.
+          Create the bot at /dashboard/bots/new, then paste its ID. */}
+      {process.env.NEXT_PUBLIC_REPLYEE_BOT_ID && (
+        <Script
+          src="https://replyee.online/widget.js"
+          data-bot-id={process.env.NEXT_PUBLIC_REPLYEE_BOT_ID}
+          strategy="afterInteractive"
+        />
+      )}
     </main>
   )
 }

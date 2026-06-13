@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { Bot as BotIcon, User, Headset, Send, MessagesSquare, RotateCcw, XCircle } from 'lucide-react'
+import { Bot as BotIcon, User, Headset, Send, MessagesSquare, RotateCcw, XCircle, ShoppingBag } from 'lucide-react'
 
 interface Bot { id: string; name: string; accent_color: string }
 interface Conversation {
@@ -37,6 +37,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
+  const [orderCtx, setOrderCtx] = useState<Record<string, unknown> | null>(null)
   const sessionChannel = useRef<RealtimeChannel | null>(null)
   const messagesEnd = useRef<HTMLDivElement>(null)
   const selectedRef = useRef<Conversation | null>(null)
@@ -85,7 +86,12 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
   // Broadcast channel to the visitor's widget for the selected session
   function joinSessionChannel(sessionId: string) {
     if (sessionChannel.current) supabase.removeChannel(sessionChannel.current)
-    sessionChannel.current = supabase.channel(`replyee-session-${sessionId}`)
+    setOrderCtx(null)
+    sessionChannel.current = supabase
+      .channel(`replyee-session-${sessionId}`)
+      .on('broadcast', { event: 'order_context' }, e => {
+        setOrderCtx(e.payload as Record<string, unknown>)
+      })
     sessionChannel.current.subscribe()
   }
 
@@ -229,6 +235,22 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                 <XCircle size={13} /> Close
               </button>
             </div>
+
+            {orderCtx && (
+              <div style={{ margin: '0 16px 0', padding: '10px 14px', background: 'rgba(251,191,36,.06)', border: '1px solid rgba(251,191,36,.2)', borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 10, flexShrink: 0 }}>
+                <ShoppingBag size={14} style={{ color: '#fbbf24', flexShrink: 0, marginTop: 2 }} />
+                <div style={{ fontSize: 12, color: '#e2e8f0', lineHeight: 1.6 }}>
+                  {orderCtx.orderId && <span style={{ fontWeight: 700, color: '#fbbf24', marginRight: 6 }}>Order #{String(orderCtx.orderId).slice(0, 8)}</span>}
+                  {orderCtx.status && <span style={{ color: '#94a3b8', marginRight: 8 }}>{String(orderCtx.status)}</span>}
+                  {Array.isArray(orderCtx.items) && orderCtx.items.length > 0 && (
+                    <span style={{ color: '#cbd5e1' }}>{(orderCtx.items as string[]).join(', ')}</span>
+                  )}
+                  {orderCtx.total != null && (
+                    <span style={{ color: '#fbbf24', fontWeight: 700, marginLeft: 8 }}>${Number(orderCtx.total).toFixed(2)}</span>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div style={{ flex: 1, overflowY: 'auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {messages.map(m => {

@@ -100,6 +100,25 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// Deactivate bot when BOO restaurant disconnects the Replyee add-on
+export async function DELETE(req: NextRequest) {
+  if (!verifySecret(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  try {
+    const body = await req.json()
+    const botId: string = body.botId
+    if (!botId) return NextResponse.json({ error: 'Missing botId' }, { status: 400 })
+
+    const supabase = createAdminClient()
+    await supabase.from('replyee_chatbots').update({ is_active: false }).eq('id', botId)
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('[/api/internal/bots DELETE]', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 // Re-ingest menu when BOO menu changes (replace all existing menu chunks)
 export async function PUT(req: NextRequest) {
   if (!verifySecret(req)) {

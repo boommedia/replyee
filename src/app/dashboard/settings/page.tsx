@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { User, CreditCard, AlertTriangle } from 'lucide-react'
+import { User, CreditCard, AlertTriangle, Copy, Check, Link } from 'lucide-react'
 
 export default function SettingsPage() {
   const [profile, setProfile]     = useState({ full_name: '', email: '', plan: 'starter' })
+  const [userId, setUserId]       = useState('')
+  const [copiedId, setCopiedId]   = useState(false)
   const [password, setPassword]   = useState('')
   const [saving, setSaving]       = useState(false)
   const [msg, setMsg]             = useState('')
@@ -20,6 +22,7 @@ export default function SettingsPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
+      setUserId(user.id)
       const { data: p } = await supabase.from('replyee_profiles').select('full_name, plan, bot_limit').eq('id', user.id).single()
       if (p) {
         setProfile({ full_name: p.full_name ?? '', email: user.email ?? '', plan: p.plan })
@@ -31,6 +34,12 @@ export default function SettingsPage() {
     }
     load()
   }, [])
+
+  function copyUserId() {
+    navigator.clipboard.writeText(userId)
+    setCopiedId(true)
+    setTimeout(() => setCopiedId(false), 2000)
+  }
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault()
@@ -112,6 +121,25 @@ export default function SettingsPage() {
                 {msg && <span style={{ fontSize: 13, color: msg === 'Saved!' ? '#4ade80' : '#f87171' }}>{msg}</span>}
               </div>
             </form>
+          </div>
+
+          {/* BOO Integration — User ID */}
+          <div style={S.card}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+              <Link size={16} style={{ color: '#6366f1' }} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Boom Online Ordering</span>
+            </div>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 14, lineHeight: 1.6 }}>
+              To connect Replyee to your BOO restaurant portal, copy your Replyee User ID and paste it into the BOO portal under Connected Apps → Replyee.
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <code style={{ flex: 1, background: '#07080f', border: '1px solid #1a2035', borderRadius: 7, padding: '9px 12px', fontSize: 12, color: '#94a3b8', wordBreak: 'break-all' }}>
+                {userId || '…'}
+              </code>
+              <button onClick={copyUserId} style={{ ...S.btn, padding: '9px 14px', flexShrink: 0 }}>
+                {copiedId ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
+              </button>
+            </div>
           </div>
 
           {/* Password */}

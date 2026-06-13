@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sendHandoffAlert } from '@/lib/email'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -78,6 +79,35 @@ export async function POST(req: NextRequest) {
       role:       'assistant',
       content:    summaryContent,
     })
+
+    // Alert the bot owner so they know to check the Live Inbox
+    const { data: bot } = await supabase
+      .from('replyee_chatbots')
+      .select('name, user_id')
+      .eq('id', botId)
+      .maybeSingle()
+
+    if (bot) {
+      const { data: owner } = await supabase
+        .from('replyee_profiles')
+        .select('email')
+        .eq('id', bot.user_id)
+        .maybeSingle()
+
+      if (owner?.email) {
+        const orderLine = [
+          itemsList && `Items: ${itemsList}`,
+          totalStr  && `Total: ${totalStr}`,
+          customerName && `Customer: ${customerName}`,
+        ].filter(Boolean).join(' · ')
+
+        sendHandoffAlert({
+          to:           owner.email,
+          botName:      bot.name,
+          lastQuestion: `New order placed — ${orderLine || orderId}`,
+        }).catch(err => console.error('[boo-order] email failed', err))
+      }
+    }
 
     return NextResponse.json({ ok: true, sessionId })
   } catch (err) {
