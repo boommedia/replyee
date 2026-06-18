@@ -30,6 +30,8 @@ const MODE_BADGE: Record<string, { label: string; color: string; bg: string }> =
   closed: { label: 'Closed', color: '#64748b', bg: 'rgba(100,116,139,.12)' },
 }
 
+interface CannedReply { id: string; shortcut: string; body: string }
+
 export default function InboxClient({ bots }: { bots: Bot[] }) {
   const supabase = useRef(createClient()).current
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -38,9 +40,14 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
   const [orderCtx, setOrderCtx] = useState<Record<string, unknown> | null>(null)
+  const [cannedReplies, setCannedReplies] = useState<CannedReply[]>([])
+  const [showCannedDropdown, setShowCannedDropdown] = useState(false)
+  const [visitorTyping, setVisitorTyping] = useState(false)
+  const [notificationEnabled, setNotificationEnabled] = useState(false)
   const sessionChannel = useRef<RealtimeChannel | null>(null)
   const messagesEnd = useRef<HTMLDivElement>(null)
   const selectedRef = useRef<Conversation | null>(null)
+  const replyInputRef = useRef<HTMLInputElement>(null)
   selectedRef.current = selected
 
   const botMap = new Map(bots.map(b => [b.id, b]))
@@ -59,6 +66,31 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase])
 
+  // Load canned replies and request notification permission
+  useEffect(() => {
+    const loadCanned = async () => {
+      try {
+        const res = await fetch('/api/canned-replies')
+        if (res.ok) {
+          const data = await res.json()
+          setCannedReplies(data.replies || [])
+        }
+      } catch (err) {
+        console.error('Failed to load canned replies:', err)
+      }
+    }
+    loadCanned()
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        setNotificationEnabled(permission === 'granted')
+      })
+    } else if ('Notification' in window) {
+      setNotificationEnabled(Notification.permission === 'granted')
+    }
+  }, [])
+
   // Initial load + realtime: refresh on any new message for my bots (RLS-scoped)
   useEffect(() => {
     loadConversations()
@@ -70,6 +102,13 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
         const sel = selectedRef.current
         if (sel && msg.session_id === sel.session_id) {
           setMessages(prev => prev.some(m => m.id === msg.id) ? prev : [...prev, msg])
+          // Browser notification if tab not focused
+          if (notificationEnabled && document.hidden) {
+            new Notification('New message', {
+              body: msg.content.substring(0, 100),
+              tag: 'replyee-inbox',
+            })
+          }
         }
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'replyee_conversations' }, () => {
@@ -77,7 +116,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
-  }, [supabase, loadConversations])
+  }, [supabase, loadConversations, notificationEnabled])
 
   useEffect(() => {
     messagesEnd.current?.scrollIntoView({ behavior: 'smooth' })
@@ -87,10 +126,21 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
   function joinSessionChannel(sessionId: string) {
     if (sessionChannel.current) supabase.removeChannel(sessionChannel.current)
     setOrderCtx(null)
+    setVisitorTyping(false)
+    let typingTimeout: NodeJS.Timeout | null = null
     sessionChannel.current = supabase
       .channel(`replyee-session-${sessionId}`)
       .on('broadcast', { event: 'order_context' }, e => {
         setOrderCtx(e.payload as Record<string, unknown>)
+      })
+      .on('broadcast', { event: 'typing' }, e => {
+        setVisitorTyping(true)
+        if (typingTimeout) clearTimeout(typingTimeout)
+        typingTimeout = setTimeout(() => setVisitorTyping(false), 3000)
+      })
+      .on('broadcast', { event: 'typing_stop' }, () => {
+        setVisitorTyping(false)
+        if (typingTimeout) clearTimeout(typingTimeout)
       })
     sessionChannel.current.subscribe()
   }
@@ -286,14 +336,52 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
               <div ref={messagesEnd} />
             </div>
 
-            <div style={{ display: 'flex', gap: 8, padding: '12px 14px', borderTop: '1px solid #1a2035', flexShrink: 0 }}>
-              <input
-                value={reply}
-                onChange={e => setReply(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReply() } }}
-                placeholder={selected.mode === 'human' ? 'Reply to the visitor…' : 'Type to take over from the bot…'}
-                style={{ flex: 1, background: '#11151f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#e2e8f0', outline: 'none' }}
-              />
+            <div style={{ position: 'relative' }}>
+              {visitorTyping && (
+                <div style={{ padding: '8px 14px', fontSize: 12, color: '#94a3b8', background: '#11151f', borderBottom: '1px solid #1a2035', fontStyle: 'italic' }}>
+                  Visitor is typing…
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 8, padding: '12px 14px', borderTop: '1px solid #1a2035', flexShrink: 0 }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <input
+                    ref={replyInputRef}
+                    value={reply}
+                    onChange={e => {
+                      setReply(e.target.value)
+                      setShowCannedDropdown(e.target.value.endsWith('/'))
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        setShowCannedDropdown(false)
+                        sendReply()
+                      } else if (e.key === 'Escape') {
+                        setShowCannedDropdown(false)
+                      }
+                    }}
+                    placeholder={selected.mode === 'human' ? 'Reply to the visitor… (type / for shortcuts)' : 'Type to take over from the bot…'}
+                    style={{ width: '100%', background: '#11151f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#e2e8f0', outline: 'none' }}
+                  />
+                  {showCannedDropdown && cannedReplies.length > 0 && (
+                    <div style={{ position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#0a0c12', border: '1px solid #1a2035', borderRadius: 8, maxHeight: 200, overflowY: 'auto', zIndex: 10, marginBottom: 4 }}>
+                      {cannedReplies.map(cr => (
+                        <button
+                          key={cr.id}
+                          onClick={() => {
+                            setReply(cr.body)
+                            setShowCannedDropdown(false)
+                            setTimeout(() => replyInputRef.current?.focus(), 0)
+                          }}
+                          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', background: 'transparent', border: 'none', borderBottom: '1px solid #1a2035', cursor: 'pointer', color: '#e2e8f0' }}
+                        >
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1' }}>{cr.shortcut}</div>
+                          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cr.body}</div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               <button
                 onClick={sendReply}
                 disabled={sending || !reply.trim()}
@@ -303,6 +391,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                 <Send size={15} />
               </button>
             </div>
+          </div>
           </>
         )}
       </div>

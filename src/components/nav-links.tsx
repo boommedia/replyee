@@ -1,13 +1,15 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Bot, MessageCircle, MessagesSquare, BarChart3, Settings, Users } from 'lucide-react'
+import { LayoutDashboard, Bot, MessageCircle, MessagesSquare, BarChart3, Settings, Users, Eye, MessageSquareDot } from 'lucide-react'
 
 const NAV = [
   { href: '/dashboard',               icon: LayoutDashboard, label: 'Overview' },
   { href: '/dashboard/bots',          icon: Bot,             label: 'My Chatbots' },
   { href: '/dashboard/inbox',         icon: MessagesSquare,  label: 'Live Inbox' },
+  { href: '/dashboard/visitors',      icon: Eye,             label: 'Visitors' },
   { href: '/dashboard/conversations', icon: MessageCircle,   label: 'Conversations' },
+  { href: '/dashboard/canned-replies', icon: MessageSquareDot, label: 'Canned Replies' },
   { href: '/dashboard/analytics',     icon: BarChart3,       label: 'Analytics' },
   { href: '/dashboard/settings',      icon: Settings,        label: 'Settings' },
 ]

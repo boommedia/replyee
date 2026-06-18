@@ -13,21 +13,48 @@
   if (!BOT_ID) { console.warn('[Replyee] Missing data-bot-id attribute'); return }
 
   // ── State ──────────────────────────────────────────────────
-  var sessionId    = null
-  var isOpen       = false
-  var isLoading    = false
-  var leadCaptured = false
-  var humanMode    = false
-  var sbChannel    = null
-  var orderContext = null   // set by BOO via window.Replyee.setOrderContext()
-  var config       = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false }
+  var sessionId      = null
+  var visitorId      = null
+  var isOpen         = false
+  var isLoading      = false
+  var leadCaptured   = false
+  var humanMode      = false
+  var sbChannel      = null
+  var sbPresence     = null
+  var agentPresent   = false
+  var orderContext   = null   // set by BOO via window.Replyee.setOrderContext()
+  var triggerFired   = false
+  var lastPage       = null
+  var heartbeatTimer = null
+  var typingTimeout  = null
+  var config         = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false, triggers: [] }
 
-  function makeSessionId() {
+  function makeUUID() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID()
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       var r = Math.random() * 16 | 0
       return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16)
     })
+  }
+
+  function makeSessionId() { return makeUUID() }
+
+  // Initialize or retrieve visitor ID
+  function initVisitorId() {
+    var stored = localStorage.getItem('replyee_visitor_id')
+    if (stored) { visitorId = stored } else {
+      visitorId = makeUUID()
+      localStorage.setItem('replyee_visitor_id', visitorId)
+    }
+    // Track visits (increment on each page load, reset after 30 minutes inactivity)
+    var visits = parseInt(localStorage.getItem('replyee_visits') || '1', 10)
+    var lastVisit = parseInt(localStorage.getItem('replyee_last_visit') || '0', 10)
+    var now = Date.now()
+    if (lastVisit && (now - lastVisit) > 30 * 60 * 1000) {
+      visits += 1
+    }
+    localStorage.setItem('replyee_visits', visits.toString())
+    localStorage.setItem('replyee_last_visit', now.toString())
   }
 
   // ── Styles ─────────────────────────────────────────────────
@@ -128,20 +155,159 @@
   var humanBtn = win.querySelector('#ry-human-btn')
   var statusEl = win.querySelector('#ry-status')
 
+  // ── Initialize visitor tracking ───────────────────────────
+  initVisitorId()
+  lastPage = location.href
+
   // ── Load bot config ────────────────────────────────────────
-  fetch(API_BASE + '/api/bot-config?id=' + BOT_ID)
-    .then(function (r) { return r.ok ? r.json() : null })
-    .then(function (data) {
-      if (!data) return
-      config = Object.assign(config, data)
-      bubble.style.background = config.accentColor
-      win.querySelector('#ry-avatar').style.background = config.accentColor
-      win.querySelector('#ry-send').style.background   = config.accentColor
-      win.querySelector('#ry-bot-name').textContent    = config.name
-      if (config.handoff) humanBtn.style.display = 'block'
-      addBotMsg(config.greeting)
+  function loadBotConfig() {
+    fetch(API_BASE + '/api/bot-config?id=' + BOT_ID)
+      .then(function (r) { return r.ok ? r.json() : null })
+      .then(function (data) {
+        if (!data) return
+        config = Object.assign(config, data)
+        bubble.style.background = config.accentColor
+        win.querySelector('#ry-avatar').style.background = config.accentColor
+        win.querySelector('#ry-send').style.background   = config.accentColor
+        win.querySelector('#ry-bot-name').textContent    = config.name
+        if (config.handoff) humanBtn.style.display = 'block'
+        addBotMsg(config.greeting)
+        // Evaluate triggers after config loads
+        evaluateTriggers()
+        // Start heartbeat and presence tracking
+        startHeartbeat()
+        subscribeToPresence()
+      })
+      .catch(function () { addBotMsg(config.greeting) })
+  }
+  loadBotConfig()
+
+  // ── Heartbeat (visitor session tracking) ───────────────────
+  function sendHeartbeat() {
+    fetch(API_BASE + '/api/visitor-heartbeat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        botId: BOT_ID,
+        visitorId: visitorId,
+        sessionId: sessionId || null,
+        page: location.href,
+        referrer: document.referrer,
+        utm: parseUTM(),
+        device: getDevice(),
+      }),
+    }).catch(function () {})
+  }
+
+  function startHeartbeat() {
+    sendHeartbeat() // Fire immediately
+    heartbeatTimer = setInterval(sendHeartbeat, 30 * 1000) // Then every 30s
+  }
+
+  function parseUTM() {
+    var params = {}
+    var search = location.search.substring(1)
+    var pairs = search.split('&')
+    for (var i = 0; i < pairs.length; i++) {
+      var pair = pairs[i].split('=')
+      if (pair[0].startsWith('utm_')) {
+        params[pair[0]] = decodeURIComponent(pair[1] || '')
+      }
+    }
+    return Object.keys(params).length > 0 ? params : null
+  }
+
+  function getDevice() {
+    var ua = navigator.userAgent
+    if (/mobile|android|iphone|ipad|ipod/i.test(ua)) return 'mobile'
+    if (/tablet|ipad|android/i.test(ua)) return 'tablet'
+    return 'desktop'
+  }
+
+  // ── Agent presence ─────────────────────────────────────────
+  function subscribeToPresence() {
+    if (!config.supabaseUrl || !config.supabaseAnonKey) return
+    loadSupabase(function () {
+      try {
+        var client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey)
+        sbPresence = client.channel('replyee-presence-' + BOT_ID)
+        sbPresence
+          .on('presence', { event: 'sync' }, function () {
+            var agents = sbPresence.presenceState()
+            agentPresent = Object.keys(agents).length > 0
+            updatePresenceStatus()
+          })
+          .subscribe()
+      } catch (err) {
+        console.warn('[Replyee] presence unavailable', err)
+      }
     })
-    .catch(function () { addBotMsg(config.greeting) })
+  }
+
+  function updatePresenceStatus() {
+    if (!statusEl) return
+    if (humanMode) {
+      statusEl.innerHTML = '&#9679; Live with a team member'
+    } else if (agentPresent) {
+      statusEl.innerHTML = '&#9679; We\'re typically online'
+    } else {
+      statusEl.innerHTML = '&#9679; Leave a message'
+    }
+  }
+
+  // ── Proactive triggers ─────────────────────────────────────
+  function evaluateTriggers() {
+    if (!config.triggers || config.triggers.length === 0 || triggerFired) return
+    var triggers = config.triggers
+
+    for (var i = 0; i < triggers.length; i++) {
+      var rule = triggers[i]
+      var shouldFire = false
+
+      if (rule.type === 'time_on_page' && rule.value) {
+        shouldFire = true
+        setTimeout(function (msg) {
+          if (!isOpen && !triggerFired) {
+            triggerFired = true
+            openChat()
+            if (msg) addBotMsg(msg)
+          }
+        }, rule.value * 1000, rule.message)
+      }
+
+      if (rule.type === 'url_contains' && rule.value && location.href.includes(rule.value)) {
+        shouldFire = true
+        if (!isOpen && !triggerFired) {
+          triggerFired = true
+          openChat()
+          if (rule.message) addBotMsg(rule.message)
+        }
+      }
+
+      if (rule.type === 'exit_intent' && rule.value) {
+        shouldFire = true
+        document.addEventListener('mouseleave', function (event) {
+          if (!isOpen && !triggerFired && event.clientY < 0) {
+            triggerFired = true
+            openChat()
+            if (rule.message) addBotMsg(rule.message)
+          }
+        })
+      }
+
+      if (rule.type === 'return_visitor' && rule.value) {
+        var visits = parseInt(localStorage.getItem('replyee_visits') || '1', 10)
+        if (visits > 1) {
+          shouldFire = true
+          if (!isOpen && !triggerFired) {
+            triggerFired = true
+            openChat()
+            if (rule.message) addBotMsg(rule.message)
+          }
+        }
+      }
+    }
+  }
 
   // ── Toggle open/close ──────────────────────────────────────
   function openChat() {
@@ -350,6 +516,25 @@
   send.addEventListener('click', sendMessage)
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() }
+  })
+
+  // ── Typing indicator (visitor typing) ──────────────────────
+  input.addEventListener('input', function () {
+    if (humanMode && sbChannel && visitorId) {
+      clearTimeout(typingTimeout)
+      sbChannel.send({
+        type: 'broadcast',
+        event: 'typing',
+        payload: { visitorId: visitorId },
+      })
+      typingTimeout = setTimeout(function () {
+        sbChannel.send({
+          type: 'broadcast',
+          event: 'typing_stop',
+          payload: { visitorId: visitorId },
+        })
+      }, 2000)
+    }
   })
 
   // ── Lead capture form ──────────────────────────────────────

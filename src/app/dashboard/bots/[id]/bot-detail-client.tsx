@@ -6,10 +6,12 @@ import { Bot, Globe, FileText, Check, Copy, Upload, Plus, Trash2, ExternalLink }
 
 interface KnowledgeSource { name: string; type: string; count: number; createdAt: string }
 interface Lead { id: string; visitor_email: string; question: string | null; created_at: string }
+interface TriggerRule { type: string; value: string; message?: string }
 interface Chatbot {
   id: string; name: string; website_url: string | null; accent_color: string
   system_prompt: string | null; greeting_message: string; fallback_message: string
   chunk_count: number; conversation_count: number; lead_count: number; is_active: boolean
+  triggers: TriggerRule[]
 }
 
 const S = {
@@ -43,6 +45,10 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
   })
   const [settingsSaving, setSettingsSaving] = useState(false)
   const [settingsMsg, setSettingsMsg] = useState('')
+  const [triggers, setTriggers] = useState(bot.triggers || [])
+  const [newTrigger, setNewTrigger] = useState({ type: 'time_on_page', value: '', message: '' })
+  const [triggersSaving, setTriggersSaving] = useState(false)
+  const [triggersMsg, setTriggersMsg] = useState('')
   const [, startTransition] = useTransition()
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.replyee.online'
@@ -118,6 +124,35 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
     if (!error) router.refresh()
   }
 
+  async function saveTriggers() {
+    setTriggersSaving(true)
+    setTriggersMsg('')
+    try {
+      const res = await fetch(`/api/chatbots/${bot.id}/triggers`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ triggers }),
+      })
+      if (!res.ok) throw new Error('Failed to save triggers')
+      setTriggersMsg('Saved!')
+      setTimeout(() => setTriggersMsg(''), 2000)
+    } catch (e) {
+      setTriggersMsg(e instanceof Error ? e.message : 'Failed to save')
+    } finally {
+      setTriggersSaving(false)
+    }
+  }
+
+  function addTrigger() {
+    if (!newTrigger.value) return
+    setTriggers([...triggers, { ...newTrigger }])
+    setNewTrigger({ type: 'time_on_page', value: '', message: '' })
+  }
+
+  function removeTrigger(index: number) {
+    setTriggers(triggers.filter((_, i) => i !== index))
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
@@ -143,6 +178,7 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
           { id: 'kb', label: 'Knowledge Base' },
           { id: 'embed', label: 'Embed Code' },
           { id: 'settings', label: 'Settings' },
+          { id: 'triggers', label: 'Triggers' },
           { id: 'leads', label: `Leads (${bot.lead_count})` },
         ].map(t => (
           <button
@@ -287,6 +323,89 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>Danger Zone</div>
             <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Permanently delete this chatbot and all its data.</p>
             <DeleteBotButton botId={bot.id} />
+          </div>
+        </div>
+      )}
+
+      {tab === 'triggers' && (
+        <div style={{ maxWidth: 680 }}>
+          <div style={S.card}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>Proactive Triggers</div>
+            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Auto-open the chat widget based on visitor behavior.</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24, padding: 16, background: '#0a0c12', borderRadius: 10 }}>
+              <div>
+                <label style={S.label}>Trigger Type</label>
+                <select
+                  value={newTrigger.type}
+                  onChange={e => setNewTrigger(t => ({ ...t, type: e.target.value }))}
+                  style={{ ...S.input, width: '100%' }}
+                >
+                  <option value="time_on_page">Time on Page (seconds)</option>
+                  <option value="url_contains">URL Contains</option>
+                  <option value="exit_intent">Exit Intent</option>
+                  <option value="return_visitor">Return Visitor</option>
+                </select>
+              </div>
+
+              {newTrigger.type !== 'exit_intent' && newTrigger.type !== 'return_visitor' && (
+                <div>
+                  <label style={S.label}>Value</label>
+                  <input
+                    type={newTrigger.type === 'time_on_page' ? 'number' : 'text'}
+                    value={newTrigger.value}
+                    onChange={e => setNewTrigger(t => ({ ...t, value: e.target.value }))}
+                    placeholder={newTrigger.type === 'time_on_page' ? 'e.g., 10' : 'e.g., /menu'}
+                    style={{ ...S.input, width: '100%' }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <label style={S.label}>Message (optional)</label>
+                <textarea
+                  value={newTrigger.message}
+                  onChange={e => setNewTrigger(t => ({ ...t, message: e.target.value }))}
+                  placeholder="Custom message to show when trigger fires"
+                  style={{ ...S.input, width: '100%', minHeight: 60, resize: 'none' }}
+                />
+              </div>
+
+              <button onClick={addTrigger} style={S.btn}>
+                <Plus size={14} /> Add Trigger
+              </button>
+            </div>
+
+            {triggers.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                {triggers.map((t, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: '#0a0c12', borderRadius: 8 }}>
+                    <div style={{ flex: 1, fontSize: 13 }}>
+                      <div style={{ fontWeight: 700, color: '#6366f1', marginBottom: 2 }}>
+                        {t.type === 'time_on_page' ? `Time on Page: ${t.value}s` : t.type === 'exit_intent' ? 'Exit Intent' : t.type === 'return_visitor' ? 'Return Visitor' : `URL Contains: ${t.value}`}
+                      </div>
+                      {t.message && <div style={{ color: '#94a3b8' }}>"{t.message}"</div>}
+                    </div>
+                    <button
+                      onClick={() => removeTrigger(i)}
+                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', padding: 4 }}
+                      title="Remove trigger"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <button onClick={saveTriggers} disabled={triggersSaving} style={{ ...S.btn, opacity: triggersSaving ? 0.7 : 1 }}>
+                {triggersSaving ? 'Saving…' : 'Save Triggers'}
+              </button>
+              {triggersMsg && (
+                <span style={{ fontSize: 13, color: triggersMsg === 'Saved!' ? '#4ade80' : '#f87171' }}>{triggersMsg}</span>
+              )}
+            </div>
           </div>
         </div>
       )}
