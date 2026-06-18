@@ -5,8 +5,9 @@ export const dynamic = 'force-dynamic'
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -16,11 +17,10 @@ export async function PUT(
     return NextResponse.json({ error: 'Triggers must be an array' }, { status: 400 })
   }
 
-  // Verify ownership
   const { data: bot } = await supabase
     .from('replyee_chatbots')
     .select('id')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user.id)
     .single()
 
@@ -31,7 +31,7 @@ export async function PUT(
   const { error } = await supabase
     .from('replyee_chatbots')
     .update({ triggers })
-    .eq('id', params.id)
+    .eq('id', id)
 
   if (error) {
     console.error('[PUT /api/chatbots/[id]/triggers]', error)
