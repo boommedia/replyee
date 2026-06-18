@@ -5,17 +5,17 @@ export const dynamic = 'force-dynamic'
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  // Verify ownership before deleting
   const { data: reply } = await supabase
     .from('replyee_canned_replies')
     .select('id')
-    .eq('id', params.id)
+    .eq('id', id)
     .eq('user_id', user.id)
     .single()
 
@@ -26,7 +26,7 @@ export async function DELETE(
   const { error } = await supabase
     .from('replyee_canned_replies')
     .delete()
-    .eq('id', params.id)
+    .eq('id', id)
 
   if (error) {
     console.error('[DELETE /api/canned-replies/[id]]', error)
