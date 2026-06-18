@@ -31,6 +31,7 @@ const MODE_BADGE: Record<string, { label: string; color: string; bg: string }> =
 }
 
 interface CannedReply { id: string; shortcut: string; body: string }
+interface OrderContext { orderId?: string | null; status?: string | null; items?: string[] | null; total?: number | null }
 
 export default function InboxClient({ bots }: { bots: Bot[] }) {
   const supabase = useRef(createClient()).current
@@ -39,7 +40,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
-  const [orderCtx, setOrderCtx] = useState<Record<string, unknown> | null>(null)
+  const [orderCtx, setOrderCtx] = useState<OrderContext | null>(null)
   const [cannedReplies, setCannedReplies] = useState<CannedReply[]>([])
   const [showCannedDropdown, setShowCannedDropdown] = useState(false)
   const [visitorTyping, setVisitorTyping] = useState(false)
@@ -131,7 +132,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
     sessionChannel.current = supabase
       .channel(`replyee-session-${sessionId}`)
       .on('broadcast', { event: 'order_context' }, e => {
-        setOrderCtx(e.payload as Record<string, unknown>)
+        setOrderCtx(e.payload as OrderContext)
       })
       .on('broadcast', { event: 'typing' }, e => {
         setVisitorTyping(true)
