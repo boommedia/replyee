@@ -78,21 +78,22 @@ export default function VisitorsPage() {
             },
             (payload) => {
               if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+                const updated = payload.new as Visitor
                 setVisitors(prev => {
-                  const existing = prev.findIndex(v => v.id === payload.new.id)
+                  const existing = prev.findIndex(v => v.id === updated.id)
                   if (existing >= 0) {
-                    const updated = [...prev]
-                    updated[existing] = payload.new
-                    return updated.sort((a, b) =>
+                    const next = [...prev]
+                    next[existing] = updated
+                    return next.sort((a, b) =>
                       new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime()
                     )
                   }
-                  return [payload.new, ...prev].sort((a, b) =>
+                  return [updated, ...prev].sort((a, b) =>
                     new Date(b.last_seen).getTime() - new Date(a.last_seen).getTime()
                   )
                 })
               } else if (payload.eventType === 'DELETE') {
-                setVisitors(prev => prev.filter(v => v.id !== payload.old.id))
+                setVisitors(prev => prev.filter(v => v.id !== (payload.old as Visitor).id))
               }
             }
           )
