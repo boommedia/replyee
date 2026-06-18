@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const supabase = createAdminClient()
   const { data: bot } = await supabase
     .from('replyee_chatbots')
-    .select('name, accent_color, greeting_message, fallback_message, is_active, triggers')
+    .select('name, accent_color, greeting_message, fallback_message, is_active, triggers, restaurant_address, restaurant_phone, restaurant_hours, restaurant_website')
     .eq('id', id)
     .maybeSingle()
 
@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
       fallback: bot.fallback_message,
       handoff: true,
       triggers: bot.triggers || [],
+      restaurantAddress: bot.restaurant_address || null,
+      restaurantPhone:   bot.restaurant_phone   || null,
+      restaurantHours:   bot.restaurant_hours   || null,
+      restaurantWebsite: bot.restaurant_website || null,
       // Public credentials so the widget can join Realtime broadcast channels
       // (anon key is public by design; data access is still gated by RLS)
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,

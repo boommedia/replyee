@@ -87,6 +87,9 @@
     '#ry-lead-btn{width:100%;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer}',
     '#ry-branding{text-align:center;font-size:10px;color:rgba(255,255,255,0.25);padding:6px;flex-shrink:0}',
     '#ry-branding a{color:inherit;text-decoration:none}',
+    '#ry-quick-actions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}',
+    '.ry-qa{background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:rgba(255,255,255,0.75);font-size:11px;padding:5px 10px;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}',
+    '.ry-qa:hover{border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.06)}',
     '.ry-agent{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#e2e8f0;border-radius:12px 12px 12px 3px;align-self:flex-start}',
     '.ry-agent-label{font-size:10px;color:#4ade80;font-weight:700;margin-bottom:3px}',
     '#ry-human-btn{background:transparent;border:none;color:rgba(255,255,255,0.45);font-size:11px;cursor:pointer;padding:4px 0;text-decoration:underline;align-self:center;flex-shrink:0}',
@@ -135,6 +138,7 @@
     '  <button id="ry-close" style="margin-left:auto;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:4px;">' + svgClose() + '</button>',
     '</div>',
     '<div id="ry-messages"></div>',
+    '<div id="ry-quick-actions" style="display:none"></div>',
     '<button id="ry-human-btn" style="display:none">Talk to a human</button>',
     '<div id="ry-input-row">',
     '  <input id="ry-input" placeholder="Ask a question…" rows="1" />',
@@ -148,16 +152,38 @@
   document.body.appendChild(widget)
 
   // ── References ────────────────────────────────────────────
-  var msgs     = win.querySelector('#ry-messages')
-  var input    = win.querySelector('#ry-input')
-  var send     = win.querySelector('#ry-send')
-  var close    = win.querySelector('#ry-close')
-  var humanBtn = win.querySelector('#ry-human-btn')
-  var statusEl = win.querySelector('#ry-status')
+  var msgs        = win.querySelector('#ry-messages')
+  var input       = win.querySelector('#ry-input')
+  var send        = win.querySelector('#ry-send')
+  var close       = win.querySelector('#ry-close')
+  var humanBtn    = win.querySelector('#ry-human-btn')
+  var statusEl    = win.querySelector('#ry-status')
+  var quickActions = win.querySelector('#ry-quick-actions')
 
   // ── Initialize visitor tracking ───────────────────────────
   initVisitorId()
   lastPage = location.href
+
+  // ── Quick-action chips (Get Directions, Call Us) ──────────
+  function renderQuickActions() {
+    if (!quickActions) return
+    var chips = []
+    if (config.restaurantAddress) {
+      var mapsUrl = 'https://maps.google.com/?q=' + encodeURIComponent(config.restaurantAddress)
+      chips.push('<a class="ry-qa" href="' + mapsUrl + '" target="_blank" rel="noopener">&#128205; Get Directions</a>')
+    }
+    if (config.restaurantPhone) {
+      var tel = config.restaurantPhone.replace(/[^\d+]/g, '')
+      chips.push('<a class="ry-qa" href="tel:' + tel + '">&#128222; Call Us</a>')
+    }
+    if (config.restaurantHours) {
+      chips.push('<button class="ry-qa" onclick="this.closest(\'#ry-widget\').querySelector(\'#ry-input\').value=\'What are your hours?\';this.closest(\'#ry-widget\').querySelector(\'#ry-send\').click()">&#128337; Hours</button>')
+    }
+    if (chips.length > 0) {
+      quickActions.innerHTML = chips.join('')
+      quickActions.style.display = 'flex'
+    }
+  }
 
   // ── Load bot config ────────────────────────────────────────
   function loadBotConfig() {
@@ -172,6 +198,7 @@
         win.querySelector('#ry-bot-name').textContent    = config.name
         if (config.handoff) humanBtn.style.display = 'block'
         addBotMsg(config.greeting)
+        renderQuickActions()
         // Evaluate triggers after config loads
         evaluateTriggers()
         // Start heartbeat and presence tracking

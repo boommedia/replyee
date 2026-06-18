@@ -24,6 +24,24 @@ interface MenuCategory {
   items: MenuItem[]
 }
 
+interface RestaurantInfo {
+  address?: string | null
+  phone?: string | null
+  hours?: string | null
+  website?: string | null
+  policies?: string | null
+}
+
+function buildInfoChunk(name: string, info: RestaurantInfo): string {
+  const lines: string[] = [`Restaurant Information — ${name}`, '']
+  if (info.address)  lines.push(`Address: ${info.address}`)
+  if (info.phone)    lines.push(`Phone: ${info.phone}`)
+  if (info.hours)    lines.push(`Hours: ${info.hours}`)
+  if (info.website)  lines.push(`Website: ${info.website}`)
+  if (info.policies) lines.push('', `Policies:`, info.policies)
+  return lines.join('\n')
+}
+
 // Called by BOO portal when a restaurant activates the Replyee add-on.
 // Creates the bot and ingests the full menu as knowledge chunks.
 export async function POST(req: NextRequest) {
@@ -39,6 +57,7 @@ export async function POST(req: NextRequest) {
     const greetingMessage: string | undefined = body.greetingMessage
     const systemPrompt: string | undefined    = body.systemPrompt
     const categories: MenuCategory[]          = body.categories ?? []
+    const restaurantInfo: RestaurantInfo | undefined = body.restaurantInfo
 
     if (!userId || !restaurantName) {
       return NextResponse.json({ error: 'Missing userId or restaurantName' }, { status: 400 })
@@ -58,6 +77,10 @@ export async function POST(req: NextRequest) {
         greeting_message: greetingMessage ?? defaultGreeting,
         system_prompt: systemPrompt ?? defaultSystem,
         is_active: true,
+        restaurant_address: restaurantInfo?.address ?? null,
+        restaurant_phone:   restaurantInfo?.phone   ?? null,
+        restaurant_hours:   restaurantInfo?.hours   ?? null,
+        restaurant_website: restaurantInfo?.website ?? null,
       })
       .select('id')
       .single()
@@ -89,6 +112,19 @@ export async function POST(req: NextRequest) {
         embedding,
       })
       chunksIngested++
+    }
+
+    // Ingest restaurant info (address, phone, hours, policies) as a single chunk
+    if (restaurantInfo && Object.values(restaurantInfo).some(Boolean)) {
+      const content = buildInfoChunk(restaurantName, restaurantInfo)
+      const embedding = await embedText(content)
+      await supabase.from('replyee_knowledge_chunks').insert({
+        chatbot_id: bot.id,
+        content,
+        source_type: 'restaurant_info',
+        source_name: 'Restaurant Info',
+        embedding,
+      })
     }
 
     const embedCode = `<script src="https://replyee.online/widget.js" data-bot-id="${bot.id}" async></script>`
@@ -129,6 +165,7 @@ export async function PUT(req: NextRequest) {
     const body = await req.json()
     const botId: string          = body.botId
     const categories: MenuCategory[] = body.categories ?? []
+    const restaurantInfo: RestaurantInfo | undefined = body.restaurantInfo
     if (!botId) return NextResponse.json({ error: 'Missing botId' }, { status: 400 })
 
     const supabase = createAdminClient()
@@ -162,6 +199,41 @@ export async function PUT(req: NextRequest) {
         embedding,
       })
       chunksIngested++
+    }
+
+    // Re-sync restaurant info chunk + chatbot columns if provided
+    if (restaurantInfo && Object.values(restaurantInfo).some(Boolean)) {
+      await supabase
+        .from('replyee_knowledge_chunks')
+        .delete()
+        .eq('chatbot_id', botId)
+        .eq('source_type', 'restaurant_info')
+
+      const { data: bot } = await supabase
+        .from('replyee_chatbots')
+        .select('name')
+        .eq('id', botId)
+        .maybeSingle()
+
+      if (bot) {
+        const content = buildInfoChunk(bot.name, restaurantInfo)
+        const embedding = await embedText(content)
+        await Promise.all([
+          supabase.from('replyee_knowledge_chunks').insert({
+            chatbot_id: botId,
+            content,
+            source_type: 'restaurant_info',
+            source_name: 'Restaurant Info',
+            embedding,
+          }),
+          supabase.from('replyee_chatbots').update({
+            restaurant_address: restaurantInfo.address ?? null,
+            restaurant_phone:   restaurantInfo.phone   ?? null,
+            restaurant_hours:   restaurantInfo.hours   ?? null,
+            restaurant_website: restaurantInfo.website ?? null,
+          }).eq('id', botId),
+        ])
+      }
     }
 
     return NextResponse.json({ ok: true, chunksIngested })
