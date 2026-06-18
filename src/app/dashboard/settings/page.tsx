@@ -1,7 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { User, CreditCard, AlertTriangle, Copy, Check, Link } from 'lucide-react'
+import { User, CreditCard, AlertTriangle, Copy, Check, Link, ChevronDown } from 'lucide-react'
+
+const UPGRADE_PLANS = [
+  { id: 'starter', label: 'Starter', price: '$25/mo', bots: 1, convos: 500 },
+  { id: 'growth',  label: 'Growth',  price: '$49/mo', bots: 5, convos: 3000 },
+  { id: 'agency',  label: 'Agency',  price: '$99/mo', bots: 999, convos: -1 },
+]
 
 export default function SettingsPage() {
   const [profile, setProfile]     = useState({ full_name: '', email: '', plan: 'starter' })
@@ -16,6 +22,10 @@ export default function SettingsPage() {
   const [botCount, setBotCount]   = useState(0)
   const [convoCount, setConvoCount] = useState(0)
   const [botLimit, setBotLimit]   = useState(1)
+  const [showUpgrade, setShowUpgrade] = useState(false)
+  const [upgrading, setUpgrading] = useState<string | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [billingMsg, setBillingMsg] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -69,6 +79,30 @@ export default function SettingsPage() {
     const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/login'
+  }
+
+  async function openPortal() {
+    setPortalLoading(true)
+    setBillingMsg('')
+    const res = await fetch('/api/billing/portal', { method: 'POST' })
+    const data = await res.json()
+    setPortalLoading(false)
+    if (data.url) { window.location.href = data.url }
+    else { setBillingMsg(data.error ?? 'Could not open billing portal') }
+  }
+
+  async function startCheckout(plan: string) {
+    setUpgrading(plan)
+    setBillingMsg('')
+    const res = await fetch('/api/billing/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan }),
+    })
+    const data = await res.json()
+    setUpgrading(null)
+    if (data.url) { window.location.href = data.url }
+    else { setBillingMsg(data.error ?? 'Could not start checkout') }
   }
 
   const PLAN_LIMITS: Record<string, { convos: number | null; bots: number }> = {
@@ -195,7 +229,7 @@ export default function SettingsPage() {
             <div style={{ fontSize: 12, color: '#64748b', marginBottom: 4 }}>Current Plan</div>
             <div style={{ fontSize: 22, fontWeight: 900, color: '#6366f1', textTransform: 'capitalize' }}>{profile.plan}</div>
             <div style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
-              {profile.plan === 'starter' ? '$25/month' : profile.plan === 'growth' ? '$49/month' : profile.plan === 'agency' ? '$99/month' : 'Free trial'}
+              {profile.plan === 'starter' ? '$25/month' : profile.plan === 'growth' ? '$49/month' : profile.plan === 'agency' ? '$99/month' : '14-day free trial'}
             </div>
           </div>
 
@@ -217,15 +251,42 @@ export default function SettingsPage() {
             {limits.bots < 999 && <div style={S.track}><div style={S.fill(botPct)} /></div>}
           </div>
 
+          {billingMsg && (
+            <div style={{ background: 'rgba(248,113,113,.1)', border: '1px solid rgba(248,113,113,.25)', borderRadius: 8, padding: '9px 13px', fontSize: 13, color: '#f87171', marginBottom: 14 }}>
+              {billingMsg}
+            </div>
+          )}
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <a href="https://billing.stripe.com/p/login" target="_blank" rel="noreferrer"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 13, padding: '11px', borderRadius: 8, textDecoration: 'none' }}>
-              Manage Billing / Cancel
-            </a>
-            <a href="/#pricing" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: '#6366f1', fontWeight: 600, fontSize: 13, padding: '11px', borderRadius: 8, border: '1px solid rgba(99,102,241,.3)', textDecoration: 'none' }}>
-              Upgrade Plan
-            </a>
+            <button onClick={openPortal} disabled={portalLoading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 13, padding: '11px', borderRadius: 8, border: 'none', cursor: portalLoading ? 'not-allowed' : 'pointer', opacity: portalLoading ? 0.7 : 1 }}>
+              {portalLoading ? 'Loading…' : 'Manage Billing / Cancel'}
+            </button>
+            <button onClick={() => setShowUpgrade(v => !v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: 'transparent', color: '#6366f1', fontWeight: 600, fontSize: 13, padding: '11px', borderRadius: 8, border: '1px solid rgba(99,102,241,.3)', cursor: 'pointer' }}>
+              Upgrade Plan <ChevronDown size={14} style={{ transform: showUpgrade ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
+            </button>
           </div>
+
+          {showUpgrade && (
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {UPGRADE_PLANS.map(p => (
+                <div key={p.id} style={{ background: '#07080f', border: `1px solid ${p.id === profile.plan ? 'rgba(99,102,241,.5)' : '#1a2035'}`, borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 2 }}>{p.label} — {p.price}</div>
+                    <div style={{ fontSize: 12, color: '#64748b' }}>
+                      {p.bots < 999 ? p.bots : '∞'} bot{p.bots !== 1 ? 's' : ''} · {p.convos > 0 ? p.convos.toLocaleString() : '∞'} convos/mo
+                    </div>
+                  </div>
+                  {p.id === profile.plan ? (
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#6366f1', background: 'rgba(99,102,241,.1)', padding: '4px 10px', borderRadius: 20 }}>Current</span>
+                  ) : (
+                    <button onClick={() => startCheckout(p.id)} disabled={upgrading === p.id} style={{ background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 12, padding: '7px 16px', borderRadius: 7, border: 'none', cursor: upgrading === p.id ? 'not-allowed' : 'pointer', opacity: upgrading === p.id ? 0.7 : 1 }}>
+                      {upgrading === p.id ? '…' : 'Select'}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
