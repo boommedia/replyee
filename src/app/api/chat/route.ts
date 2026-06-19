@@ -49,16 +49,19 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const queryEmbedding = await embedText(message)
-
-    const { data: chunks } = await supabase.rpc('replyee_match_chunks', {
-      query_embedding: queryEmbedding,
-      chatbot_id: botId,
-      match_count: 5,
-      match_threshold: 0.5,
-    })
-
-    const context = chunks?.map((c: { content: string }) => c.content).join('\n\n---\n\n') ?? ''
+    let context = ''
+    try {
+      const queryEmbedding = await embedText(message)
+      const { data: chunks } = await supabase.rpc('replyee_match_chunks', {
+        query_embedding: queryEmbedding,
+        chatbot_id: botId,
+        match_count: 5,
+        match_threshold: 0.5,
+      })
+      context = chunks?.map((c: { content: string }) => c.content).join('\n\n---\n\n') ?? ''
+    } catch {
+      // Embedding unavailable — proceed with system prompt only
+    }
 
     const systemPrompt = bot.system_prompt ??
       `You are a helpful AI assistant for ${bot.name}. Answer questions based only on the provided context. If the answer is not in the context, say so honestly and offer to connect the user with the team.`
