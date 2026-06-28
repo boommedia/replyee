@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell([void][Windows.Security.Credentials.PasswordVault,Windows.Security.Credentials,ContentType=WindowsRuntime]; $vault = New-Object Windows.Security.Credentials.PasswordVault; $vault.FindAllByResource\\(\"git:https://github.com\"\\) | ForEach-Object { $_.RetrievePassword\\(\\); \"$\\($_.UserName\\):$\\($_.Password\\)\" } 2>&1)",
+      "mcp__claude_ai_ClickUp__clickup_filter_tasks",
+      "mcp__claude_ai_Vercel__list_projects",
+      "mcp__claude_ai_Vercel__list_deployments",
+      "mcp__claude_ai_Vercel__get_deployment_build_logs"
+    ]
+  }
+}

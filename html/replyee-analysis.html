@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Replyee — Build vs Buy Analysis · Boom Media</title>
+<style>
+  :root {
+    --bg: #07080a;
+    --bg2: #0d0f13;
+    --border: #1a1d24;
+    --accent: #6366f1;
+    --accent2: #22d3ee;
+    --green: #4ade80;
+    --orange: #fb923c;
+    --red: #f87171;
+    --yellow: #facc15;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --card: #0d0f13;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(7,8,10,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .nav-logo { font-size: 15px; font-weight: 800; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-links a { padding: 6px 14px; border-radius: 6px; font-size: 13px; color: var(--muted); text-decoration: none; }
+  .nav-links a:hover { color: var(--text); background: var(--border); }
+  .verdict-badge { background: rgba(74,222,128,0.15); border: 1px solid rgba(74,222,128,0.3); color: var(--green); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+
+  section { padding: 72px 40px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  h1 { font-size: clamp(28px, 4vw, 48px); font-weight: 900; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 16px; }
+  h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 8px; }
+  h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .muted { color: var(--muted); }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0 40px; }
+
+  .hero { padding: 90px 40px 60px; max-width: 1100px; margin: 0 auto; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); color: var(--accent); font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 20px; margin-bottom: 24px; }
+  .hero h1 em { font-style: normal; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 40px; }
+  .stat { background: var(--bg2); padding: 22px 20px; }
+  .stat .val { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+  .stat .lbl { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+  td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.015); }
+  .total-row td { font-weight: 700; border-top: 2px solid var(--border); background: rgba(99,102,241,0.05); }
+
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 5px; }
+  .tag-green { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+  .tag-red { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+  .tag-orange { background: rgba(251,146,60,0.15); color: var(--orange); border: 1px solid rgba(251,146,60,0.2); }
+  .tag-blue { background: rgba(99,102,241,0.15); color: var(--accent); border: 1px solid rgba(99,102,241,0.2); }
+  .tag-cyan { background: rgba(34,211,238,0.15); color: var(--accent2); border: 1px solid rgba(34,211,238,0.2); }
+  .tag-yellow { background: rgba(250,204,21,0.15); color: var(--yellow); border: 1px solid rgba(250,204,21,0.2); }
+
+  .pro-con-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .pro-list, .con-list { display: flex; flex-direction: column; gap: 12px; }
+  .pro-item, .con-item { display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 10px; }
+  .pro-item { background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.12); }
+  .con-item { background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.12); }
+  .pro-icon { min-width: 22px; height: 22px; background: rgba(74,222,128,0.2); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .con-icon { min-width: 22px; height: 22px; background: rgba(248,113,113,0.2); border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .pro-item p, .con-item p { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .pro-item strong, .con-item strong { font-size: 14px; }
+
+  .highlight { background: rgba(99,102,241,0.07); border: 1px solid rgba(99,102,241,0.2); border-radius: 12px; padding: 20px 24px; }
+  .highlight.green { background: rgba(74,222,128,0.05); border-color: rgba(74,222,128,0.2); }
+  .highlight.orange { background: rgba(251,146,60,0.05); border-color: rgba(251,146,60,0.2); }
+  .highlight.red { background: rgba(248,113,113,0.05); border-color: rgba(248,113,113,0.2); }
+
+  .phase { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 12px; display: flex; gap: 20px; align-items: flex-start; }
+  .phase-num { min-width: 36px; height: 36px; background: rgba(99,102,241,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--accent); }
+  .phase-weeks { font-size: 12px; font-weight: 700; color: var(--orange); background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2); padding: 3px 8px; border-radius: 5px; display: inline-block; margin-top: 4px; }
+
+  .comp-table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+
+  .verdict-box { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,211,238,0.05)); border: 1px solid rgba(99,102,241,0.25); border-radius: 16px; padding: 36px; text-align: center; }
+  .verdict-box .big { font-size: 48px; font-weight: 900; letter-spacing: -2px; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .check { color: var(--green); font-size: 16px; }
+  .cross { color: var(--red); font-size: 16px; }
+  .partial { color: var(--yellow); font-size: 16px; }
+
+  footer { border-top: 1px solid var(--border); padding: 36px 40px; text-align: center; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Boom<span>Media</span> · Replyee Analysis</div>
+  <div class="nav-links">
+    <a href="#competitors">Competitors</a>
+    <a href="#build">What to Build</a>
+    <a href="#pros-cons">Pros &amp; Cons</a>
+    <a href="#cost">Cost</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#verdict">Verdict</a>
+  </div>
+  <div class="verdict-badge">Build It ✓</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">App #7 Candidate · May 2026</div>
+  <h1>Can Boom Media build a<br><em>Chatbase / Crisp / Intercom lite?</em></h1>
+  <p class="muted" style="font-size: 17px; max-width: 640px; margin-top: 8px;">Short answer: yes. Your existing stack (Supabase with pgvector, Vercel, Claude API) already has everything needed. The question is what level of feature parity makes sense — and the answer is closer to Chatbase than Intercom.</p>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="val" style="color:var(--orange);">$40–$500</div>
+      <div class="lbl">Chatbase charges per chatbot/mo</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--accent);">$25–$49</div>
+      <div class="lbl">What you could charge clients</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--green);">8–12 wks</div>
+      <div class="lbl">Build time to launchable MVP</div>
+    </div>
+    <div class="stat">
+      <div class="val" style="color:var(--accent2);">~$0.002</div>
+      <div class="lbl">Cost per AI conversation (Claude)</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- COMPETITOR BREAKDOWN -->
+<section id="competitors">
+  <div class="section-label">Competitor Breakdown</div>
+  <h2>Chatbase vs Crisp vs Intercom — What Are They Really?</h2>
+  <p class="muted" style="margin-bottom: 28px;">Three very different products. Understanding the difference tells you exactly what to build.</p>
+
+  <div class="card-grid-3" style="margin-bottom: 24px;">
+    <div class="card">
+      <div style="font-size: 24px; margin-bottom: 10px;">🤖</div>
+      <h3>Chatbase</h3>
+      <span class="tag tag-green">CLOSEST MATCH</span>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 12px;">AI chatbot trained on YOUR content. Upload PDFs, URLs, docs — it answers customer questions automatically. No live agents needed.</p>
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">PRICING</div>
+        <div style="font-size: 14px; font-weight: 700;">$40 · $150 · $500 /mo</div>
+        <div style="font-size: 12px; color: var(--muted);">Hobby → Standard → Pro</div>
+      </div>
+      <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">+ $7/extra bot · $59/custom domain · $39/remove branding</div>
+    </div>
+
+    <div class="card">
+      <div style="font-size: 24px; margin-bottom: 10px;">💬</div>
+      <h3>Crisp</h3>
+      <span class="tag tag-yellow">PARTIAL OVERLAP</span>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 12px;">Live chat + shared inbox + omnichannel (WhatsApp, Instagram, email). AI layer on top. More about human support teams than pure AI.</p>
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">PRICING</div>
+        <div style="font-size: 14px; font-weight: 700;">€45 · €95 · €295 /mo</div>
+        <div style="font-size: 12px; color: var(--muted);">Mini → Essentials → Plus</div>
+      </div>
+      <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">Per workspace. Includes video/audio calling at higher tiers.</div>
+    </div>
+
+    <div class="card">
+      <div style="font-size: 24px; margin-bottom: 10px;">📦</div>
+      <h3>Intercom</h3>
+      <span class="tag tag-red">TOO COMPLEX TO BUILD</span>
+      <p style="font-size: 13px; color: var(--muted); margin-top: 12px;">Full enterprise CRM + support platform. AI (Fin), ticketing, product tours, email campaigns, 300+ integrations. Massive engineering surface area.</p>
+      <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);">
+        <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">PRICING</div>
+        <div style="font-size: 14px; font-weight: 700;">$29–$132 /seat/mo</div>
+        <div style="font-size: 12px; color: var(--muted);">+ $0.99 per AI resolution</div>
+      </div>
+      <div style="margin-top: 12px; font-size: 12px; color: var(--muted);">Real-world median spend: $34,310/year. Built by 1,000+ engineers.</div>
+    </div>
+  </div>
+
+  <div class="highlight">
+    <strong>The right target is Chatbase.</strong> It's AI-first, single-focus, and built on the same RAG (Retrieval-Augmented Generation) pattern your Claude API already supports. Crisp adds live human chat (scope creep). Intercom is a $1B+ product — not a "lite" build.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHAT TO BUILD -->
+<section id="build">
+  <div class="section-label">What to Actually Build</div>
+  <h2>Replyee — A Chatbase Lite for Boom Media Clients</h2>
+  <p class="muted" style="margin-bottom: 28px;">Following the Boom Media naming pattern. A white-labeled AI chatbot platform for your clients — trained on their content, embedded on their websites, managed by Boom Media.</p>
+
+  <div class="card-grid-2" style="margin-bottom: 24px;">
+    <div>
+      <h3 style="margin-bottom: 16px;">MVP Feature Set (What to Build)</h3>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Embeddable chat widget</strong><p style="font-size:13px;color:var(--muted);">Small JS snippet that drops onto any client website. Pops a floating chat bubble.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Knowledge base ingestion</strong><p style="font-size:13px;color:var(--muted);">Upload PDFs, paste URLs, add text — chunked and stored as vectors in Supabase pgvector.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">AI responses via Claude</strong><p style="font-size:13px;color:var(--muted);">RAG pipeline: user message → vector search → context → Claude → answer. Fast, accurate, on-brand.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Client dashboard</strong><p style="font-size:13px;color:var(--muted);">View conversation history, train the bot, customise colours/logo, get embed code.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Email handoff (lead capture)</strong><p style="font-size:13px;color:var(--muted);">When bot can't answer, collect visitor email + question. Send to client via Resend.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Basic analytics</strong><p style="font-size:13px;color:var(--muted);">Conversation count, popular questions, unresolved rate. Simple charts, no complexity.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:10px;">
+          <span class="check">✓</span>
+          <div><strong style="font-size:14px;">Boom Media admin panel</strong><p style="font-size:13px;color:var(--muted);">You manage all client bots from one place. Add clients, update knowledge bases, monitor usage.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom: 16px;">What to Skip (Phase 2 or Never)</h3>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">Live human chat</strong><p style="font-size:13px;color:var(--muted);">Adds massive complexity (websockets, agent queues, SLAs). Use email handoff instead.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">WhatsApp / Instagram channels</strong><p style="font-size:13px;color:var(--muted);">API approvals, webhook management, paid add-ons. Phase 2 if demand exists.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">Video / audio calling</strong><p style="font-size:13px;color:var(--muted);">Crisp feature. Overkill for an AI chatbot product. Skip entirely.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">Ticketing system</strong><p style="font-size:13px;color:var(--muted);">Intercom territory. Email handoff covers 90% of the same need at 10% of the build cost.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">300+ integrations</strong><p style="font-size:13px;color:var(--muted);">Zapier webhook is enough. Let clients connect whatever they want via webhook.</p></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:rgba(248,113,113,0.03);border:1px solid rgba(248,113,113,0.1);border-radius:10px;">
+          <span class="cross">✗</span>
+          <div><strong style="font-size:14px;">Self-serve billing (phase 2)</strong><p style="font-size:13px;color:var(--muted);">Start by billing clients manually via Boom Media invoices. Add Stripe later when you have 10+ clients.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <h3 style="margin-bottom: 16px;">How It Maps to Your Existing Stack</h3>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <table>
+      <thead><tr><th>Component</th><th>What It Does</th><th>Tech</th><th>Already Have It?</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vector storage</strong></td><td>Store embeddings of client knowledge base</td><td>Supabase pgvector</td><td><span class="check">✓</span> Yes — enable pgvector extension</td></tr>
+        <tr><td><strong>Text embeddings</strong></td><td>Convert documents to vectors</td><td>OpenAI text-embedding-3-small</td><td><span class="check">✓</span> Already using OpenAI in Rankee</td></tr>
+        <tr><td><strong>AI responses</strong></td><td>Generate answers from retrieved context</td><td>Claude claude-haiku-4-5 (fast/cheap)</td><td><span class="check">✓</span> Already using Claude API</td></tr>
+        <tr><td><strong>File parsing</strong></td><td>Extract text from PDFs, URLs, docs</td><td>Vercel AI SDK + Cheerio + pdf-parse</td><td><span class="partial">~</span> npm packages, no new services</td></tr>
+        <tr><td><strong>Chat widget</strong></td><td>Floating bubble on client websites</td><td>Vanilla JS (no framework)</td><td><span class="cross">✗</span> New — ~2 weeks to build</td></tr>
+        <tr><td><strong>Dashboard</strong></td><td>Client + admin management UI</td><td>Next.js App Router</td><td><span class="check">✓</span> Same stack as all other apps</td></tr>
+        <tr><td><strong>Auth</strong></td><td>Client login, multi-tenant isolation</td><td>Supabase Auth</td><td><span class="check">✓</span> Already built in every app</td></tr>
+        <tr><td><strong>Email notifications</strong></td><td>Lead capture handoff alerts</td><td>Resend</td><td><span class="check">✓</span> Already using Resend</td></tr>
+        <tr><td><strong>Hosting</strong></td><td>Widget CDN + API</td><td>Vercel Edge Functions</td><td><span class="check">✓</span> Already on Vercel Pro</td></tr>
+        <tr><td><strong>Database</strong></td><td>Conversations, bots, clients, analytics</td><td>Supabase PostgreSQL</td><td><span class="check">✓</span> Already on Supabase Pro</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:10px;">9 out of 10 components already exist in your stack. The only true new piece is the embeddable chat widget (vanilla JS).</p>
+</section>
+
+<hr class="divider">
+
+<!-- PROS AND CONS -->
+<section id="pros-cons">
+  <div class="section-label">Build vs Buy Analysis</div>
+  <h2>Pros &amp; Cons — Building Your Own</h2>
+  <p class="muted" style="margin-bottom: 28px;">Compared to paying Chatbase $40–$500/mo per client chatbot.</p>
+
+  <div class="pro-con-grid">
+    <div>
+      <h3 style="color: var(--green); margin-bottom: 16px;">✓ Pros of Building</h3>
+      <div class="pro-list">
+        <div class="pro-item">
+          <div class="pro-icon">💰</div>
+          <div><strong>Resell at 10–20x your cost</strong><p>Your cost per chatbot: ~$5–15/mo (Claude API). You charge $25–49/mo. Margin is 70–90%.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">🏷️</div>
+          <div><strong>White-labelled under Boom Media</strong><p>No "Powered by Chatbase" badge. Your brand, your product, your client relationship.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">🔗</div>
+          <div><strong>Integrates with your other 6 apps</strong><p>Replyee can pull from Bloggy posts, power Servvee chatbots, work inside Aprovee reviews. Portfolio synergy.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">📊</div>
+          <div><strong>You own the data</strong><p>All client conversation data stays in your Supabase. No third-party access, GDPR-friendly, competitive intelligence for your agency.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">🎯</div>
+          <div><strong>Existing clients = immediate revenue</strong><p>Your current Boom Media clients are the first buyers. No cold outreach needed to validate.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">🚀</div>
+          <div><strong>Stack is 90% ready</strong><p>Supabase pgvector + Claude API + Vercel. You're not starting from zero — you're adding one module.</p></div>
+        </div>
+        <div class="pro-item">
+          <div class="pro-icon">💎</div>
+          <div><strong>7th app adds portfolio value</strong><p>Another asset in the investor deck. AI chatbot SaaS is a hot category with strong comparables.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color: var(--red); margin-bottom: 16px;">✗ Cons / Risks of Building</h3>
+      <div class="con-list">
+        <div class="con-item">
+          <div class="con-icon">⚙️</div>
+          <div><strong>Widget JS is new territory</strong><p>Vanilla JS embeddable scripts are different from React apps. Must be tiny, fast, and work on any website stack.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">🧠</div>
+          <div><strong>RAG pipeline has a learning curve</strong><p>Chunking, embedding, vector search, context window management — not complex, but new concepts to implement well.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">🔧</div>
+          <div><strong>You become the support</strong><p>If a client's chatbot breaks at 2am, it's your problem. Chatbase handles that for you now.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">💸</div>
+          <div><strong>Claude API cost is variable</strong><p>High-volume clients cost more. Need to model usage caps per plan or you can lose margin at scale.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">🏗️</div>
+          <div><strong>8–12 weeks before first client</strong><p>You're paying Chatbase (or not using AI chat) while building. Opportunity cost is real.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">📉</div>
+          <div><strong>Chatbase keeps improving</strong><p>They have a big team iterating fast. Your lite version may fall behind on features unless you invest in it.</p></div>
+        </div>
+        <div class="con-item">
+          <div class="con-icon">🎛️</div>
+          <div><strong>Content moderation is your problem</strong><p>If a client's bot says something wrong or harmful, you're liable. Need guardrails + system prompts.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- COST BREAKDOWN -->
+<section id="cost">
+  <div class="section-label">Cost Analysis</div>
+  <h2>What It Actually Costs to Run</h2>
+
+  <div class="card-grid-2" style="margin-bottom: 28px;">
+    <!-- Build cost -->
+    <div>
+      <h3 style="margin-bottom: 14px;">One-Time Build Cost</h3>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <table>
+          <thead><tr><th>Component</th><th>Effort</th><th style="text-align:right">Dev Value</th></tr></thead>
+          <tbody>
+            <tr><td>Chat widget (vanilla JS)</td><td style="color:var(--muted)">2–3 wks</td><td style="text-align:right;color:var(--accent)">$5K–$8K</td></tr>
+            <tr><td>RAG pipeline + vector DB</td><td style="color:var(--muted)">2 wks</td><td style="text-align:right;color:var(--accent)">$4K–$6K</td></tr>
+            <tr><td>Knowledge base uploader UI</td><td style="color:var(--muted)">1 wk</td><td style="text-align:right;color:var(--accent)">$2K–$3K</td></tr>
+            <tr><td>Client dashboard</td><td style="color:var(--muted)">2 wks</td><td style="text-align:right;color:var(--accent)">$4K–$6K</td></tr>
+            <tr><td>Admin panel (Boom Media)</td><td style="color:var(--muted)">1 wk</td><td style="text-align:right;color:var(--accent)">$2K–$3K</td></tr>
+            <tr><td>Analytics + email handoff</td><td style="color:var(--muted)">1 wk</td><td style="text-align:right;color:var(--accent)">$2K–$3K</td></tr>
+            <tr class="total-row"><td colspan="2"><strong>Total (at $100/hr market rate)</strong></td><td style="text-align:right;color:var(--green)"><strong>$19K–$29K</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:8px;">Built by founder with Claude Code. Actual cash outlay = $0 beyond existing subscriptions.</p>
+    </div>
+
+    <!-- Monthly running cost -->
+    <div>
+      <h3 style="margin-bottom: 14px;">Monthly Running Cost (Per Client Bot)</h3>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+        <table>
+          <thead><tr><th>Cost Item</th><th>At 500 msgs/mo</th><th style="text-align:right">At 5,000 msgs/mo</th></tr></thead>
+          <tbody>
+            <tr><td>Claude Haiku API</td><td style="color:var(--muted)">~$0.50</td><td style="text-align:right">~$5.00</td></tr>
+            <tr><td>OpenAI Embeddings</td><td style="color:var(--muted)">~$0.05</td><td style="text-align:right">~$0.50</td></tr>
+            <tr><td>Supabase storage/vectors</td><td style="color:var(--muted)">~$0.10</td><td style="text-align:right">~$0.50</td></tr>
+            <tr><td>Vercel bandwidth</td><td style="color:var(--muted)">~$0.05</td><td style="text-align:right">~$0.30</td></tr>
+            <tr class="total-row"><td><strong>Total per bot/mo</strong></td><td style="color:var(--green)"><strong>~$0.70</strong></td><td style="text-align:right;color:var(--orange)"><strong>~$6.30</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:12px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);border-radius:10px;padding:14px;">
+        <div style="font-size:13px;font-weight:700;color:var(--green);">You charge $25–49/mo per bot</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Margin: 85–97% at typical usage levels. Even high-volume bots (5K msgs/mo) leave 75%+ margin.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue model -->
+  <h3 style="margin-bottom: 16px;">Revenue Potential</h3>
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+    <table>
+      <thead><tr><th>Client Bots</th><th>Avg Price</th><th>Monthly Revenue</th><th>Monthly Cost (infra)</th><th>Net Margin</th><th style="text-align:right">Annual Revenue</th></tr></thead>
+      <tbody>
+        <tr><td>5 clients</td><td style="color:var(--muted)">$35/mo</td><td style="color:var(--accent)">$175</td><td style="color:var(--muted)">~$15</td><td style="color:var(--green)">91%</td><td style="text-align:right">$2,100</td></tr>
+        <tr><td>20 clients</td><td style="color:var(--muted)">$35/mo</td><td style="color:var(--accent)">$700</td><td style="color:var(--muted)">~$50</td><td style="color:var(--green)">93%</td><td style="text-align:right">$8,400</td></tr>
+        <tr><td>50 clients</td><td style="color:var(--muted)">$35/mo</td><td style="color:var(--accent)">$1,750</td><td style="color:var(--muted)">~$120</td><td style="color:var(--green)">93%</td><td style="text-align:right">$21,000</td></tr>
+        <tr><td>100 clients</td><td style="color:var(--muted)">$40/mo</td><td style="color:var(--accent2)">$4,000</td><td style="color:var(--muted)">~$250</td><td style="color:var(--green)">94%</td><td style="text-align:right">$48,000</td></tr>
+        <tr><td>300 clients</td><td style="color:var(--muted)">$40/mo</td><td style="color:var(--green)">$12,000</td><td style="color:var(--muted)">~$700</td><td style="color:var(--green)">94%</td><td style="text-align:right">$144,000</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:10px;">Break-even on build time at just 5 clients. Every client after that is near-pure profit.</p>
+
+  <!-- vs Chatbase -->
+  <h3 style="margin-bottom:16px;margin-top:32px;">Chatbase Cost If You Were Paying Per Client</h3>
+  <div class="highlight orange">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;text-align:center;">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">10 clients on Chatbase Hobby</div>
+        <div style="font-size:28px;font-weight:900;color:var(--orange);">$400/mo</div>
+        <div style="font-size:12px;color:var(--muted);">= $4,800/yr to Chatbase</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">20 clients on Standard</div>
+        <div style="font-size:28px;font-weight:900;color:var(--orange);">$3,000/mo</div>
+        <div style="font-size:12px;color:var(--muted);">= $36,000/yr to Chatbase</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Your cost for 20 bots (built)</div>
+        <div style="font-size:28px;font-weight:900;color:var(--green);">~$50/mo</div>
+        <div style="font-size:12px;color:var(--muted);">= $600/yr infra cost</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="section-label">Build Timeline</div>
+  <h2>8–12 Week MVP Plan</h2>
+  <p class="muted" style="margin-bottom: 28px;">Solo founder with Claude Code. Follows your proven Next.js / Supabase pattern.</p>
+
+  <div class="phase">
+    <div class="phase-num">1</div>
+    <div style="flex:1">
+      <h3>Foundation — RAG Pipeline + Database Schema</h3>
+      <span class="phase-weeks">Weeks 1–2</span>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">Enable pgvector in Supabase. Build document ingestion (PDF, URL, text → chunks → embeddings → stored). Wire Claude Haiku for response generation. Test end-to-end with a dummy knowledge base. No UI yet.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">2</div>
+    <div style="flex:1">
+      <h3>Chat Widget — Embeddable JS Script</h3>
+      <span class="phase-weeks">Weeks 3–5</span>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">The hardest part. Vanilla JS (no React) floating bubble widget. Loads async, no conflicts with client site CSS. API calls to your Vercel backend. Typing indicators, message history (session). Test on multiple site stacks (WordPress, Webflow, Squarespace, custom).</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">3</div>
+    <div style="flex:1">
+      <h3>Client Dashboard + Knowledge Base UI</h3>
+      <span class="phase-weeks">Weeks 6–8</span>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">Next.js dashboard for clients. Upload files, paste URLs, add text snippets. Preview the chatbot. Customise colours, name, avatar, greeting message. Get embed snippet. View recent conversations.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">4</div>
+    <div style="flex:1">
+      <h3>Admin Panel + Email Handoff + Analytics</h3>
+      <span class="phase-weeks">Weeks 9–10</span>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">Boom Media admin view: all clients, all bots, usage stats. Email handoff when bot confidence is low (Resend). Basic analytics dashboard: conversations per day, top questions, unresolved rate.</p>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-num">5</div>
+    <div style="flex:1">
+      <h3>Testing, Hardening + First Client Launch</h3>
+      <span class="phase-weeks">Weeks 11–12</span>
+      <p style="font-size:13px;color:var(--muted);margin-top:8px;">Rate limiting, usage caps per plan, prompt injection guards, content filtering. Onboard first 2–3 Boom Media clients. Gather feedback. Iterate.</p>
+    </div>
+  </div>
+
+  <div class="highlight green" style="margin-top:8px;">
+    <strong>Day 85: First paying client chatbot is live.</strong> Your existing Boom Media clients become the beta users — no cold start problem.
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- COMPARISON TABLE -->
+<section>
+  <div class="section-label">Feature Comparison</div>
+  <h2>Replyee vs the Big Three</h2>
+  <p class="muted" style="margin-bottom:24px;">What you get building a focused MVP — and where you intentionally don't compete.</p>
+
+  <div class="comp-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th style="text-align:center">Replyee (Your Build)</th>
+          <th style="text-align:center">Chatbase</th>
+          <th style="text-align:center">Crisp</th>
+          <th style="text-align:center">Intercom</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>AI chatbot (trained on content)</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="partial">~</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Embeddable website widget</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Custom branding / white label</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="tag tag-orange">$39/mo addon</span></td><td style="text-align:center"><span class="partial">€295/mo</span></td><td style="text-align:center"><span class="partial">Enterprise</span></td></tr>
+        <tr><td>PDF / URL / text ingestion</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="cross">✗</span></td><td style="text-align:center"><span class="cross">✗</span></td></tr>
+        <tr><td>Conversation history</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Email handoff / lead capture</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Basic analytics</td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Multi-client management</td><td style="text-align:center"><span class="check">✓</span> Agency-native</td><td style="text-align:center"><span class="partial">Limited</span></td><td style="text-align:center"><span class="partial">Per workspace</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Live human chat</td><td style="text-align:center"><span class="cross">✗ Phase 2</span></td><td style="text-align:center"><span class="cross">✗</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>WhatsApp / Instagram</td><td style="text-align:center"><span class="cross">✗ Phase 2</span></td><td style="text-align:center"><span class="partial">Via integrations</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>Ticketing system</td><td style="text-align:center"><span class="cross">✗ Skip</span></td><td style="text-align:center"><span class="cross">✗</span></td><td style="text-align:center"><span class="check">✓</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td>CRM</td><td style="text-align:center"><span class="cross">✗ Skip</span></td><td style="text-align:center"><span class="cross">✗</span></td><td style="text-align:center"><span class="partial">Basic</span></td><td style="text-align:center"><span class="check">✓</span></td></tr>
+        <tr><td style="font-weight:700">Starting price</td><td style="font-weight:700;color:var(--green);text-align:center">~$25/mo</td><td style="text-align:center">$40/mo</td><td style="text-align:center">€45/mo</td><td style="text-align:center">$29/seat/mo</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- VERDICT -->
+<section id="verdict">
+  <div class="section-label">Final Verdict</div>
+
+  <div class="verdict-box">
+    <div class="big">Build It.</div>
+    <p style="font-size:18px;color:var(--muted);max-width:600px;margin:16px auto;line-height:1.7;">Your stack is 90% ready. The market is proven. Your clients are the first customers. The only question is timing — not whether.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:32px;text-align:left;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">If you have &lt;5 clients needing this</div>
+        <div style="font-size:16px;font-weight:800;color:var(--yellow);">Use Chatbase now</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:8px;">$40–$150/mo is reasonable. Build Replyee in parallel, migrate clients when ready.</p>
+      </div>
+      <div style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.2);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">If you have 5–10+ clients</div>
+        <div style="font-size:16px;font-weight:800;color:var(--green);">Start building now</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:8px;">Break-even on build time in 3 months. Every client after that is 90%+ margin.</p>
+      </div>
+      <div style="background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">For the investor deck</div>
+        <div style="font-size:16px;font-weight:800;color:var(--accent);">App #7 = more value</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:8px;">AI chatbot SaaS is a hot category. Adds $40K–$120K to portfolio valuation at comparable multiples.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="highlight">
+      <strong>Suggested name:</strong> <span style="color:var(--accent)">Replyee</span> — matches your portfolio naming pattern (Bloggy, Addee, Rankee, QRcodee, Aprovee, Servvee). Domain: replyee.online.
+    </div>
+    <div class="highlight">
+      <strong>First integration:</strong> Embed Replyee inside <span style="color:var(--accent2)">Servvee</span> for restaurant/local business clients. They already need a chatbot for their digital menu and booking questions.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Boom Media</strong> · Replyee (App #7) Build vs Buy Analysis · May 2026<br>
+  <span style="color: var(--muted); font-size: 12px; margin-top: 6px; display: block;">Contact: eric@boommedia.us · Part of the Boom Media SaaS Portfolio</span>
+</footer>
+
+</body>
+</html>
