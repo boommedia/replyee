@@ -1,3 +1,5 @@
+> ⚠️ **SUPERSEDED 2026-07-06** — Phase 1 was committed + deployed-ready long ago (plus Stripe billing, daily digest cron, BOO order-status). Current status: `.md/BOUNDARIES_AND_BOO_STATUS.md`. Kept for the migration/E2E checklists only.
+
 # Replyee — Phase 1 Deploy Status
 > Last updated: 2026-06-13 | Ready to deploy — code complete, 3 steps to live
 
