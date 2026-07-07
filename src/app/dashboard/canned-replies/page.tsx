@@ -69,22 +69,22 @@ export default function CannedRepliesPage() {
     }
   }
 
-  const CARD = { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }
-  const INPUT = { background: '#0a0c12', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 12px', color: '#e2e8f0', outline: 'none', fontFamily: 'inherit' }
+  const CARD = { background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 24 }
+  const INPUT = { background: '#0a0c12', border: '1px solid #262631', borderRadius: 8, padding: '10px 12px', color: '#ECECF1', outline: 'none', fontFamily: 'inherit' }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Canned Replies</h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Agent shortcuts for common responses.</p>
+          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>Canned Replies</h1>
+          <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>Agent shortcuts for common responses.</p>
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 28 }}>
         {/* Add form */}
         <div style={CARD}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 16 }}>Add Canned Reply</h2>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 16 }}>Add Canned Reply</h2>
           <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <input
               type="text"
@@ -105,7 +105,7 @@ export default function CannedRepliesPage() {
               type="submit"
               disabled={creating}
               style={{
-                background: '#6366f1',
+                background: '#8b7bf0',
                 color: '#fff',
                 border: 'none',
                 borderRadius: 8,
@@ -123,22 +123,22 @@ export default function CannedRepliesPage() {
 
         {/* List */}
         <div style={CARD}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 16 }}>Your Replies</h2>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 16 }}>Your Replies</h2>
           {loading ? (
-            <p style={{ color: '#64748b', fontSize: 13 }}>Loading...</p>
+            <p style={{ color: '#8B8B99', fontSize: 13 }}>Loading...</p>
           ) : replies.length === 0 ? (
-            <p style={{ color: '#64748b', fontSize: 13 }}>No canned replies yet. Create one to get started!</p>
+            <p style={{ color: '#8B8B99', fontSize: 13 }}>No canned replies yet. Create one to get started!</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {replies.map(r => (
                 <div key={r.id} style={{ background: '#0a0c12', borderRadius: 8, padding: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div>
-                    <div style={{ color: '#6366f1', fontWeight: 700, fontSize: 12 }}>{r.shortcut}</div>
+                    <div style={{ color: '#8b7bf0', fontWeight: 700, fontSize: 12 }}>{r.shortcut}</div>
                     <div style={{ color: '#94a3b8', fontSize: 12, marginTop: 4, lineHeight: 1.4, maxWidth: 200 }}>{r.body}</div>
                   </div>
                   <button
                     onClick={() => handleDelete(r.id)}
-                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', padding: 4 }}
+                    style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#8B8B99', padding: 4 }}
                     title="Delete"
                   >
                     <Trash2 size={16} />

@@ -25,9 +25,9 @@ interface Message {
 }
 
 const MODE_BADGE: Record<string, { label: string; color: string; bg: string }> = {
-  bot:    { label: 'Bot',    color: '#22d3ee', bg: 'rgba(34,211,238,.1)' },
+  bot:    { label: 'Bot',    color: '#a99bf5', bg: 'rgba(34,211,238,.1)' },
   human:  { label: 'Live',   color: '#4ade80', bg: 'rgba(74,222,128,.12)' },
-  closed: { label: 'Closed', color: '#64748b', bg: 'rgba(100,116,139,.12)' },
+  closed: { label: 'Closed', color: '#8B8B99', bg: 'rgba(100,116,139,.12)' },
 }
 
 interface CannedReply { id: string; shortcut: string; body: string }
@@ -204,14 +204,14 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
     }
   }
 
-  const panel = { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14 }
+  const panel = { background: '#141419', border: '1px solid #262631', borderRadius: 14 }
 
   if (bots.length === 0) {
     return (
       <div style={{ ...panel, padding: '64px 40px', textAlign: 'center' }}>
-        <MessagesSquare size={40} style={{ color: '#6366f1', margin: '0 auto 16px', display: 'block' }} />
-        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>No chatbots yet</h2>
-        <p style={{ color: '#64748b', fontSize: 14 }}>Create a chatbot first — live conversations will appear here.</p>
+        <MessagesSquare size={40} style={{ color: '#8b7bf0', margin: '0 auto 16px', display: 'block' }} />
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: '#ECECF1', marginBottom: 8 }}>No chatbots yet</h2>
+        <p style={{ color: '#8B8B99', fontSize: 14 }}>Create a chatbot first — live conversations will appear here.</p>
       </div>
     )
   }
@@ -221,7 +221,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
       {/* Conversation list */}
       <div style={{ ...panel, overflowY: 'auto' }}>
         {conversations.length === 0 ? (
-          <p style={{ color: '#64748b', fontSize: 13, padding: 20, textAlign: 'center' }}>
+          <p style={{ color: '#8B8B99', fontSize: 13, padding: 20, textAlign: 'center' }}>
             No active conversations. They appear here the moment a visitor messages one of your bots.
           </p>
         ) : conversations.map(c => {
@@ -234,16 +234,16 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
               onClick={() => selectConversation(c)}
               style={{
                 display: 'block', width: '100%', textAlign: 'left', padding: '12px 14px',
-                background: active ? 'rgba(99,102,241,.08)' : 'transparent',
-                border: 'none', borderBottom: '1px solid #1a2035',
-                borderLeft: active ? '2px solid #6366f1' : '2px solid transparent', cursor: 'pointer',
+                background: active ? 'rgba(139,123,240,.08)' : 'transparent',
+                border: 'none', borderBottom: '1px solid #262631',
+                borderLeft: active ? '2px solid #8b7bf0' : '2px solid transparent', cursor: 'pointer',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99, color: badge.color, background: badge.bg }}>
                   {badge.label}
                 </span>
-                <span style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: 12, color: '#ECECF1', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {bot?.name ?? 'Bot'}
                 </span>
                 {c.unread_by_agent > 0 && (
@@ -252,7 +252,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: 11, color: '#64748b' }}>
+              <div style={{ fontSize: 11, color: '#8B8B99' }}>
                 {c.visitor_email ?? 'Anonymous visitor'} · {c.last_message_at ? new Date(c.last_message_at).toLocaleString() : new Date(c.updated_at).toLocaleString()}
               </div>
             </button>
@@ -264,25 +264,25 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
       <div style={{ ...panel, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         {!selected ? (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 10 }}>
-            <Headset size={36} style={{ color: '#6366f1' }} />
-            <p style={{ color: '#64748b', fontSize: 14 }}>Select a conversation to view and reply</p>
+            <Headset size={36} style={{ color: '#8b7bf0' }} />
+            <p style={{ color: '#8B8B99', fontSize: 14 }}>Select a conversation to view and reply</p>
           </div>
         ) : (
           <>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: '1px solid #1a2035', flexShrink: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0', flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: '1px solid #262631', flexShrink: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#ECECF1', flex: 1, minWidth: 0 }}>
                 {botMap.get(selected.chatbot_id)?.name ?? 'Bot'} · {selected.visitor_email ?? 'Anonymous visitor'}
               </div>
               {selected.mode !== 'human' ? (
-                <button onClick={() => setMode(selected, 'human')} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '7px 14px', borderRadius: 8, border: 'none', background: '#6366f1', color: '#fff', cursor: 'pointer' }}>
+                <button onClick={() => setMode(selected, 'human')} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, padding: '7px 14px', borderRadius: 8, border: 'none', background: '#8b7bf0', color: '#fff', cursor: 'pointer' }}>
                   <Headset size={13} /> Take over
                 </button>
               ) : (
-                <button onClick={() => setMode(selected, 'bot')} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 8, border: '1px solid #1a2035', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}>
+                <button onClick={() => setMode(selected, 'bot')} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 14px', borderRadius: 8, border: '1px solid #262631', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}>
                   <RotateCcw size={13} /> Release to bot
                 </button>
               )}
-              <button onClick={() => { setMode(selected, 'closed'); setSelected(null) }} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 12px', borderRadius: 8, border: '1px solid #1a2035', background: 'transparent', color: '#64748b', cursor: 'pointer' }}>
+              <button onClick={() => { setMode(selected, 'closed'); setSelected(null) }} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 600, padding: '7px 12px', borderRadius: 8, border: '1px solid #262631', background: 'transparent', color: '#8B8B99', cursor: 'pointer' }}>
                 <XCircle size={13} /> Close
               </button>
             </div>
@@ -290,7 +290,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
             {orderCtx && (
               <div style={{ margin: '0 16px 0', padding: '10px 14px', background: 'rgba(251,191,36,.06)', border: '1px solid rgba(251,191,36,.2)', borderRadius: 10, display: 'flex', alignItems: 'flex-start', gap: 10, flexShrink: 0 }}>
                 <ShoppingBag size={14} style={{ color: '#fbbf24', flexShrink: 0, marginTop: 2 }} />
-                <div style={{ fontSize: 12, color: '#e2e8f0', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 12, color: '#ECECF1', lineHeight: 1.6 }}>
                   {orderCtx.orderId && <span style={{ fontWeight: 700, color: '#fbbf24', marginRight: 6 }}>Order #{String(orderCtx.orderId).slice(0, 8)}</span>}
                   {orderCtx.status && <span style={{ color: '#94a3b8', marginRight: 8 }}>{String(orderCtx.status)}</span>}
                   {Array.isArray(orderCtx.items) && orderCtx.items.length > 0 && (
@@ -310,25 +310,25 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                 return (
                   <div key={m.id} style={{ display: 'flex', gap: 8, justifyContent: mine ? 'flex-end' : 'flex-start' }}>
                     {!mine && (
-                      <div style={{ width: 26, height: 26, background: '#1a2035', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
-                        <User size={12} color="#64748b" />
+                      <div style={{ width: 26, height: 26, background: '#262631', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
+                        <User size={12} color="#8B8B99" />
                       </div>
                     )}
                     <div style={{
                       maxWidth: '70%',
-                      background: !mine ? '#11151f' : isAgent ? 'rgba(74,222,128,.1)' : 'rgba(99,102,241,.12)',
-                      border: `1px solid ${!mine ? '#1a2035' : isAgent ? 'rgba(74,222,128,.25)' : 'rgba(99,102,241,.2)'}`,
+                      background: !mine ? '#11151f' : isAgent ? 'rgba(74,222,128,.1)' : 'rgba(139,123,240,.12)',
+                      border: `1px solid ${!mine ? '#262631' : isAgent ? 'rgba(74,222,128,.25)' : 'rgba(139,123,240,.2)'}`,
                       borderRadius: mine ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                       padding: '9px 13px',
                     }}>
-                      <p style={{ fontSize: 13, color: '#e2e8f0', margin: 0, lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>{m.content}</p>
-                      <div style={{ fontSize: 10, color: '#64748b', marginTop: 5, textAlign: mine ? 'right' : 'left' }}>
+                      <p style={{ fontSize: 13, color: '#ECECF1', margin: 0, lineHeight: 1.55, whiteSpace: 'pre-wrap' }}>{m.content}</p>
+                      <div style={{ fontSize: 10, color: '#8B8B99', marginTop: 5, textAlign: mine ? 'right' : 'left' }}>
                         {isAgent ? 'You' : m.role === 'assistant' ? 'AI' : 'Visitor'} · {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                     {mine && (
-                      <div style={{ width: 26, height: 26, background: isAgent ? 'rgba(74,222,128,.15)' : 'rgba(99,102,241,.2)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
-                        {isAgent ? <Headset size={12} color="#4ade80" /> : <BotIcon size={12} color="#6366f1" />}
+                      <div style={{ width: 26, height: 26, background: isAgent ? 'rgba(74,222,128,.15)' : 'rgba(139,123,240,.2)', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 3 }}>
+                        {isAgent ? <Headset size={12} color="#4ade80" /> : <BotIcon size={12} color="#8b7bf0" />}
                       </div>
                     )}
                   </div>
@@ -339,11 +339,11 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
 
             <div style={{ position: 'relative' }}>
               {visitorTyping && (
-                <div style={{ padding: '8px 14px', fontSize: 12, color: '#94a3b8', background: '#11151f', borderBottom: '1px solid #1a2035', fontStyle: 'italic' }}>
+                <div style={{ padding: '8px 14px', fontSize: 12, color: '#94a3b8', background: '#11151f', borderBottom: '1px solid #262631', fontStyle: 'italic' }}>
                   Visitor is typing…
                 </div>
               )}
-              <div style={{ display: 'flex', gap: 8, padding: '12px 14px', borderTop: '1px solid #1a2035', flexShrink: 0 }}>
+              <div style={{ display: 'flex', gap: 8, padding: '12px 14px', borderTop: '1px solid #262631', flexShrink: 0 }}>
                 <div style={{ position: 'relative', flex: 1 }}>
                   <input
                     ref={replyInputRef}
@@ -362,10 +362,10 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                       }
                     }}
                     placeholder={selected.mode === 'human' ? 'Reply to the visitor… (type / for shortcuts)' : 'Type to take over from the bot…'}
-                    style={{ width: '100%', background: '#11151f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#e2e8f0', outline: 'none' }}
+                    style={{ width: '100%', background: '#11151f', border: '1px solid #262631', borderRadius: 8, padding: '10px 13px', fontSize: 13, color: '#ECECF1', outline: 'none' }}
                   />
                   {showCannedDropdown && cannedReplies.length > 0 && (
-                    <div style={{ position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#0a0c12', border: '1px solid #1a2035', borderRadius: 8, maxHeight: 200, overflowY: 'auto', zIndex: 10, marginBottom: 4 }}>
+                    <div style={{ position: 'absolute', bottom: '100%', left: 0, right: 0, background: '#0a0c12', border: '1px solid #262631', borderRadius: 8, maxHeight: 200, overflowY: 'auto', zIndex: 10, marginBottom: 4 }}>
                       {cannedReplies.map(cr => (
                         <button
                           key={cr.id}
@@ -374,9 +374,9 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
                             setShowCannedDropdown(false)
                             setTimeout(() => replyInputRef.current?.focus(), 0)
                           }}
-                          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', background: 'transparent', border: 'none', borderBottom: '1px solid #1a2035', cursor: 'pointer', color: '#e2e8f0' }}
+                          style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 14px', background: 'transparent', border: 'none', borderBottom: '1px solid #262631', cursor: 'pointer', color: '#ECECF1' }}
                         >
-                          <div style={{ fontSize: 12, fontWeight: 700, color: '#6366f1' }}>{cr.shortcut}</div>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: '#8b7bf0' }}>{cr.shortcut}</div>
                           <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{cr.body}</div>
                         </button>
                       ))}
@@ -386,7 +386,7 @@ export default function InboxClient({ bots }: { bots: Bot[] }) {
               <button
                 onClick={sendReply}
                 disabled={sending || !reply.trim()}
-                style={{ width: 40, borderRadius: 8, border: 'none', background: '#6366f1', color: '#fff', cursor: sending ? 'default' : 'pointer', opacity: sending || !reply.trim() ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ width: 40, borderRadius: 8, border: 'none', background: '#8b7bf0', color: '#fff', cursor: sending ? 'default' : 'pointer', opacity: sending || !reply.trim() ? 0.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 aria-label="Send reply"
               >
                 <Send size={15} />

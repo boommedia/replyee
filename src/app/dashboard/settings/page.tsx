@@ -115,20 +115,20 @@ export default function SettingsPage() {
   const botPct   = limits.bots < 999 ? Math.min(Math.round((botCount / limits.bots) * 100), 100) : 0
 
   const S = {
-    card:   { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 },
+    card:   { background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 24 },
     label:  { fontSize: 13, fontWeight: 600 as const, color: '#cbd5e1', display: 'block' as const, marginBottom: 6 },
-    input:  { width: '100%', background: '#07080f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#e2e8f0', outline: 'none' },
+    input:  { width: '100%', background: '#0B0B0F', border: '1px solid #262631', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#ECECF1', outline: 'none' },
     group:  { marginBottom: 20 },
-    btn:    { background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 13, padding: '10px 22px', borderRadius: 8, border: 'none', cursor: 'pointer' },
-    track:  { height: 5, background: '#1a2035', borderRadius: 99, overflow: 'hidden', marginTop: 6 },
-    fill:   (pct: number) => ({ width: `${pct}%`, height: '100%', background: '#6366f1', borderRadius: 99 }),
+    btn:    { background: '#8b7bf0', color: '#fff', fontWeight: 700, fontSize: 13, padding: '10px 22px', borderRadius: 8, border: 'none', cursor: 'pointer' },
+    track:  { height: 5, background: '#262631', borderRadius: 99, overflow: 'hidden', marginTop: 6 },
+    fill:   (pct: number) => ({ width: `${pct}%`, height: '100%', background: '#8b7bf0', borderRadius: 99 }),
   }
 
   return (
     <div>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Account Settings</h1>
-        <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Manage your profile and billing.</p>
+        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>Account Settings</h1>
+        <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>Manage your profile and billing.</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
@@ -136,8 +136,8 @@ export default function SettingsPage() {
           {/* Profile */}
           <div style={S.card}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-              <User size={16} style={{ color: '#6366f1' }} />
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Profile</span>
+              <User size={16} style={{ color: '#8b7bf0' }} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Profile</span>
             </div>
             <form onSubmit={saveProfile}>
               <div style={S.group}>
@@ -146,7 +146,7 @@ export default function SettingsPage() {
               </div>
               <div style={S.group}>
                 <label style={S.label}>Email</label>
-                <input style={{ ...S.input, color: '#64748b' }} value={profile.email} readOnly />
+                <input style={{ ...S.input, color: '#8B8B99' }} value={profile.email} readOnly />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <button type="submit" disabled={saving} style={{ ...S.btn, opacity: saving ? 0.7 : 1 }}>
@@ -160,14 +160,14 @@ export default function SettingsPage() {
           {/* BOO Integration — User ID */}
           <div style={S.card}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <Link size={16} style={{ color: '#6366f1' }} />
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Boom Online Ordering</span>
+              <Link size={16} style={{ color: '#8b7bf0' }} />
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Boom Online Ordering</span>
             </div>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 14, lineHeight: 1.6 }}>
+            <p style={{ fontSize: 13, color: '#8B8B99', marginBottom: 14, lineHeight: 1.6 }}>
               To connect Replyee to your BOO restaurant portal, copy your Replyee User ID and paste it into the BOO portal under Connected Apps → Replyee.
             </p>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <code style={{ flex: 1, background: '#07080f', border: '1px solid #1a2035', borderRadius: 7, padding: '9px 12px', fontSize: 12, color: '#94a3b8', wordBreak: 'break-all' }}>
+              <code style={{ flex: 1, background: '#0B0B0F', border: '1px solid #262631', borderRadius: 7, padding: '9px 12px', fontSize: 12, color: '#94a3b8', wordBreak: 'break-all' }}>
                 {userId || '…'}
               </code>
               <button onClick={copyUserId} style={{ ...S.btn, padding: '9px 14px', flexShrink: 0 }}>
@@ -178,7 +178,7 @@ export default function SettingsPage() {
 
           {/* Password */}
           <div style={S.card}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', marginBottom: 16 }}>Change Password</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1', marginBottom: 16 }}>Change Password</div>
             <form onSubmit={changePassword}>
               <div style={S.group}>
                 <label style={S.label}>New Password</label>
@@ -197,9 +197,9 @@ export default function SettingsPage() {
           <div style={{ ...S.card, borderColor: 'rgba(239,68,68,.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <AlertTriangle size={16} style={{ color: '#ef4444' }} />
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Danger Zone</span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Danger Zone</span>
             </div>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Permanently delete your account and all chatbots.</p>
+            <p style={{ fontSize: 13, color: '#8B8B99', marginBottom: 16 }}>Permanently delete your account and all chatbots.</p>
             {!deleteConfirm ? (
               <button onClick={() => setDeleteConfirm(true)} style={{ background: 'rgba(239,68,68,.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,.3)', fontSize: 13, fontWeight: 700, padding: '8px 18px', borderRadius: 8, cursor: 'pointer' }}>
                 Delete Account
@@ -210,7 +210,7 @@ export default function SettingsPage() {
                 <button onClick={deleteAccount} style={{ background: '#ef4444', color: '#fff', fontSize: 13, fontWeight: 700, padding: '6px 16px', borderRadius: 7, border: 'none', cursor: 'pointer' }}>
                   Yes, delete
                 </button>
-                <button onClick={() => setDeleteConfirm(false)} style={{ background: 'transparent', color: '#64748b', fontSize: 13, padding: '6px 12px', border: '1px solid #1a2035', borderRadius: 7, cursor: 'pointer' }}>
+                <button onClick={() => setDeleteConfirm(false)} style={{ background: 'transparent', color: '#8B8B99', fontSize: 13, padding: '6px 12px', border: '1px solid #262631', borderRadius: 7, cursor: 'pointer' }}>
                   Cancel
                 </button>
               </div>
@@ -221,22 +221,22 @@ export default function SettingsPage() {
         {/* Billing */}
         <div style={S.card}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20 }}>
-            <CreditCard size={16} style={{ color: '#6366f1' }} />
-            <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Billing</span>
+            <CreditCard size={16} style={{ color: '#8b7bf0' }} />
+            <span style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Billing</span>
           </div>
 
-          <div style={{ background: 'rgba(99,102,241,.08)', border: '1px solid rgba(99,102,241,.2)', borderRadius: 10, padding: '16px 18px', marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 4 }}>Current Plan</div>
-            <div style={{ fontSize: 22, fontWeight: 900, color: '#6366f1', textTransform: 'capitalize' }}>{profile.plan}</div>
-            <div style={{ fontSize: 13, color: '#64748b', marginTop: 4 }}>
+          <div style={{ background: 'rgba(139,123,240,.08)', border: '1px solid rgba(139,123,240,.2)', borderRadius: 10, padding: '16px 18px', marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: '#8B8B99', marginBottom: 4 }}>Current Plan</div>
+            <div style={{ fontSize: 22, fontWeight: 900, color: '#8b7bf0', textTransform: 'capitalize' }}>{profile.plan}</div>
+            <div style={{ fontSize: 13, color: '#8B8B99', marginTop: 4 }}>
               {profile.plan === 'starter' ? '$25/month' : profile.plan === 'growth' ? '$49/month' : profile.plan === 'agency' ? '$99/month' : '14-day free trial'}
             </div>
           </div>
 
           <div style={{ marginBottom: 16 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#64748b' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8B8B99' }}>
               <span>Conversations</span>
-              <span style={{ color: '#e2e8f0' }}>
+              <span style={{ color: '#ECECF1' }}>
                 {convoCount.toLocaleString()} / {limits.convos ? limits.convos.toLocaleString() : '∞'}
               </span>
             </div>
@@ -244,9 +244,9 @@ export default function SettingsPage() {
           </div>
 
           <div style={{ marginBottom: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#64748b' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: '#8B8B99' }}>
               <span>Chatbots</span>
-              <span style={{ color: '#e2e8f0' }}>{botCount} / {limits.bots < 999 ? limits.bots : '∞'}</span>
+              <span style={{ color: '#ECECF1' }}>{botCount} / {limits.bots < 999 ? limits.bots : '∞'}</span>
             </div>
             {limits.bots < 999 && <div style={S.track}><div style={S.fill(botPct)} /></div>}
           </div>
@@ -258,10 +258,10 @@ export default function SettingsPage() {
           )}
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <button onClick={openPortal} disabled={portalLoading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 13, padding: '11px', borderRadius: 8, border: 'none', cursor: portalLoading ? 'not-allowed' : 'pointer', opacity: portalLoading ? 0.7 : 1 }}>
+            <button onClick={openPortal} disabled={portalLoading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#8b7bf0', color: '#fff', fontWeight: 700, fontSize: 13, padding: '11px', borderRadius: 8, border: 'none', cursor: portalLoading ? 'not-allowed' : 'pointer', opacity: portalLoading ? 0.7 : 1 }}>
               {portalLoading ? 'Loading…' : 'Manage Billing / Cancel'}
             </button>
-            <button onClick={() => setShowUpgrade(v => !v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: 'transparent', color: '#6366f1', fontWeight: 600, fontSize: 13, padding: '11px', borderRadius: 8, border: '1px solid rgba(99,102,241,.3)', cursor: 'pointer' }}>
+            <button onClick={() => setShowUpgrade(v => !v)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, background: 'transparent', color: '#8b7bf0', fontWeight: 600, fontSize: 13, padding: '11px', borderRadius: 8, border: '1px solid rgba(139,123,240,.3)', cursor: 'pointer' }}>
               Upgrade Plan <ChevronDown size={14} style={{ transform: showUpgrade ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />
             </button>
           </div>
@@ -269,17 +269,17 @@ export default function SettingsPage() {
           {showUpgrade && (
             <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
               {UPGRADE_PLANS.map(p => (
-                <div key={p.id} style={{ background: '#07080f', border: `1px solid ${p.id === profile.plan ? 'rgba(99,102,241,.5)' : '#1a2035'}`, borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div key={p.id} style={{ background: '#0B0B0F', border: `1px solid ${p.id === profile.plan ? 'rgba(139,123,240,.5)' : '#262631'}`, borderRadius: 10, padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 2 }}>{p.label} — {p.price}</div>
-                    <div style={{ fontSize: 12, color: '#64748b' }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 2 }}>{p.label} — {p.price}</div>
+                    <div style={{ fontSize: 12, color: '#8B8B99' }}>
                       {p.bots < 999 ? p.bots : '∞'} bot{p.bots !== 1 ? 's' : ''} · {p.convos > 0 ? p.convos.toLocaleString() : '∞'} convos/mo
                     </div>
                   </div>
                   {p.id === profile.plan ? (
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#6366f1', background: 'rgba(99,102,241,.1)', padding: '4px 10px', borderRadius: 20 }}>Current</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#8b7bf0', background: 'rgba(139,123,240,.1)', padding: '4px 10px', borderRadius: 20 }}>Current</span>
                   ) : (
-                    <button onClick={() => startCheckout(p.id)} disabled={upgrading === p.id} style={{ background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 12, padding: '7px 16px', borderRadius: 7, border: 'none', cursor: upgrading === p.id ? 'not-allowed' : 'pointer', opacity: upgrading === p.id ? 0.7 : 1 }}>
+                    <button onClick={() => startCheckout(p.id)} disabled={upgrading === p.id} style={{ background: '#8b7bf0', color: '#fff', fontWeight: 700, fontSize: 12, padding: '7px 16px', borderRadius: 7, border: 'none', cursor: upgrading === p.id ? 'not-allowed' : 'pointer', opacity: upgrading === p.id ? 0.7 : 1 }}>
                       {upgrading === p.id ? '…' : 'Select'}
                     </button>
                   )}

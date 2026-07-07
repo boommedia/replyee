@@ -141,20 +141,20 @@ const baseStyle = `
   background: #ffffff; color: #1a202c; margin: 0; padding: 0;
 `
 const headerHtml = `
-  <div style="background:#07080f;padding:28px 40px;display:flex;align-items:center;gap:10px">
-    <div style="width:30px;height:30px;background:#6366f1;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle">
+  <div style="background:#0B0B0F;padding:28px 40px;display:flex;align-items:center;gap:10px">
+    <div style="width:30px;height:30px;background:#8b7bf0;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle">
       <span style="color:#fff;font-size:14px">✦</span>
     </div>
     <span style="font-weight:900;font-size:18px;color:#fff;margin-left:8px;letter-spacing:-0.5px">Replyee</span>
-    <span style="font-size:12px;color:#64748b;margin-left:4px">by Boom Media</span>
+    <span style="font-size:12px;color:#8B8B99;margin-left:4px">by Boom Media</span>
   </div>
 `
 const footerHtml = `
   <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:24px 40px;text-align:center">
     <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0">
       by Boom Media &nbsp;·&nbsp;
-      <a href="https://replyee.online/unsubscribe" style="color:#6366f1">Unsubscribe</a> &nbsp;·&nbsp;
-      <a href="https://replyee.online/privacy" style="color:#6366f1">Privacy Policy</a><br>
+      <a href="https://replyee.online/unsubscribe" style="color:#8b7bf0">Unsubscribe</a> &nbsp;·&nbsp;
+      <a href="https://replyee.online/privacy" style="color:#8b7bf0">Privacy Policy</a><br>
       © 2026 Boom Media. All rights reserved.
     </p>
   </div>
@@ -176,7 +176,7 @@ function welcomeHtml(name: string) {
         <div style="font-size:14px;color:#334155;margin-bottom:8px"><strong>Step 2</strong> &nbsp; Upload a PDF or paste your website URL</div>
         <div style="font-size:14px;color:#334155"><strong>Step 3</strong> &nbsp; Copy your embed code and add it to your site</div>
       </div>
-      <a href="https://replyee.online/dashboard" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;margin:8px 0 24px">
+      <a href="https://replyee.online/dashboard" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;margin:8px 0 24px">
         Open My Dashboard →
       </a>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0">
@@ -200,7 +200,7 @@ function leadAlertHtml(opts: { botName: string; visitorEmail: string; question: 
       </p>
       <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:20px 24px;margin:0 0 24px">
         <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Lead Details</div>
-        <div style="font-size:14px;color:#334155;margin-bottom:8px"><strong>Email:</strong> <a href="mailto:${opts.visitorEmail}" style="color:#6366f1">${opts.visitorEmail}</a></div>
+        <div style="font-size:14px;color:#334155;margin-bottom:8px"><strong>Email:</strong> <a href="mailto:${opts.visitorEmail}" style="color:#8b7bf0">${opts.visitorEmail}</a></div>
         <div style="font-size:14px;color:#334155;margin-bottom:8px"><strong>Question:</strong> "${opts.question}"</div>
         <div style="font-size:14px;color:#334155"><strong>Bot:</strong> ${opts.botName}</div>
       </div>
@@ -208,7 +208,7 @@ function leadAlertHtml(opts: { botName: string; visitorEmail: string; question: 
         Reply to Visitor →
       </a>
       <br><br>
-      <a href="https://replyee.online/dashboard/bots" style="font-size:13px;color:#6366f1">View all leads in dashboard →</a>
+      <a href="https://replyee.online/dashboard/bots" style="font-size:13px;color:#8b7bf0">View all leads in dashboard →</a>
     </div>
     ${footerHtml}
   </body></html>`
@@ -225,11 +225,11 @@ function handoffAlertHtml(opts: { botName: string; lastQuestion: string }) {
         Someone chatting with <strong>${opts.botName}</strong> asked for a team member.
         Jump into the Live Inbox to reply while they're still on the site.
       </p>
-      <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:10px;padding:20px 24px;margin:0 0 24px">
-        <div style="font-size:13px;font-weight:700;color:#3730a3;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Their last message</div>
+      <div style="background:#f2effc;border:1px solid #d8cff9;border-radius:10px;padding:20px 24px;margin:0 0 24px">
+        <div style="font-size:13px;font-weight:700;color:#4b3a9c;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Their last message</div>
         <div style="font-size:14px;color:#334155">"${opts.lastQuestion}"</div>
       </div>
-      <a href="https://replyee.online/dashboard/inbox" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
+      <a href="https://replyee.online/dashboard/inbox" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
         Open Live Inbox →
       </a>
     </div>
@@ -254,11 +254,11 @@ function trialExpiryHtml(name: string, daysLeft: number) {
         </p>
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:20px 24px;margin:0 0 24px">
-        <div style="font-size:16px;font-weight:900;color:#6366f1;margin-bottom:4px">Starter — $25/month</div>
+        <div style="font-size:16px;font-weight:900;color:#8b7bf0;margin-bottom:4px">Starter — $25/month</div>
         <div style="font-size:13px;color:#374151;margin-bottom:12px">1 chatbot · 500 conversations/mo · Custom branding · Lead capture</div>
-        <a href="https://replyee.online/dashboard/settings" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:13px;padding:10px 20px;border-radius:7px;text-decoration:none">Start Starter Plan →</a>
+        <a href="https://replyee.online/dashboard/settings" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:13px;padding:10px 20px;border-radius:7px;text-decoration:none">Start Starter Plan →</a>
       </div>
-      <a href="https://replyee.online/dashboard/settings" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
+      <a href="https://replyee.online/dashboard/settings" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
         Choose a Plan →
       </a>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0">
@@ -286,7 +286,7 @@ function paymentFailedHtml(name: string, amount: string) {
         Update Payment Method →
       </a>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0">
-      <p style="font-size:13px;color:#64748b">Need help? Reply to this email or <a href="mailto:eric@boommedia.us" style="color:#6366f1">contact support</a>.</p>
+      <p style="font-size:13px;color:#64748b">Need help? Reply to this email or <a href="mailto:eric@boommedia.us" style="color:#8b7bf0">contact support</a>.</p>
     </div>
     ${footerHtml}
   </body></html>`
@@ -303,7 +303,7 @@ function monthlyReportHtml(opts: {
       <p style="font-size:15px;line-height:1.7;color:#334155;margin:0 0 24px">Hi ${opts.name}, here's what your Replyee chatbots accomplished this month.</p>
       <div style="display:flex;gap:16px;margin:0 0 24px">
         <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;text-align:center">
-          <div style="font-size:28px;font-weight:900;color:#6366f1">${opts.conversations.toLocaleString()}</div>
+          <div style="font-size:28px;font-weight:900;color:#8b7bf0">${opts.conversations.toLocaleString()}</div>
           <div style="font-size:12px;color:#64748b;margin-top:4px">Conversations</div>
         </div>
         <div style="flex:1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;text-align:center">
@@ -315,7 +315,7 @@ function monthlyReportHtml(opts: {
           <div style="font-size:12px;color:#64748b;margin-top:4px">Leads Captured</div>
         </div>
       </div>
-      <a href="https://replyee.online/dashboard/analytics" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
+      <a href="https://replyee.online/dashboard/analytics" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none">
         View Full Analytics →
       </a>
     </div>
@@ -357,7 +357,7 @@ function booOrderAlertHtml(opts: {
         </div>
         ${opts.customerEmail ? `<div style="margin-top:10px;font-size:13px;color:#64748b"><strong>Customer:</strong> ${opts.customerEmail}</div>` : ''}
       </div>
-      <a href="https://replyee.online/dashboard/inbox" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;margin-right:12px">
+      <a href="https://replyee.online/dashboard/inbox" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:8px;text-decoration:none;margin-right:12px">
         Open Live Inbox →
       </a>
     </div>
@@ -375,7 +375,7 @@ function dailyReportHtml(opts: {
 }) {
   const newPct = opts.visitorsTotal > 0 ? Math.round((opts.visitorsNew / opts.visitorsTotal) * 100) : 0
   const topPagesRows = opts.topPages.map(p =>
-    `<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:10px 16px;color:#6366f1">${p.path}</td><td style="padding:10px 16px;text-align:right;font-weight:700;color:#334155">${p.views}</td></tr>`
+    `<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:10px 16px;color:#8b7bf0">${p.path}</td><td style="padding:10px 16px;text-align:right;font-weight:700;color:#334155">${p.views}</td></tr>`
   ).join('')
   const sourcesRows = opts.sources.map(s =>
     `<tr style="border-bottom:1px solid #f1f5f9"><td style="padding:10px 16px;color:#475569">${s.name}</td><td style="padding:10px 16px;text-align:right;font-weight:700;color:#334155">${s.count}</td></tr>`
@@ -389,7 +389,7 @@ function dailyReportHtml(opts: {
     </div>
 
     <div style="padding:20px 40px">
-      <div style="background:#1e2535;border-radius:6px;padding:10px 16px;margin-bottom:16px">
+      <div style="background:#141419;border-radius:6px;padding:10px 16px;margin-bottom:16px">
         <span style="font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em">Website Overview</span>
       </div>
       <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px">
@@ -403,7 +403,7 @@ function dailyReportHtml(opts: {
               </div>
               <table width="100%" style="font-size:13px">
                 <tr><td><span style="display:inline-block;width:10px;height:10px;background:#f97316;border-radius:50%;margin-right:6px"></span>New</td><td style="text-align:right;font-weight:700;color:#1e293b">${opts.visitorsNew} <span style="color:#94a3b8;font-weight:400;font-size:11px">(${newPct}%)</span></td></tr>
-                <tr><td><span style="display:inline-block;width:10px;height:10px;background:#67e8f9;border-radius:50%;margin-right:6px"></span>Returning</td><td style="text-align:right;font-weight:700;color:#1e293b">${opts.visitorsReturning} <span style="color:#94a3b8;font-weight:400;font-size:11px">(${100 - newPct}%)</span></td></tr>
+                <tr><td><span style="display:inline-block;width:10px;height:10px;background:#a99bf5;border-radius:50%;margin-right:6px"></span>Returning</td><td style="text-align:right;font-weight:700;color:#1e293b">${opts.visitorsReturning} <span style="color:#94a3b8;font-weight:400;font-size:11px">(${100 - newPct}%)</span></td></tr>
               </table>
             </div>
           </td>
@@ -419,7 +419,7 @@ function dailyReportHtml(opts: {
                 <tbody>
                   <tr><td style="padding:8px;color:#475569">Automatic</td><td style="text-align:center;padding:8px;font-weight:700">${opts.triggeredAuto}</td><td style="text-align:center;padding:8px;font-weight:700;color:#4ade80">${opts.respondedAuto}</td></tr>
                   <tr><td style="padding:8px;color:#475569">Manual</td><td style="text-align:center;padding:8px;font-weight:700">${opts.triggeredManual}</td><td style="text-align:center;padding:8px;font-weight:700;color:#4ade80">${opts.respondedManual}</td></tr>
-                  <tr style="border-top:1px solid #e2e8f0"><td style="padding:8px;font-weight:700;color:#334155">Total</td><td style="text-align:center;padding:8px;font-weight:900;color:#6366f1">${opts.triggeredAuto + opts.triggeredManual}</td><td style="text-align:center;padding:8px;font-weight:900;color:#4ade80">${opts.respondedAuto + opts.respondedManual}</td></tr>
+                  <tr style="border-top:1px solid #e2e8f0"><td style="padding:8px;font-weight:700;color:#334155">Total</td><td style="text-align:center;padding:8px;font-weight:900;color:#8b7bf0">${opts.triggeredAuto + opts.triggeredManual}</td><td style="text-align:center;padding:8px;font-weight:900;color:#4ade80">${opts.respondedAuto + opts.respondedManual}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -429,7 +429,7 @@ function dailyReportHtml(opts: {
     </div>
 
     <div style="padding:0 40px 20px">
-      <div style="background:#1e2535;border-radius:6px;padding:10px 16px;margin-bottom:16px">
+      <div style="background:#141419;border-radius:6px;padding:10px 16px;margin-bottom:16px">
         <span style="font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em">Visitor Behaviour</span>
       </div>
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -451,15 +451,15 @@ function dailyReportHtml(opts: {
     </div>
 
     <div style="padding:0 40px 32px">
-      <div style="background:#1e2535;border-radius:6px;padding:10px 16px;margin-bottom:16px">
+      <div style="background:#141419;border-radius:6px;padding:10px 16px;margin-bottom:16px">
         <span style="font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em">Chats Overview</span>
       </div>
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td width="25%" style="text-align:center;padding:0 6px">
             <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 8px">
-              <div style="width:52px;height:52px;border:3px solid #6366f1;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px">
-                <span style="font-size:20px;font-weight:900;color:#6366f1">${opts.conversations}</span>
+              <div style="width:52px;height:52px;border:3px solid #8b7bf0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:8px">
+                <span style="font-size:20px;font-weight:900;color:#8b7bf0">${opts.conversations}</span>
               </div>
               <div style="font-size:11px;color:#64748b;font-weight:600">Conversations</div>
             </div>
@@ -491,7 +491,7 @@ function dailyReportHtml(opts: {
         </tr>
       </table>
       <div style="margin-top:24px;text-align:center">
-        <a href="https://replyee.online/dashboard" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none">View Full Dashboard →</a>
+        <a href="https://replyee.online/dashboard" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none">View Full Dashboard →</a>
       </div>
     </div>
     ${footerHtml}
@@ -506,7 +506,7 @@ function passwordResetHtml(resetUrl: string) {
       <p style="font-size:15px;line-height:1.7;color:#334155;margin:0 0 24px">
         We received a request to reset your Replyee password. Click below to choose a new one.
       </p>
-      <a href="${resetUrl}" style="display:inline-block;background:#6366f1;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;margin-bottom:24px">
+      <a href="${resetUrl}" style="display:inline-block;background:#8b7bf0;color:#fff;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;margin-bottom:24px">
         Reset Password →
       </a>
       <hr style="border:none;border-top:1px solid #e2e8f0;margin:28px 0">

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { ArrowLeft, Bot } from 'lucide-react'
 
-const COLORS = ['#6366f1', '#22d3ee', '#4ade80', '#f97316', '#f43f5e', '#a855f7', '#eab308', '#14b8a6']
+const COLORS = ['#8b7bf0', '#a99bf5', '#4ade80', '#f97316', '#f43f5e', '#a855f7', '#eab308', '#14b8a6']
 
 export default function NewBotPage() {
   const router = useRouter()
@@ -14,7 +14,7 @@ export default function NewBotPage() {
   const [form, setForm] = useState({
     name: '',
     website_url: '',
-    accent_color: '#6366f1',
+    accent_color: '#8b7bf0',
     greeting_message: 'Hi! How can I help you today?',
     fallback_message: "I don't have that information. Can I take your email so someone can follow up?",
     system_prompt: '',
@@ -46,15 +46,15 @@ export default function NewBotPage() {
 
   const S = {
     label: { fontSize: 13, fontWeight: 600 as const, color: '#cbd5e1', display: 'block' as const, marginBottom: 6 },
-    input: { width: '100%', background: '#07080f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#e2e8f0', outline: 'none' },
+    input: { width: '100%', background: '#0B0B0F', border: '1px solid #262631', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#ECECF1', outline: 'none' },
     group: { marginBottom: 20 },
-    hint: { fontSize: 12, color: '#64748b', marginTop: 5 },
+    hint: { fontSize: 12, color: '#8B8B99', marginTop: 5 },
   }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
-        <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#64748b', textDecoration: 'none', fontSize: 13 }}>
+        <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#8B8B99', textDecoration: 'none', fontSize: 13 }}>
           <ArrowLeft size={14} /> Back to bots
         </Link>
       </div>
@@ -65,10 +65,10 @@ export default function NewBotPage() {
             <Bot size={20} color="#fff" />
           </div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: '#e2e8f0' }}>
+            <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: '#ECECF1' }}>
               {form.name || 'New Chatbot'}
             </h1>
-            <p style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>Configure your bot — you can change everything later.</p>
+            <p style={{ fontSize: 13, color: '#8B8B99', marginTop: 2 }}>Configure your bot — you can change everything later.</p>
           </div>
         </div>
 
@@ -78,7 +78,7 @@ export default function NewBotPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 28, marginTop: 24 }}>
+        <form onSubmit={handleSubmit} style={{ background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 28, marginTop: 24 }}>
           <div style={S.group}>
             <label style={S.label}>Bot Name *</label>
             <input style={S.input} value={form.name} onChange={e => set('name', e.target.value)} placeholder="Acme Support Bot" required />
@@ -122,7 +122,7 @@ export default function NewBotPage() {
           </div>
 
           <div style={S.group}>
-            <label style={S.label}>System Prompt <span style={{ color: '#64748b', fontWeight: 400 }}>(optional)</span></label>
+            <label style={S.label}>System Prompt <span style={{ color: '#8B8B99', fontWeight: 400 }}>(optional)</span></label>
             <textarea
               style={{ ...S.input, resize: 'vertical', minHeight: 100 }}
               value={form.system_prompt}
@@ -136,11 +136,11 @@ export default function NewBotPage() {
             <button
               type="submit"
               disabled={loading}
-              style={{ background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+              style={{ background: '#8b7bf0', color: '#fff', fontWeight: 700, fontSize: 14, padding: '12px 28px', borderRadius: 8, border: 'none', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
             >
               {loading ? 'Creating…' : 'Create Chatbot →'}
             </button>
-            <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', color: '#64748b', fontSize: 14, textDecoration: 'none' }}>
+            <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', color: '#8B8B99', fontSize: 14, textDecoration: 'none' }}>
               Cancel
             </Link>
           </div>

@@ -34,8 +34,8 @@ export function NavLinks({ isAdmin }: { isAdmin: boolean }) {
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '9px 12px', borderRadius: 8,
               fontSize: 13, fontWeight: 500,
-              color: active ? '#6366f1' : '#94a3b8',
-              background: active ? 'rgba(99,102,241,0.1)' : 'transparent',
+              color: active ? '#8b7bf0' : '#94a3b8',
+              background: active ? 'rgba(139,123,240,0.1)' : 'transparent',
               textDecoration: 'none', transition: 'all 0.15s',
             }}
           >

@@ -27,7 +27,7 @@
   var lastPage       = null
   var heartbeatTimer = null
   var typingTimeout  = null
-  var config         = { accentColor: '#6366f1', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false, triggers: [] }
+  var config         = { accentColor: '#8b7bf0', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false, triggers: [] }
 
   function makeUUID() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID()

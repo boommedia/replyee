@@ -108,7 +108,7 @@ export default function VisitorsPage() {
     init()
   }, [supabase])
 
-  const CARD = { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }
+  const CARD = { background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 24 }
   const now = Date.now()
   const liveCount = visitors.filter(v => now - new Date(v.last_seen).getTime() < 5 * 60 * 1000).length
 
@@ -135,24 +135,24 @@ export default function VisitorsPage() {
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Visitors</h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>Visitors</h1>
+          <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>
             {liveCount} active in the last 5 minutes
           </p>
         </div>
-        <Users size={32} color="#6366f1" />
+        <Users size={32} color="#8b7bf0" />
       </div>
 
       <div style={CARD}>
         {loading ? (
-          <p style={{ color: '#64748b' }}>Loading visitors...</p>
+          <p style={{ color: '#8B8B99' }}>Loading visitors...</p>
         ) : visitors.length === 0 ? (
-          <p style={{ color: '#64748b' }}>No recent visitors.</p>
+          <p style={{ color: '#8B8B99' }}>No recent visitors.</p>
         ) : (
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #1a2035' }}>
+                <tr style={{ borderBottom: '1px solid #262631' }}>
                   <th style={{ textAlign: 'left', padding: '12px 8px', color: '#94a3b8', fontWeight: 600 }}>Bot</th>
                   <th style={{ textAlign: 'left', padding: '12px 8px', color: '#94a3b8', fontWeight: 600 }}>Page</th>
                   <th style={{ textAlign: 'left', padding: '12px 8px', color: '#94a3b8', fontWeight: 600 }}>Views</th>
@@ -166,9 +166,9 @@ export default function VisitorsPage() {
                 {visitors.map(v => {
                   const bot = bots.get(v.chatbot_id)
                   return (
-                    <tr key={v.id} style={{ borderBottom: '1px solid #1a2035', color: '#e2e8f0' }}>
+                    <tr key={v.id} style={{ borderBottom: '1px solid #262631', color: '#ECECF1' }}>
                       <td style={{ padding: '12px 8px' }}>
-                        <span style={{ fontSize: 12, color: '#6366f1', fontWeight: 600 }}>
+                        <span style={{ fontSize: 12, color: '#8b7bf0', fontWeight: 600 }}>
                           {bot?.name || 'Unknown'}
                         </span>
                       </td>
@@ -183,7 +183,7 @@ export default function VisitorsPage() {
                         {v.session_id ? (
                           <button
                             style={{
-                              background: '#6366f1',
+                              background: '#8b7bf0',
                               color: '#fff',
                               border: 'none',
                               borderRadius: 6,

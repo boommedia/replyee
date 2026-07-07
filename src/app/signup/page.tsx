@@ -6,11 +6,11 @@ import Logo from '@/components/Logo'
 import { MessageSquare, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
-const PRIMARY = '#6366f1'
-const BG      = '#07080f'
-const BG2     = '#0d1018'
-const BORDER  = '#1a2035'
-const BODY    = '#64748b'
+const PRIMARY = '#8b7bf0'
+const BG      = '#0B0B0F'
+const BG2     = '#141419'
+const BORDER  = '#262631'
+const BODY    = '#8B8B99'
 
 const PERKS = ['14-day free trial', 'No credit card required', 'First bot live in 60 seconds']
 

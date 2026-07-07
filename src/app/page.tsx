@@ -9,13 +9,13 @@ import {
   FileText, Link2, ChevronDown,
 } from 'lucide-react'
 
-const BG      = '#07080f'
-const BG2     = '#0d1018'
-const BORDER  = '#1a2035'
-const PRIMARY = '#6366f1'
-const ACCENT  = '#22d3ee'
-const BODY    = '#64748b'
-const MUTED   = '#0a0c14'
+const BG      = '#0B0B0F'
+const BG2     = '#141419'
+const BORDER  = '#262631'
+const PRIMARY = '#8b7bf0'
+const ACCENT  = '#a99bf5'
+const BODY    = '#8B8B99'
+const MUTED   = '#141419'
 
 const FEATURES = [
   {
@@ -132,9 +132,9 @@ export default function Home() {
       {/* ── Hero ── */}
       <section style={{ padding: '100px 48px 80px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         {/* Glow */}
-        <div style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', width: 800, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(99,102,241,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '5%', left: '50%', transform: 'translateX(-50%)', width: 800, height: 500, borderRadius: '50%', background: 'radial-gradient(ellipse, rgba(139,123,240,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
 
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `rgba(99,102,241,0.1)`, border: `1px solid rgba(99,102,241,0.25)`, borderRadius: 20, padding: '5px 16px', fontSize: 12, fontWeight: 700, color: PRIMARY, marginBottom: 28, letterSpacing: '0.06em' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: `rgba(139,123,240,0.1)`, border: `1px solid rgba(139,123,240,0.25)`, borderRadius: 20, padding: '5px 16px', fontSize: 12, fontWeight: 700, color: PRIMARY, marginBottom: 28, letterSpacing: '0.06em' }}>
           <span style={{ width: 6, height: 6, borderRadius: '50%', background: ACCENT, display: 'inline-block' }} className="pulse-dot" />
           AI-POWERED · KNOWLEDGE-GROUNDED · EMBEDDABLE IN 60 SECONDS
         </div>
@@ -159,7 +159,7 @@ export default function Home() {
 
         {/* Chat widget mockup */}
         <div style={{ maxWidth: 780, margin: '0 auto', position: 'relative' }}>
-          <div style={{ background: BG2, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: 'hidden', boxShadow: `0 0 80px rgba(99,102,241,0.12)` }}>
+          <div style={{ background: BG2, border: `1px solid ${BORDER}`, borderRadius: 16, overflow: 'hidden', boxShadow: `0 0 80px rgba(139,123,240,0.12)` }}>
             {/* Browser bar */}
             <div style={{ background: MUTED, borderBottom: `1px solid ${BORDER}`, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
@@ -197,13 +197,13 @@ export default function Home() {
                     </div>
                   </div>
                   <div style={{ padding: 12 }}>
-                    <div style={{ background: 'rgba(99,102,241,0.15)', borderRadius: '8px 8px 8px 2px', padding: '8px 12px', fontSize: 12, color: '#fff', marginBottom: 8 }}>
+                    <div style={{ background: 'rgba(139,123,240,0.15)', borderRadius: '8px 8px 8px 2px', padding: '8px 12px', fontSize: 12, color: '#fff', marginBottom: 8 }}>
                       👋 Hi! I know everything about Acme. What can I help you with?
                     </div>
                     <div style={{ background: BG, border: `1px solid ${BORDER}`, borderRadius: '8px 8px 2px 8px', padding: '8px 12px', fontSize: 12, color: '#fff', marginBottom: 8, marginLeft: 'auto', width: 'fit-content' }}>
                       What's your return policy?
                     </div>
-                    <div style={{ background: 'rgba(99,102,241,0.15)', borderRadius: '8px 8px 8px 2px', padding: '8px 12px', fontSize: 12, color: '#fff' }}>
+                    <div style={{ background: 'rgba(139,123,240,0.15)', borderRadius: '8px 8px 8px 2px', padding: '8px 12px', fontSize: 12, color: '#fff' }}>
                       We offer 30-day returns on all items. Just email returns@acme.com with your order number...
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export default function Home() {
                   </div>
                 </div>
                 {/* Bubble */}
-                <div style={{ background: PRIMARY, width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', boxShadow: `0 4px 20px rgba(99,102,241,0.5)` }}>
+                <div style={{ background: PRIMARY, width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: 'auto', boxShadow: `0 4px 20px rgba(139,123,240,0.5)` }}>
                   <MessageSquare size={18} color="#fff" />
                 </div>
               </div>
@@ -253,7 +253,7 @@ export default function Home() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
           {FEATURES.map((f) => (
             <div key={f.title} style={{ background: BG2, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 24 }}>
-              <div style={{ width: 40, height: 40, background: `rgba(99,102,241,0.15)`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: PRIMARY }}>
+              <div style={{ width: 40, height: 40, background: `rgba(139,123,240,0.15)`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: PRIMARY }}>
                 {f.icon}
               </div>
               <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{f.title}</h3>
@@ -272,7 +272,7 @@ export default function Home() {
         <div style={{ maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {STEPS.map((s, i) => (
             <div key={s.num} style={{ display: 'flex', gap: 24, alignItems: 'flex-start', background: BG2, border: `1px solid ${BORDER}`, borderRadius: 14, padding: 28 }}>
-              <div style={{ minWidth: 48, height: 48, background: `rgba(99,102,241,0.15)`, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: PRIMARY }}>
+              <div style={{ minWidth: 48, height: 48, background: `rgba(139,123,240,0.15)`, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 900, color: PRIMARY }}>
                 {s.num}
               </div>
               <div>
@@ -313,7 +313,7 @@ export default function Home() {
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {PLANS.map((plan) => (
-              <div key={plan.name} style={{ background: plan.highlight ? `rgba(99,102,241,0.08)` : BG2, border: `1px solid ${plan.highlight ? 'rgba(99,102,241,0.4)' : BORDER}`, borderRadius: 16, padding: 28, position: 'relative', display: 'flex', flexDirection: 'column' }}>
+              <div key={plan.name} style={{ background: plan.highlight ? `rgba(139,123,240,0.08)` : BG2, border: `1px solid ${plan.highlight ? 'rgba(139,123,240,0.4)' : BORDER}`, borderRadius: 16, padding: 28, position: 'relative', display: 'flex', flexDirection: 'column' }}>
                 {plan.highlight && (
                   <div style={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', background: PRIMARY, color: '#fff', fontSize: 11, fontWeight: 800, padding: '3px 14px', borderRadius: 20, whiteSpace: 'nowrap' }}>
                     Most Popular

@@ -33,13 +33,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const PLAN_PRICES: Record<string, number> = { starter: 25, growth: 49, agency: 99 }
   const mrr = profiles?.reduce((s, p) => s + (PLAN_PRICES[p.plan] ?? 0), 0) ?? 0
 
-  const CARD = { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 }
+  const CARD = { background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 24 }
 
   const planTag = (plan: string) => {
     const colors: Record<string, [string, string]> = {
-      starter: ['rgba(100,116,139,.15)', '#64748b'],
-      growth:  ['rgba(99,102,241,.15)',  '#6366f1'],
-      agency:  ['rgba(34,211,238,.15)',  '#22d3ee'],
+      starter: ['rgba(100,116,139,.15)', '#8B8B99'],
+      growth:  ['rgba(139,123,240,.15)',  '#8b7bf0'],
+      agency:  ['rgba(34,211,238,.15)',  '#a99bf5'],
     }
     const [bg, color] = colors[plan] ?? ['rgba(249,115,22,.12)', '#f97316']
     return (
@@ -49,14 +49,14 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     )
   }
 
-  const TABLE_TH = { fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase' as const, letterSpacing: '.08em', padding: '0 12px 12px', borderBottom: '1px solid #1a2035', textAlign: 'left' as const }
+  const TABLE_TH = { fontSize: 11, fontWeight: 700, color: '#8B8B99', textTransform: 'uppercase' as const, letterSpacing: '.08em', padding: '0 12px 12px', borderBottom: '1px solid #262631', textAlign: 'left' as const }
   const TABLE_TD = { fontSize: 13, padding: '14px 12px', borderBottom: '1px solid rgba(26,32,53,.5)', verticalAlign: 'middle' as const }
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>
+          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>
             {section === 'overview' ? 'Admin Overview'
               : section === 'users' ? 'All Users'
               : section === 'bots' ? 'All Chatbots'
@@ -64,7 +64,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               : section === 'usage' ? 'API Usage'
               : 'Alerts'}
           </h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Replyee platform — Boom Media internal</p>
+          <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>Replyee platform — Boom Media internal</p>
         </div>
       </div>
 
@@ -73,20 +73,20 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         <>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28 }}>
             {[
-              { label: 'Total Users', value: totalUsers, icon: Users, color: '#6366f1', delta: `${trialUsers} on trial` },
+              { label: 'Total Users', value: totalUsers, icon: Users, color: '#8b7bf0', delta: `${trialUsers} on trial` },
               { label: 'MRR', value: `$${mrr.toLocaleString()}`, icon: DollarSign, color: '#4ade80', delta: `${payingUsers} paying` },
-              { label: 'Active Bots', value: totalBots, icon: Bot, color: '#22d3ee', delta: '' },
+              { label: 'Active Bots', value: totalBots, icon: Bot, color: '#a99bf5', delta: '' },
               { label: 'Total Conversations', value: totalConvos.toLocaleString(), icon: MessageCircle, color: '#f97316', delta: '' },
             ].map(({ label, value, icon: Icon, color, delta }) => (
               <div key={label} style={CARD}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <span style={{ fontSize: 12, color: '#64748b' }}>{label}</span>
+                  <span style={{ fontSize: 12, color: '#8B8B99' }}>{label}</span>
                   <div style={{ width: 28, height: 28, background: `${color}20`, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Icon size={13} style={{ color }} />
                   </div>
                 </div>
-                <div style={{ fontSize: 30, fontWeight: 900, color: '#e2e8f0', letterSpacing: '-1px' }}>{value}</div>
-                {delta && <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>{delta}</div>}
+                <div style={{ fontSize: 30, fontWeight: 900, color: '#ECECF1', letterSpacing: '-1px' }}>{value}</div>
+                {delta && <div style={{ fontSize: 12, color: '#8B8B99', marginTop: 4 }}>{delta}</div>}
               </div>
             ))}
           </div>
@@ -94,8 +94,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           {/* Recent signups */}
           <div style={CARD}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Recent Signups</span>
-              <a href="/admin?section=users" style={{ fontSize: 12, color: '#6366f1', textDecoration: 'none' }}>View all →</a>
+              <span style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Recent Signups</span>
+              <a href="/admin?section=users" style={{ fontSize: 12, color: '#8b7bf0', textDecoration: 'none' }}>View all →</a>
             </div>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -112,12 +112,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                   return (
                     <tr key={p.id}>
                       <td style={TABLE_TD}>
-                        <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{p.full_name ?? '—'}</div>
-                        <div style={{ fontSize: 11, color: '#64748b' }}>{p.email}</div>
+                        <div style={{ fontWeight: 600, color: '#ECECF1' }}>{p.full_name ?? '—'}</div>
+                        <div style={{ fontSize: 11, color: '#8B8B99' }}>{p.email}</div>
                       </td>
                       <td style={TABLE_TD}>{planTag(p.plan)}</td>
                       <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{userBots.length}</td>
-                      <td style={{ ...TABLE_TD, color: '#64748b', fontSize: 12 }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                      <td style={{ ...TABLE_TD, color: '#8B8B99', fontSize: 12 }}>{new Date(p.created_at).toLocaleDateString()}</td>
                     </tr>
                   )
                 })}
@@ -130,7 +130,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {/* ── All Users ── */}
       {section === 'users' && (
         <div style={CARD}>
-          <div style={{ marginBottom: 16, fontSize: 14, color: '#64748b' }}>{totalUsers} accounts</div>
+          <div style={{ marginBottom: 16, fontSize: 14, color: '#8B8B99' }}>{totalUsers} accounts</div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -148,13 +148,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                 return (
                   <tr key={p.id} style={{ cursor: 'default' }}>
                     <td style={TABLE_TD}>
-                      <div style={{ fontWeight: 600, color: '#e2e8f0' }}>{p.full_name ?? '—'}</div>
-                      <div style={{ fontSize: 11, color: '#64748b' }}>{p.email}</div>
+                      <div style={{ fontWeight: 600, color: '#ECECF1' }}>{p.full_name ?? '—'}</div>
+                      <div style={{ fontSize: 11, color: '#8B8B99' }}>{p.email}</div>
                     </td>
                     <td style={TABLE_TD}>{planTag(p.plan)}</td>
                     <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{userBots.length}</td>
                     <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{convos.toLocaleString()}</td>
-                    <td style={{ ...TABLE_TD, color: '#64748b', fontSize: 12 }}>{new Date(p.created_at).toLocaleDateString()}</td>
+                    <td style={{ ...TABLE_TD, color: '#8B8B99', fontSize: 12 }}>{new Date(p.created_at).toLocaleDateString()}</td>
                   </tr>
                 )
               })}
@@ -166,7 +166,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {/* ── All Bots ── */}
       {section === 'bots' && (
         <div style={CARD}>
-          <div style={{ marginBottom: 16, fontSize: 14, color: '#64748b' }}>{totalBots} chatbots</div>
+          <div style={{ marginBottom: 16, fontSize: 14, color: '#8B8B99' }}>{totalBots} chatbots</div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
@@ -185,15 +185,15 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                   <tr key={bot.id}>
                     <td style={TABLE_TD}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <div style={{ width: 26, height: 26, background: bot.accent_color ?? '#6366f1', borderRadius: 6, flexShrink: 0 }} />
-                        <span style={{ fontWeight: 600, color: '#e2e8f0' }}>{bot.name}</span>
+                        <div style={{ width: 26, height: 26, background: bot.accent_color ?? '#8b7bf0', borderRadius: 6, flexShrink: 0 }} />
+                        <span style={{ fontWeight: 600, color: '#ECECF1' }}>{bot.name}</span>
                       </div>
                     </td>
-                    <td style={{ ...TABLE_TD, color: '#64748b', fontSize: 12 }}>{owner?.email ?? '—'}</td>
+                    <td style={{ ...TABLE_TD, color: '#8B8B99', fontSize: 12 }}>{owner?.email ?? '—'}</td>
                     <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{bot.chunk_count}</td>
                     <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{bot.conversation_count.toLocaleString()}</td>
                     <td style={{ ...TABLE_TD, color: '#94a3b8' }}>{bot.lead_count}</td>
-                    <td style={{ ...TABLE_TD, color: '#64748b', fontSize: 12 }}>{new Date(bot.created_at).toLocaleDateString()}</td>
+                    <td style={{ ...TABLE_TD, color: '#8B8B99', fontSize: 12 }}>{new Date(bot.created_at).toLocaleDateString()}</td>
                   </tr>
                 )
               })}
@@ -208,17 +208,17 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24 }}>
             {[
               { label: 'MRR', value: `$${mrr.toLocaleString()}`, color: '#4ade80' },
-              { label: 'ARR (projected)', value: `$${(mrr * 12).toLocaleString()}`, color: '#6366f1' },
-              { label: 'Paying Users', value: payingUsers, color: '#22d3ee' },
+              { label: 'ARR (projected)', value: `$${(mrr * 12).toLocaleString()}`, color: '#8b7bf0' },
+              { label: 'Paying Users', value: payingUsers, color: '#a99bf5' },
             ].map(({ label, value, color }) => (
               <div key={label} style={CARD}>
-                <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8 }}>{label}</div>
+                <div style={{ fontSize: 12, color: '#8B8B99', marginBottom: 8 }}>{label}</div>
                 <div style={{ fontSize: 32, fontWeight: 900, color, letterSpacing: '-1px' }}>{value}</div>
               </div>
             ))}
           </div>
           <div style={CARD}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', marginBottom: 20 }}>Plan Distribution</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1', marginBottom: 20 }}>Plan Distribution</div>
             {(['agency', 'growth', 'starter'] as const).map(plan => {
               const count = profiles?.filter(p => p.plan === plan).length ?? 0
               const rev   = count * (PLAN_PRICES[plan] ?? 0)
@@ -226,11 +226,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               return (
                 <div key={plan} style={{ marginBottom: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
-                    <span style={{ color: '#e2e8f0', textTransform: 'capitalize' }}>{plan} <span style={{ color: '#64748b' }}>${PLAN_PRICES[plan]}/mo</span></span>
-                    <span style={{ color: '#64748b' }}>{count} users · ${rev.toLocaleString()}</span>
+                    <span style={{ color: '#ECECF1', textTransform: 'capitalize' }}>{plan} <span style={{ color: '#8B8B99' }}>${PLAN_PRICES[plan]}/mo</span></span>
+                    <span style={{ color: '#8B8B99' }}>{count} users · ${rev.toLocaleString()}</span>
                   </div>
-                  <div style={{ height: 6, background: '#1a2035', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{ width: `${pct}%`, height: '100%', background: plan === 'agency' ? '#22d3ee' : plan === 'growth' ? '#6366f1' : '#64748b', borderRadius: 99 }} />
+                  <div style={{ height: 6, background: '#262631', borderRadius: 99, overflow: 'hidden' }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: plan === 'agency' ? '#a99bf5' : plan === 'growth' ? '#8b7bf0' : '#8B8B99', borderRadius: 99 }} />
                   </div>
                 </div>
               )
@@ -242,13 +242,13 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {/* ── API Usage ── */}
       {section === 'usage' && (
         <div style={CARD}>
-          <p style={{ color: '#64748b', fontSize: 14 }}>
+          <p style={{ color: '#8B8B99', fontSize: 14 }}>
             API usage tracking (Claude + OpenAI) coming soon. Connect to your Anthropic and OpenAI dashboards for current spend.
           </p>
           <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <a href="https://console.anthropic.com/usage" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#6366f1' }}>→ Anthropic Console Usage</a>
-            <a href="https://platform.openai.com/usage" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#6366f1' }}>→ OpenAI Platform Usage</a>
-            <a href="https://dashboard.stripe.com" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#6366f1' }}>→ Stripe Dashboard</a>
+            <a href="https://console.anthropic.com/usage" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#8b7bf0' }}>→ Anthropic Console Usage</a>
+            <a href="https://platform.openai.com/usage" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#8b7bf0' }}>→ OpenAI Platform Usage</a>
+            <a href="https://dashboard.stripe.com" target="_blank" rel="noreferrer" style={{ fontSize: 14, color: '#8b7bf0' }}>→ Stripe Dashboard</a>
           </div>
         </div>
       )}
@@ -256,11 +256,11 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
       {/* ── Alerts ── */}
       {section === 'alerts' && (
         <div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, background: 'rgba(99,102,241,.06)', border: '1px solid rgba(99,102,241,.2)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
-            <AlertTriangle size={18} style={{ color: '#6366f1', flexShrink: 0, marginTop: 1 }} />
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, background: 'rgba(139,123,240,.06)', border: '1px solid rgba(139,123,240,.2)', borderRadius: 12, padding: 16, marginBottom: 12 }}>
+            <AlertTriangle size={18} style={{ color: '#8b7bf0', flexShrink: 0, marginTop: 1 }} />
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>Admin alerts will appear here</div>
-              <p style={{ fontSize: 13, color: '#64748b' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 4 }}>Admin alerts will appear here</div>
+              <p style={{ fontSize: 13, color: '#8B8B99' }}>
                 Future: payment failures, trial expirations, high-usage accounts, and system health alerts.
               </p>
             </div>
@@ -269,10 +269,10 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, background: 'rgba(249,115,22,.06)', border: '1px solid rgba(249,115,22,.2)', borderRadius: 12, padding: 16 }}>
               <AlertTriangle size={18} style={{ color: '#f97316', flexShrink: 0, marginTop: 1 }} />
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 4 }}>
                   {trialUsers} users currently on trial
                 </div>
-                <p style={{ fontSize: 13, color: '#64748b' }}>
+                <p style={{ fontSize: 13, color: '#8B8B99' }}>
                   Review trial users in the All Users tab and consider sending a conversion nudge.
                 </p>
               </div>

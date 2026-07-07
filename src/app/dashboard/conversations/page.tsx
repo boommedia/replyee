@@ -62,13 +62,13 @@ export default async function ConversationsPage({ searchParams }: { searchParams
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Conversations</h1>
-          <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>Full history of all chatbot interactions.</p>
+          <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>Conversations</h1>
+          <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>Full history of all chatbot interactions.</p>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           <Link
             href="/dashboard/conversations"
-            style={{ fontSize: 12, padding: '6px 14px', borderRadius: 99, border: '1px solid', borderColor: !botFilter ? '#6366f1' : '#1a2035', background: !botFilter ? 'rgba(99,102,241,.1)' : 'transparent', color: !botFilter ? '#6366f1' : '#64748b', textDecoration: 'none', fontWeight: 600 }}
+            style={{ fontSize: 12, padding: '6px 14px', borderRadius: 99, border: '1px solid', borderColor: !botFilter ? '#8b7bf0' : '#262631', background: !botFilter ? 'rgba(139,123,240,.1)' : 'transparent', color: !botFilter ? '#8b7bf0' : '#8B8B99', textDecoration: 'none', fontWeight: 600 }}
           >
             All
           </Link>
@@ -76,7 +76,7 @@ export default async function ConversationsPage({ searchParams }: { searchParams
             <Link
               key={b.id}
               href={`/dashboard/conversations?bot=${b.id}`}
-              style={{ fontSize: 12, padding: '6px 14px', borderRadius: 99, border: '1px solid', borderColor: botFilter === b.id ? '#6366f1' : '#1a2035', background: botFilter === b.id ? 'rgba(99,102,241,.1)' : 'transparent', color: botFilter === b.id ? '#6366f1' : '#64748b', textDecoration: 'none', fontWeight: 600 }}
+              style={{ fontSize: 12, padding: '6px 14px', borderRadius: 99, border: '1px solid', borderColor: botFilter === b.id ? '#8b7bf0' : '#262631', background: botFilter === b.id ? 'rgba(139,123,240,.1)' : 'transparent', color: botFilter === b.id ? '#8b7bf0' : '#8B8B99', textDecoration: 'none', fontWeight: 600 }}
             >
               {b.name}
             </Link>
@@ -85,10 +85,10 @@ export default async function ConversationsPage({ searchParams }: { searchParams
       </div>
 
       {!conversations?.length ? (
-        <div style={{ background: '#0d1018', border: '1px dashed #1a2035', borderRadius: 16, padding: '64px 40px', textAlign: 'center' }}>
-          <MessageCircle size={40} style={{ color: '#6366f1', margin: '0 auto 16px', display: 'block' }} />
-          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>No conversations yet</h2>
-          <p style={{ color: '#64748b', fontSize: 14 }}>Embed your chatbot on a website to start getting conversations.</p>
+        <div style={{ background: '#141419', border: '1px dashed #262631', borderRadius: 16, padding: '64px 40px', textAlign: 'center' }}>
+          <MessageCircle size={40} style={{ color: '#8b7bf0', margin: '0 auto 16px', display: 'block' }} />
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: '#ECECF1', marginBottom: 8 }}>No conversations yet</h2>
+          <p style={{ color: '#8B8B99', fontSize: 14 }}>Embed your chatbot on a website to start getting conversations.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -100,15 +100,15 @@ export default async function ConversationsPage({ searchParams }: { searchParams
               <Link
                 key={c.id}
                 href={`/dashboard/conversations/${c.id}`}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#0d1018', border: '1px solid #1a2035', borderRadius: 10, textDecoration: 'none' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: '#141419', border: '1px solid #262631', borderRadius: 10, textDecoration: 'none' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-                  <MessageCircle size={16} style={{ color: '#22d3ee', flexShrink: 0 }} />
+                  <MessageCircle size={16} style={{ color: '#a99bf5', flexShrink: 0 }} />
                   <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: '#e2e8f0', fontWeight: 500, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ fontSize: 13, color: '#ECECF1', fontWeight: 500, marginBottom: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {preview ? `"${preview.slice(0, 80)}${preview.length > 80 ? '…' : ''}"` : 'No messages'}
                     </div>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>
+                    <div style={{ fontSize: 11, color: '#8B8B99' }}>
                       {bot?.name ?? 'Unknown bot'} &nbsp;·&nbsp; {msgCount} messages &nbsp;·&nbsp; {new Date(c.updated_at).toLocaleDateString()}
                     </div>
                   </div>

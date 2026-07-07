@@ -19,8 +19,8 @@ export default async function InboxPage() {
   return (
     <div>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#e2e8f0' }}>Live Inbox</h1>
-        <p style={{ fontSize: 14, color: '#64748b', marginTop: 4 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 900, letterSpacing: '-1px', color: '#ECECF1' }}>Live Inbox</h1>
+        <p style={{ fontSize: 14, color: '#8B8B99', marginTop: 4 }}>
           Take over from the bot and chat with visitors in real time.
         </p>
       </div>

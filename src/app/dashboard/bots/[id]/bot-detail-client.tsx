@@ -15,13 +15,13 @@ interface Chatbot {
 }
 
 const S = {
-  card: { background: '#0d1018', border: '1px solid #1a2035', borderRadius: 14, padding: 24 },
+  card: { background: '#141419', border: '1px solid #262631', borderRadius: 14, padding: 24 },
   label: { fontSize: 13, fontWeight: 600 as const, color: '#cbd5e1', display: 'block' as const, marginBottom: 6 },
-  input: { width: '100%', background: '#07080f', border: '1px solid #1a2035', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#e2e8f0', outline: 'none' },
+  input: { width: '100%', background: '#0B0B0F', border: '1px solid #262631', borderRadius: 8, padding: '10px 14px', fontSize: 14, color: '#ECECF1', outline: 'none' },
   group: { marginBottom: 20 },
-  hint: { fontSize: 12, color: '#64748b', marginTop: 5 },
-  btn: { background: '#6366f1', color: '#fff', fontWeight: 700, fontSize: 13, padding: '9px 18px', borderRadius: 8, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 },
-  btnGhost: { background: 'rgba(99,102,241,0.12)', color: '#6366f1', fontWeight: 700, fontSize: 13, padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(99,102,241,0.3)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 },
+  hint: { fontSize: 12, color: '#8B8B99', marginTop: 5 },
+  btn: { background: '#8b7bf0', color: '#fff', fontWeight: 700, fontSize: 13, padding: '9px 18px', borderRadius: 8, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 },
+  btnGhost: { background: 'rgba(139,123,240,0.12)', color: '#8b7bf0', fontWeight: 700, fontSize: 13, padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(139,123,240,0.3)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 },
 }
 
 export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
@@ -161,19 +161,19 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             <Bot size={22} color="#fff" />
           </div>
           <div>
-            <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: '#e2e8f0', marginBottom: 2 }}>{bot.name}</h1>
-            <p style={{ fontSize: 13, color: '#64748b' }}>
+            <h1 style={{ fontSize: 22, fontWeight: 900, letterSpacing: '-0.5px', color: '#ECECF1', marginBottom: 2 }}>{bot.name}</h1>
+            <p style={{ fontSize: 13, color: '#8B8B99' }}>
               {bot.website_url ?? 'No website'} &nbsp;·&nbsp; {bot.conversation_count} conversations &nbsp;·&nbsp; {bot.lead_count} leads
             </p>
           </div>
         </div>
         <a href={`${siteUrl}/preview/${bot.id}`} target="_blank" rel="noreferrer"
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(99,102,241,.12)', color: '#6366f1', border: '1px solid rgba(99,102,241,.3)', fontWeight: 600, fontSize: 13, padding: '9px 16px', borderRadius: 8, textDecoration: 'none' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(139,123,240,.12)', color: '#8b7bf0', border: '1px solid rgba(139,123,240,.3)', fontWeight: 600, fontSize: 13, padding: '9px 16px', borderRadius: 8, textDecoration: 'none' }}>
           <ExternalLink size={13} /> Preview Widget
         </a>
       </div>
 
-      <div style={{ display: 'flex', gap: 4, background: '#0d1018', border: '1px solid #1a2035', padding: 4, borderRadius: 10, width: 'fit-content', marginBottom: 28 }}>
+      <div style={{ display: 'flex', gap: 4, background: '#141419', border: '1px solid #262631', padding: 4, borderRadius: 10, width: 'fit-content', marginBottom: 28 }}>
         {[
           { id: 'kb', label: 'Knowledge Base' },
           { id: 'embed', label: 'Embed Code' },
@@ -186,8 +186,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             onClick={() => switchTab(t.id)}
             style={{
               padding: '7px 16px', borderRadius: 7, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
-              background: tab === t.id ? '#6366f1' : 'transparent',
-              color: tab === t.id ? '#fff' : '#64748b',
+              background: tab === t.id ? '#8b7bf0' : 'transparent',
+              color: tab === t.id ? '#fff' : '#8B8B99',
             }}
           >
             {t.label}
@@ -199,8 +199,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0' }}>Knowledge Sources</div>
-              <div style={{ fontSize: 13, color: '#64748b', marginTop: 2 }}>{bot.chunk_count} chunks indexed</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1' }}>Knowledge Sources</div>
+              <div style={{ fontSize: 13, color: '#8B8B99', marginTop: 2 }}>{bot.chunk_count} chunks indexed</div>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
               <input
@@ -226,24 +226,24 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
           )}
 
           {knowledgeSources.length === 0 ? (
-            <div style={{ border: '2px dashed #1a2035', borderRadius: 12, padding: '48px 24px', textAlign: 'center' }}>
-              <FileText size={36} style={{ color: '#64748b', margin: '0 auto 12px', display: 'block' }} />
-              <p style={{ color: '#64748b', fontSize: 14, marginBottom: 8 }}>No knowledge sources yet.</p>
-              <p style={{ color: '#64748b', fontSize: 13 }}>Upload a PDF or add a URL to train your bot.</p>
+            <div style={{ border: '2px dashed #262631', borderRadius: 12, padding: '48px 24px', textAlign: 'center' }}>
+              <FileText size={36} style={{ color: '#8B8B99', margin: '0 auto 12px', display: 'block' }} />
+              <p style={{ color: '#8B8B99', fontSize: 14, marginBottom: 8 }}>No knowledge sources yet.</p>
+              <p style={{ color: '#8B8B99', fontSize: 13 }}>Upload a PDF or add a URL to train your bot.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {knowledgeSources.map(s => (
-                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#0d1018', border: '1px solid #1a2035', borderRadius: 10 }}>
+                <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', background: '#141419', border: '1px solid #262631', borderRadius: 10 }}>
                   <div style={{ width: 36, height: 36, background: 'rgba(34,211,238,.1)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {s.type === 'url' ? <Globe size={16} color="#22d3ee" /> : <FileText size={16} color="#22d3ee" />}
+                    {s.type === 'url' ? <Globe size={16} color="#a99bf5" /> : <FileText size={16} color="#a99bf5" />}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{s.name}</div>
-                    <div style={{ fontSize: 11, color: '#64748b' }}>{s.count} chunks · {new Date(s.createdAt).toLocaleDateString()}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#ECECF1' }}>{s.name}</div>
+                    <div style={{ fontSize: 11, color: '#8B8B99' }}>{s.count} chunks · {new Date(s.createdAt).toLocaleDateString()}</div>
                   </div>
                   <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, fontWeight: 700, background: 'rgba(74,222,128,.1)', color: '#4ade80' }}>✓ Indexed</span>
-                  <button onClick={() => deleteSource(s.name)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', display: 'flex', padding: 4 }} title="Remove source">
+                  <button onClick={() => deleteSource(s.name)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#8B8B99', display: 'flex', padding: 4 }} title="Remove source">
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -256,21 +256,21 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
       {tab === 'embed' && (
         <div style={{ maxWidth: 680 }}>
           <div style={S.card}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#e2e8f0', marginBottom: 12 }}>Your Embed Code</div>
-            <p style={{ fontSize: 14, color: '#64748b', marginBottom: 20 }}>
-              Copy this script tag and paste it before the <code style={{ color: '#22d3ee', background: '#0a0c14', padding: '1px 5px', borderRadius: 4 }}>&lt;/body&gt;</code> tag on your website.
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#ECECF1', marginBottom: 12 }}>Your Embed Code</div>
+            <p style={{ fontSize: 14, color: '#8B8B99', marginBottom: 20 }}>
+              Copy this script tag and paste it before the <code style={{ color: '#a99bf5', background: '#141419', padding: '1px 5px', borderRadius: 4 }}>&lt;/body&gt;</code> tag on your website.
             </p>
-            <div style={{ background: '#0a0c14', border: '1px solid #1a2035', borderRadius: 10, padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+            <div style={{ background: '#141419', border: '1px solid #262631', borderRadius: 10, padding: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
               <code style={{ fontSize: 12, color: '#94a3b8', wordBreak: 'break-all', flex: 1 }}>{embedCode}</code>
               <button onClick={copyEmbed} style={{ ...S.btn, whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy</>}
               </button>
             </div>
             <div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0', marginBottom: 10 }}>Works on:</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#ECECF1', marginBottom: 10 }}>Works on:</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['WordPress', 'Webflow', 'Shopify', 'Squarespace', 'Wix', 'Any HTML site'].map(p => (
-                  <span key={p} style={{ fontSize: 12, padding: '4px 12px', background: '#07080f', border: '1px solid #1a2035', borderRadius: 6, color: '#64748b' }}>{p}</span>
+                  <span key={p} style={{ fontSize: 12, padding: '4px 12px', background: '#0B0B0F', border: '1px solid #262631', borderRadius: 6, color: '#8B8B99' }}>{p}</span>
                 ))}
               </div>
             </div>
@@ -305,7 +305,7 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
               </div>
             </div>
             <div style={S.group}>
-              <label style={S.label}>System Prompt <span style={{ color: '#64748b', fontWeight: 400 }}>(optional)</span></label>
+              <label style={S.label}>System Prompt <span style={{ color: '#8B8B99', fontWeight: 400 }}>(optional)</span></label>
               <textarea style={{ ...S.input, resize: 'vertical', minHeight: 100 }} value={settings.system_prompt} onChange={e => setSettings(s => ({ ...s, system_prompt: e.target.value }))} />
               <p style={S.hint}>Custom AI instructions. Leave blank for sensible defaults.</p>
             </div>
@@ -320,8 +320,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
           </form>
 
           <div style={{ ...S.card, marginTop: 20, borderColor: 'rgba(239,68,68,.2)' }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>Danger Zone</div>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Permanently delete this chatbot and all its data.</p>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#ECECF1', marginBottom: 8 }}>Danger Zone</div>
+            <p style={{ fontSize: 13, color: '#8B8B99', marginBottom: 16 }}>Permanently delete this chatbot and all its data.</p>
             <DeleteBotButton botId={bot.id} />
           </div>
         </div>
@@ -330,8 +330,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
       {tab === 'triggers' && (
         <div style={{ maxWidth: 680 }}>
           <div style={S.card}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>Proactive Triggers</div>
-            <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Auto-open the chat widget based on visitor behavior.</p>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#ECECF1', marginBottom: 4 }}>Proactive Triggers</div>
+            <p style={{ fontSize: 13, color: '#8B8B99', marginBottom: 20 }}>Auto-open the chat widget based on visitor behavior.</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24, padding: 16, background: '#0a0c12', borderRadius: 10 }}>
               <div>
@@ -381,14 +381,14 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
                 {triggers.map((t, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: '#0a0c12', borderRadius: 8 }}>
                     <div style={{ flex: 1, fontSize: 13 }}>
-                      <div style={{ fontWeight: 700, color: '#6366f1', marginBottom: 2 }}>
+                      <div style={{ fontWeight: 700, color: '#8b7bf0', marginBottom: 2 }}>
                         {t.type === 'time_on_page' ? `Time on Page: ${t.value}s` : t.type === 'exit_intent' ? 'Exit Intent' : t.type === 'return_visitor' ? 'Return Visitor' : `URL Contains: ${t.value}`}
                       </div>
                       {t.message && <div style={{ color: '#94a3b8' }}>"{t.message}"</div>}
                     </div>
                     <button
                       onClick={() => removeTrigger(i)}
-                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b', padding: 4 }}
+                      style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#8B8B99', padding: 4 }}
                       title="Remove trigger"
                     >
                       <Trash2 size={14} />
@@ -413,8 +413,8 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
       {tab === 'leads' && (
         <div>
           {leads.length === 0 ? (
-            <div style={{ background: '#0d1018', border: '1px solid #1a2035', borderRadius: 12, padding: '48px 24px', textAlign: 'center' }}>
-              <p style={{ color: '#64748b', fontSize: 14 }}>No leads captured yet. When your bot can't answer a question, it'll capture the visitor's email here.</p>
+            <div style={{ background: '#141419', border: '1px solid #262631', borderRadius: 12, padding: '48px 24px', textAlign: 'center' }}>
+              <p style={{ color: '#8B8B99', fontSize: 14 }}>No leads captured yet. When your bot can't answer a question, it'll capture the visitor's email here.</p>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -422,13 +422,13 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
                 <div key={l.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, background: 'rgba(249,115,22,.06)', border: '1px solid rgba(249,115,22,.2)', borderRadius: 12, padding: 16 }}>
                   <div style={{ width: 8, height: 8, background: '#f97316', borderRadius: '50%', flexShrink: 0, marginTop: 4 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0', marginBottom: 4 }}>
-                      <a href={`mailto:${l.visitor_email}`} style={{ color: '#6366f1', textDecoration: 'none' }}>{l.visitor_email}</a>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#ECECF1', marginBottom: 4 }}>
+                      <a href={`mailto:${l.visitor_email}`} style={{ color: '#8b7bf0', textDecoration: 'none' }}>{l.visitor_email}</a>
                     </div>
                     {l.question && <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 4 }}>"{l.question}"</div>}
-                    <div style={{ fontSize: 11, color: '#64748b' }}>{new Date(l.created_at).toLocaleString()}</div>
+                    <div style={{ fontSize: 11, color: '#8B8B99' }}>{new Date(l.created_at).toLocaleString()}</div>
                   </div>
-                  <a href={`mailto:${l.visitor_email}`} style={{ fontSize: 12, padding: '6px 12px', background: '#6366f1', color: '#fff', borderRadius: 6, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}>
+                  <a href={`mailto:${l.visitor_email}`} style={{ fontSize: 12, padding: '6px 12px', background: '#8b7bf0', color: '#fff', borderRadius: 6, textDecoration: 'none', fontWeight: 600, flexShrink: 0 }}>
                     Reply
                   </a>
                 </div>
@@ -460,7 +460,7 @@ function DeleteBotButton({ botId }: { botId: string }) {
         <button onClick={doDelete} disabled={deleting} style={{ background: '#ef4444', color: '#fff', fontSize: 13, fontWeight: 700, padding: '6px 16px', borderRadius: 7, border: 'none', cursor: 'pointer' }}>
           {deleting ? 'Deleting…' : 'Yes, delete'}
         </button>
-        <button onClick={() => setConfirm(false)} style={{ background: 'transparent', color: '#64748b', fontSize: 13, padding: '6px 12px', border: '1px solid #1a2035', borderRadius: 7, cursor: 'pointer' }}>
+        <button onClick={() => setConfirm(false)} style={{ background: 'transparent', color: '#8B8B99', fontSize: 13, padding: '6px 12px', border: '1px solid #262631', borderRadius: 7, cursor: 'pointer' }}>
           Cancel
         </button>
       </div>

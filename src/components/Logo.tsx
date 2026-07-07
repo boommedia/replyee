@@ -2,7 +2,7 @@ export default function Logo({ className, size = 'md' }: { className?: string; s
   const s = size === 'sm' ? { box: 34, br: 9, icon: 17 } : size === 'lg' ? { box: 56, br: 14, icon: 28 } : { box: 44, br: 11, icon: 22 }
   return (
     <div className={`flex items-center gap-[10px] ${className ?? ''}`}>
-      <div style={{ width: s.box, height: s.box, borderRadius: s.br, background: 'linear-gradient(145deg,#312E81,#4F46E5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{ width: s.box, height: s.box, borderRadius: s.br, background: 'linear-gradient(145deg,#6D5CE0,#8B7BF0)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <svg width={s.icon} height={s.icon} viewBox="0 0 24 24" fill="none">
           <path d="M20 4H4C2.9 4 2 4.9 2 6v10c0 1.1.9 2 2 2h4l3.3 3.3c.4.4 1 .4 1.4 0L16 18h4c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" fill="white" opacity="0.15" stroke="white" strokeWidth="1.5"/>
           <path d="M12 8l.7 2.1L15 11l-2.3.9L12 14l-.7-2.1L9 11l2.3-.9L12 8z" fill="white"/>

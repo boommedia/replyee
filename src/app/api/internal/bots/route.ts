@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const userId: string         = body.userId
     const restaurantName: string = body.restaurantName
-    const accentColor: string    = body.accentColor    ?? '#6366f1'
+    const accentColor: string    = body.accentColor    ?? '#8b7bf0'
     const greetingMessage: string | undefined = body.greetingMessage
     const systemPrompt: string | undefined    = body.systemPrompt
     const categories: MenuCategory[]          = body.categories ?? []

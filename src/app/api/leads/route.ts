@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
         subject: `New lead from ${bot.name} chatbot`,
         html: `
           <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 24px;">
-            <h2 style="color: #6366f1; margin-bottom: 8px;">New Lead Captured</h2>
+            <h2 style="color: #8b7bf0; margin-bottom: 8px;">New Lead Captured</h2>
             <p style="color: #64748b; margin-bottom: 24px;">Someone left their contact details on your <strong>${bot.name}</strong> chatbot.</p>
             <div style="background: #f8fafc; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
               <p style="margin: 0 0 8px; font-size: 13px; color: #64748b;">Visitor Email</p>

@@ -60,7 +60,7 @@ export default async function BotDetailPage({ params, searchParams }: Props) {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
-        <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#64748b', textDecoration: 'none', fontSize: 13 }}>
+        <Link href="/dashboard/bots" style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#8B8B99', textDecoration: 'none', fontSize: 13 }}>
           <ArrowLeft size={14} /> My Chatbots
         </Link>
       </div>
