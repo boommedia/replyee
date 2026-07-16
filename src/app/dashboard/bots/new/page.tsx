@@ -93,20 +93,33 @@ export default function NewBotPage() {
 
           <div style={S.group}>
             <label style={S.label}>Accent Color</label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10, alignItems: 'center' }}>
               {COLORS.map(c => (
                 <button
                   key={c} type="button"
                   onClick={() => set('accent_color', c)}
+                  title={c}
                   style={{
                     width: 32, height: 32, borderRadius: 8, background: c, border: 'none', cursor: 'pointer',
-                    outline: form.accent_color === c ? '3px solid #fff' : 'none',
+                    outline: form.accent_color.toLowerCase() === c.toLowerCase() ? '3px solid #fff' : 'none',
                     outlineOffset: 2,
                   }}
                 />
               ))}
+              {/* Custom color — opens the native picker for any color */}
+              <label title="Pick any color" style={{ position: 'relative', width: 32, height: 32, borderRadius: 8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'conic-gradient(from 90deg, #f43f5e, #eab308, #4ade80, #14b8a6, #8b7bf0, #a855f7, #f43f5e)', border: '1px solid #262631' }}>
+                <span style={{ position: 'absolute', inset: 0, borderRadius: 8, boxShadow: 'inset 0 0 0 3px #141419' }} />
+                <span style={{ position: 'relative', fontSize: 15, fontWeight: 800, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,.5)' }}>+</span>
+                <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(form.accent_color) ? form.accent_color : '#8b7bf0'}
+                  onChange={e => set('accent_color', e.target.value)}
+                  style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }} />
+              </label>
             </div>
-            <input style={{ ...S.input, fontFamily: 'monospace', width: 140 }} value={form.accent_color} onChange={e => set('accent_color', e.target.value)} />
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <div style={{ width: 38, height: 38, borderRadius: 8, background: form.accent_color, border: '1px solid #262631', flexShrink: 0 }} />
+              <input style={{ ...S.input, fontFamily: 'monospace', width: 140 }} value={form.accent_color}
+                onChange={e => set('accent_color', e.target.value)} placeholder="#8b7bf0" />
+            </div>
           </div>
 
           <div style={S.group}>

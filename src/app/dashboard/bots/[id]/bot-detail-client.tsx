@@ -299,9 +299,24 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
             </div>
             <div style={S.group}>
               <label style={S.label}>Accent Color</label>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10, alignItems: 'center' }}>
+                {['#8b7bf0', '#a99bf5', '#4ade80', '#f97316', '#f43f5e', '#a855f7', '#eab308', '#14b8a6'].map(c => (
+                  <button key={c} type="button" title={c}
+                    onClick={() => setSettings(s => ({ ...s, accent_color: c }))}
+                    style={{ width: 30, height: 30, borderRadius: 8, background: c, border: 'none', cursor: 'pointer',
+                      outline: settings.accent_color.toLowerCase() === c.toLowerCase() ? '3px solid #fff' : 'none', outlineOffset: 2 }} />
+                ))}
+                <label title="Pick any color" style={{ position: 'relative', width: 30, height: 30, borderRadius: 8, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'conic-gradient(from 90deg, #f43f5e, #eab308, #4ade80, #14b8a6, #8b7bf0, #a855f7, #f43f5e)', border: '1px solid #262631' }}>
+                  <span style={{ position: 'absolute', inset: 0, borderRadius: 8, boxShadow: 'inset 0 0 0 3px #141419' }} />
+                  <span style={{ position: 'relative', fontSize: 14, fontWeight: 800, color: '#fff', textShadow: '0 1px 2px rgba(0,0,0,.5)' }}>+</span>
+                  <input type="color" value={/^#[0-9a-fA-F]{6}$/.test(settings.accent_color) ? settings.accent_color : '#8b7bf0'}
+                    onChange={e => setSettings(s => ({ ...s, accent_color: e.target.value }))}
+                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }} />
+                </label>
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <input style={{ ...S.input, flex: 1 }} value={settings.accent_color} onChange={e => setSettings(s => ({ ...s, accent_color: e.target.value }))} />
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: settings.accent_color, flexShrink: 0 }} />
+                <div style={{ width: 40, height: 40, borderRadius: 8, background: settings.accent_color, border: '1px solid #262631', flexShrink: 0 }} />
+                <input style={{ ...S.input, flex: 1, fontFamily: 'monospace' }} value={settings.accent_color} placeholder="#8b7bf0" onChange={e => setSettings(s => ({ ...s, accent_color: e.target.value }))} />
               </div>
             </div>
             <div style={S.group}>
