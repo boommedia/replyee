@@ -60,7 +60,14 @@ export async function POST(req: NextRequest) {
       })
       context = chunks?.map((c: { content: string }) => c.content).join('\n\n---\n\n') ?? ''
     } catch {
-      // Embedding unavailable — proceed with system prompt only
+      // No embedding provider (Claude-only KBs). Load the whole knowledge base —
+      // small per-site KBs fit in Claude's context, so vector search isn't needed.
+      const { data: allChunks } = await supabase
+        .from('replyee_knowledge_chunks')
+        .select('content')
+        .eq('chatbot_id', botId)
+        .limit(60)
+      context = allChunks?.map((c: { content: string }) => c.content).join('\n\n---\n\n') ?? ''
     }
 
     const systemPrompt = bot.system_prompt ??

@@ -55,7 +55,20 @@ export async function POST(req: NextRequest) {
     }
 
     const chunks = chunkText(text)
-    const embeddings = await embedBatch(chunks)
+
+    // Embeddings are optional. If an embedding provider (OpenAI) is configured,
+    // store vectors for similarity search. If not, store the raw content with a
+    // null embedding — the chat route falls back to loading the whole (small)
+    // KB into Claude's context, so no vector provider is required.
+    let embeddings: (number[] | null)[]
+    let mode: 'vector' | 'claude-context'
+    try {
+      embeddings = await embedBatch(chunks)
+      mode = 'vector'
+    } catch {
+      embeddings = chunks.map(() => null)
+      mode = 'claude-context'
+    }
 
     const rows = chunks.map((content, i) => ({
       chatbot_id: botId,
@@ -68,7 +81,7 @@ export async function POST(req: NextRequest) {
     const { error } = await admin.from('replyee_knowledge_chunks').insert(rows)
     if (error) throw error
 
-    return NextResponse.json({ botId, chunksIngested: rows.length, source: sourceName ?? url ?? 'text' })
+    return NextResponse.json({ botId, chunksIngested: rows.length, mode, source: sourceName ?? url ?? 'text' })
   } catch (err) {
     console.error('[/api/internal/ingest]', err)
     return NextResponse.json({ error: 'Internal server error', detail: err instanceof Error ? err.message : String(err) }, { status: 500 })
