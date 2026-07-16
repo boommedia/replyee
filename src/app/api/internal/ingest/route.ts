@@ -8,11 +8,13 @@ export const dynamic = 'force-dynamic'
 
 // Vercel strips the Authorization header on the public domains (same lesson
 // as Displayee's partner API), so accept the secret via ?key= as well.
+// Trim both sides — env values and pasted keys often carry stray whitespace.
 function verifySecret(req: NextRequest) {
-  const secret = process.env.BOO_API_SECRET
+  const secret = (process.env.BOO_API_SECRET ?? '').trim()
   if (!secret) return false
-  if (req.headers.get('authorization') === `Bearer ${secret}`) return true
-  return req.nextUrl.searchParams.get('key') === secret
+  const bearer = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '').trim()
+  if (bearer && bearer === secret) return true
+  return (req.nextUrl.searchParams.get('key') ?? '').trim() === secret
 }
 
 // Internal (secret-authed) knowledge ingest for an EXISTING bot — the
