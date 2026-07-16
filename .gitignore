@@ -42,3 +42,4 @@ Thumbs.db
 *.pem
 
 .vercel
+.env.vercel-pull
