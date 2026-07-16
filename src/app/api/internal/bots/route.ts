@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       }
       const content = lines.join('\n')
 
-      const embedding = await embedText(content)
+      const embedding = await embedText(content).catch(() => null)
       await supabase.from('replyee_knowledge_chunks').insert({
         chatbot_id: bot.id,
         content,
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     // Ingest restaurant info (address, phone, hours, policies) as a single chunk
     if (restaurantInfo && Object.values(restaurantInfo).some(Boolean)) {
       const content = buildInfoChunk(restaurantName, restaurantInfo)
-      const embedding = await embedText(content)
+      const embedding = await embedText(content).catch(() => null)
       await supabase.from('replyee_knowledge_chunks').insert({
         chatbot_id: bot.id,
         content,
@@ -190,7 +190,7 @@ export async function PUT(req: NextRequest) {
       }
       const content = lines.join('\n')
 
-      const embedding = await embedText(content)
+      const embedding = await embedText(content).catch(() => null)
       await supabase.from('replyee_knowledge_chunks').insert({
         chatbot_id: botId,
         content,
@@ -217,7 +217,7 @@ export async function PUT(req: NextRequest) {
 
       if (bot) {
         const content = buildInfoChunk(bot.name, restaurantInfo)
-        const embedding = await embedText(content)
+        const embedding = await embedText(content).catch(() => null)
         await Promise.all([
           supabase.from('replyee_knowledge_chunks').insert({
             chatbot_id: botId,

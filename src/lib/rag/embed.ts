@@ -20,6 +20,20 @@ export async function embedBatch(texts: string[]): Promise<number[][]> {
   return response.data.map(d => d.embedding)
 }
 
+/**
+ * Embed chunks if an embedding provider (OpenAI) is configured; otherwise
+ * return nulls. Small per-site KBs work without vectors — the chat route
+ * loads the whole KB into Claude's context when embeddings are absent.
+ */
+export async function embedChunksOptional(chunks: string[]): Promise<{ embeddings: (number[] | null)[]; mode: 'vector' | 'claude-context' }> {
+  try {
+    const embeddings = await embedBatch(chunks)
+    return { embeddings, mode: 'vector' }
+  } catch {
+    return { embeddings: chunks.map(() => null), mode: 'claude-context' }
+  }
+}
+
 export function chunkText(text: string, chunkSize = 500, overlap = 50): string[] {
   const words = text.split(/\s+/)
   const chunks: string[] = []

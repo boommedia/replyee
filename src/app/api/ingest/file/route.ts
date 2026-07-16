@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { chunkText, embedBatch } from '@/lib/rag/embed'
+import { chunkText, embedChunksOptional } from '@/lib/rag/embed'
 import pdfParse from 'pdf-parse'
 
 export async function POST(req: NextRequest) {
@@ -22,13 +22,17 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
     let text = ''
 
-    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+    const nameLc = file.name.toLowerCase()
+    if (file.type === 'application/pdf' || nameLc.endsWith('.pdf')) {
       const parsed = await pdfParse(buffer)
       text = parsed.text
-    } else if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
+    } else if (
+      file.type.startsWith('text/') ||
+      nameLc.endsWith('.txt') || nameLc.endsWith('.md') || nameLc.endsWith('.markdown') || nameLc.endsWith('.csv')
+    ) {
       text = buffer.toString('utf-8')
     } else {
-      return NextResponse.json({ error: 'Only PDF and TXT files are supported' }, { status: 400 })
+      return NextResponse.json({ error: 'Supported files: PDF, TXT, Markdown (.md), CSV' }, { status: 400 })
     }
 
     text = text.replace(/\s+/g, ' ').trim()
@@ -37,7 +41,7 @@ export async function POST(req: NextRequest) {
     }
 
     const chunks = chunkText(text)
-    const embeddings = await embedBatch(chunks)
+    const { embeddings } = await embedChunksOptional(chunks)
 
     const admin = createAdminClient()
     const rows = chunks.map((content, i) => ({

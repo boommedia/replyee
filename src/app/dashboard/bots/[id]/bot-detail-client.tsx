@@ -10,6 +10,7 @@ interface TriggerRule { type: string; value: string; message?: string }
 interface Chatbot {
   id: string; name: string; website_url: string | null; accent_color: string
   system_prompt: string | null; greeting_message: string; fallback_message: string
+  widget_position: string | null
   chunk_count: number; conversation_count: number; lead_count: number; is_active: boolean
   triggers: TriggerRule[]
 }
@@ -38,10 +39,15 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
   const [urlError, setUrlError] = useState('')
   const [fileLoading, setFileLoading] = useState(false)
   const [uploadMsg, setUploadMsg] = useState('')
+  const [showText, setShowText] = useState(false)
+  const [textInput, setTextInput] = useState('')
+  const [textName, setTextName] = useState('')
+  const [textLoading, setTextLoading] = useState(false)
   const [settings, setSettings] = useState({
     name: bot.name, website_url: bot.website_url ?? '',
     greeting_message: bot.greeting_message, fallback_message: bot.fallback_message,
     system_prompt: bot.system_prompt ?? '', accent_color: bot.accent_color,
+    widget_position: bot.widget_position ?? 'bottom-right',
   })
   const [settingsSaving, setSettingsSaving] = useState(false)
   const [settingsMsg, setSettingsMsg] = useState('')
@@ -104,6 +110,27 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
     } finally {
       setFileLoading(false)
       e.target.value = ''
+    }
+  }
+
+  async function ingestText() {
+    if (!textInput.trim()) return
+    setTextLoading(true)
+    setUrlError('')
+    try {
+      const res = await fetch('/api/ingest/text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ botId: bot.id, text: textInput, sourceName: textName.trim() || undefined }),
+      })
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? 'Failed') }
+      setTextInput(''); setTextName(''); setShowText(false)
+      setUploadMsg('Text added to the knowledge base!')
+      router.refresh()
+    } catch (e: unknown) {
+      setUrlError(e instanceof Error ? e.message : 'Failed to add text')
+    } finally {
+      setTextLoading(false)
     }
   }
 
@@ -212,12 +239,34 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
               <button onClick={ingestUrl} disabled={urlLoading} style={S.btnGhost}>
                 <Globe size={13} /> {urlLoading ? 'Scraping…' : 'Add URL'}
               </button>
+              <button onClick={() => setShowText(v => !v)} style={S.btnGhost}>
+                <FileText size={13} /> Paste text
+              </button>
               <label style={{ ...S.btn, cursor: 'pointer' }}>
-                <Upload size={13} /> {fileLoading ? 'Uploading…' : 'Upload PDF'}
-                <input type="file" accept=".pdf,.txt" onChange={ingestFile} style={{ display: 'none' }} disabled={fileLoading} />
+                <Upload size={13} /> {fileLoading ? 'Uploading…' : 'Upload file'}
+                <input type="file" accept=".pdf,.txt,.md,.markdown,.csv" onChange={ingestFile} style={{ display: 'none' }} disabled={fileLoading} />
               </label>
             </div>
           </div>
+
+          {showText && (
+            <div style={{ background: '#141419', border: '1px solid #262631', borderRadius: 12, padding: 16, marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1' }}>Paste text or Markdown</div>
+                <input value={textName} onChange={e => setTextName(e.target.value)} placeholder="Source label (optional)"
+                  style={{ ...S.input, width: 220, padding: '7px 11px', fontSize: 12.5 }} />
+              </div>
+              <textarea value={textInput} onChange={e => setTextInput(e.target.value)} rows={7}
+                placeholder="Paste FAQs, policies, service details, Markdown docs — anything the bot should know…"
+                style={{ ...S.input, resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.5 }} />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 10 }}>
+                <button onClick={() => { setShowText(false); setTextInput(''); setTextName('') }} style={{ ...S.btnGhost, background: 'transparent', border: '1px solid #262631', color: '#8B8B99' }}>Cancel</button>
+                <button onClick={ingestText} disabled={textLoading || !textInput.trim()} style={{ ...S.btn, opacity: textLoading || !textInput.trim() ? 0.5 : 1 }}>
+                  <Plus size={13} /> {textLoading ? 'Adding…' : 'Add to knowledge base'}
+                </button>
+              </div>
+            </div>
+          )}
 
           {(urlError || uploadMsg) && (
             <div style={{ background: urlError ? 'rgba(248,113,113,.1)' : 'rgba(74,222,128,.1)', border: `1px solid ${urlError ? 'rgba(248,113,113,.3)' : 'rgba(74,222,128,.3)'}`, borderRadius: 8, padding: '10px 14px', fontSize: 13, color: urlError ? '#f87171' : '#4ade80', marginBottom: 16 }}>
@@ -318,6 +367,14 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
                 <div style={{ width: 40, height: 40, borderRadius: 8, background: settings.accent_color, border: '1px solid #262631', flexShrink: 0 }} />
                 <input style={{ ...S.input, flex: 1, fontFamily: 'monospace' }} value={settings.accent_color} placeholder="#8b7bf0" onChange={e => setSettings(s => ({ ...s, accent_color: e.target.value }))} />
               </div>
+            </div>
+            <div style={S.group}>
+              <label style={S.label}>Widget Position</label>
+              <select style={{ ...S.input, cursor: 'pointer' }} value={settings.widget_position} onChange={e => setSettings(s => ({ ...s, widget_position: e.target.value }))}>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+              </select>
+              <p style={S.hint}>Which corner the chat bubble sits in on your site.</p>
             </div>
             <div style={S.group}>
               <label style={S.label}>System Prompt <span style={{ color: '#8B8B99', fontWeight: 400 }}>(optional)</span></label>
