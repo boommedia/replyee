@@ -6,10 +6,13 @@ import * as cheerio from 'cheerio'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+// Vercel strips the Authorization header on the public domains (same lesson
+// as Displayee's partner API), so accept the secret via ?key= as well.
 function verifySecret(req: NextRequest) {
   const secret = process.env.BOO_API_SECRET
   if (!secret) return false
-  return req.headers.get('authorization') === `Bearer ${secret}`
+  if (req.headers.get('authorization') === `Bearer ${secret}`) return true
+  return req.nextUrl.searchParams.get('key') === secret
 }
 
 // Internal (secret-authed) knowledge ingest for an EXISTING bot — the
