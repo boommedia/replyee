@@ -27,7 +27,7 @@
   var lastPage       = null
   var heartbeatTimer = null
   var typingTimeout  = null
-  var config         = { accentColor: '#8b7bf0', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false, triggers: [] }
+  var config         = { accentColor: '#8b7bf0', name: 'Assistant', greeting: 'Hi! How can I help you today?', fallback: "I don't have that information. Can I take your email so someone can follow up?", handoff: false, triggers: [], position: 'bottom-right' }
 
   function makeUUID() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID()
@@ -61,41 +61,61 @@
   var style = document.createElement('style')
   style.textContent = [
     '#ry-widget *{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}',
-    '#ry-bubble{position:fixed;bottom:24px;right:24px;z-index:2147483646;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:transform .2s,box-shadow .2s;border:none}',
+    '#ry-bubble{position:fixed;bottom:24px;bottom:calc(24px + env(safe-area-inset-bottom, 0px));right:24px;z-index:2147483646;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:transform .2s,box-shadow .2s;border:none}',
     '#ry-bubble:hover{transform:scale(1.08);box-shadow:0 6px 28px rgba(0,0,0,0.4)}',
-    '#ry-window{position:fixed;bottom:90px;right:24px;z-index:2147483645;width:340px;height:520px;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,0.4);background:#0f1117;border:1px solid rgba(255,255,255,0.08);transform:scale(0.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}',
+    '#ry-window{position:fixed;bottom:90px;bottom:calc(90px + env(safe-area-inset-bottom, 0px));right:24px;z-index:2147483645;width:340px;height:520px;max-width:calc(100vw - 32px);max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 48px rgba(0,0,0,0.4);background:#0f1117;border:1px solid rgba(255,255,255,0.08);transform:scale(0.92) translateY(16px);opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}',
     '#ry-window.ry-open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}',
     '#ry-header{display:flex;align-items:center;gap:10px;padding:14px 16px;flex-shrink:0}',
     '#ry-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}',
     '#ry-bot-name{font-size:14px;font-weight:700;color:#fff}',
     '#ry-status{font-size:11px;color:rgba(255,255,255,0.6)}',
-    '#ry-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}',
+    '#ry-messages{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:12px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.1) transparent}',
     '.ry-msg{max-width:84%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.55;word-wrap:break-word;animation:ry-fadein .18s ease}',
     '.ry-bot{background:rgba(255,255,255,0.07);color:#e2e8f0;border-radius:12px 12px 12px 3px;align-self:flex-start}',
     '.ry-user{color:#fff;border-radius:12px 12px 3px 12px;align-self:flex-end}',
     '.ry-typing{display:flex;gap:4px;padding:12px 14px}',
     '.ry-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4);animation:ry-bounce 1.2s infinite}',
     '.ry-dot:nth-child(2){animation-delay:.2s}.ry-dot:nth-child(3){animation-delay:.4s}',
-    '#ry-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;background:#0a0c12}',
-    '#ry-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 12px;font-size:13px;color:#e2e8f0;outline:none;resize:none}',
+    '#ry-input-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid rgba(255,255,255,0.07);flex-shrink:0;background:#0a0c12}',
+    '#ry-input{flex:1;min-width:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:9px 12px;font-size:16px;color:#e2e8f0;outline:none;resize:none}',
     '#ry-input::placeholder{color:rgba(255,255,255,0.3)}',
-    '#ry-send{width:36px;height:36px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}',
+    '#ry-send{width:40px;height:40px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}',
     '#ry-send:disabled{opacity:0.4;cursor:not-allowed}',
     '#ry-lead-form{padding:16px;background:#0a0c12;border-top:1px solid rgba(255,255,255,0.07)}',
-    '#ry-lead-form input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px 12px;font-size:13px;color:#e2e8f0;outline:none;margin-bottom:8px}',
+    '#ry-lead-form input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:10px 12px;font-size:16px;color:#e2e8f0;outline:none;margin-bottom:8px}',
     '#ry-lead-form input::placeholder{color:rgba(255,255,255,0.3)}',
-    '#ry-lead-btn{width:100%;border:none;border-radius:8px;padding:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer}',
-    '#ry-branding{text-align:center;font-size:10px;color:rgba(255,255,255,0.25);padding:6px;flex-shrink:0}',
+    '#ry-lead-btn{width:100%;min-height:44px;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;color:#fff;cursor:pointer}',
+    '#ry-branding{text-align:center;font-size:10px;color:rgba(255,255,255,0.25);padding:6px 6px calc(6px + env(safe-area-inset-bottom, 0px));flex-shrink:0}',
     '#ry-branding a{color:inherit;text-decoration:none}',
     '#ry-quick-actions{display:flex;gap:6px;flex-wrap:wrap;padding:0 12px 10px}',
-    '.ry-qa{background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:rgba(255,255,255,0.75);font-size:11px;padding:5px 10px;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:4px}',
+    '.ry-qa{background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:20px;color:rgba(255,255,255,0.75);font-size:13px;line-height:1.2;min-height:36px;padding:9px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:4px}',
     '.ry-qa:hover{border-color:rgba(255,255,255,0.4);color:#fff;background:rgba(255,255,255,0.06)}',
     '.ry-agent{background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.25);color:#e2e8f0;border-radius:12px 12px 12px 3px;align-self:flex-start}',
     '.ry-agent-label{font-size:10px;color:#4ade80;font-weight:700;margin-bottom:3px}',
-    '#ry-human-btn{background:transparent;border:none;color:rgba(255,255,255,0.45);font-size:11px;cursor:pointer;padding:4px 0;text-decoration:underline;align-self:center;flex-shrink:0}',
+    '#ry-human-btn{background:transparent;border:none;color:rgba(255,255,255,0.45);font-size:13px;line-height:1.2;min-height:44px;cursor:pointer;padding:10px 14px;text-decoration:underline;align-self:center;flex-shrink:0}',
     '#ry-human-btn:hover{color:#fff}',
+    '#ry-close{flex-shrink:0}',
     '@keyframes ry-fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}',
     '@keyframes ry-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}',
+    // ── Large phones / small tablets: keep the floating window, clamp it ──
+    '@media (min-width:481px) and (max-width:900px){',
+    '  #ry-window{max-width:calc(100vw - 32px);max-height:calc(100vh - 110px);max-height:calc(100dvh - 110px)}',
+    '}',
+    // ── Small phones: full-screen sheet (Intercom/Crisp style) ──
+    '@media (max-width:480px){',
+    '  #ry-window{top:0 !important;right:0 !important;bottom:0 !important;left:0 !important;width:100% !important;max-width:100% !important;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;border-radius:0;border:none;box-shadow:none}',
+    '  #ry-widget.ry-fullscreen #ry-bubble{display:none}',
+    '  #ry-header{padding:12px 12px;min-height:56px}',
+    '  #ry-close{width:44px !important;height:44px !important;padding:0 !important;border-radius:10px}',
+    '  #ry-messages{padding:12px 12px 4px}',
+    '  #ry-widget input,#ry-widget textarea{font-size:16px}',
+    '  #ry-input{padding:11px 12px}',
+    '  #ry-send{width:44px;height:44px}',
+    '  .ry-qa{min-height:44px;font-size:14px;padding:11px 16px}',
+    '  #ry-human-btn{min-height:44px;font-size:14px}',
+    '  #ry-input-row{padding-bottom:10px}',
+    '  #ry-branding{padding-bottom:calc(6px + env(safe-area-inset-bottom, 0px))}',
+    '}',
   ].join('')
   document.head.appendChild(style)
 
@@ -135,7 +155,7 @@
     '    <div id="ry-bot-name">' + config.name + '</div>',
     '    <div id="ry-status">&#9679; Online</div>',
     '  </div>',
-    '  <button id="ry-close" style="margin-left:auto;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:4px;">' + svgClose() + '</button>',
+    '  <button id="ry-close" aria-label="Close chat" style="margin-left:auto;background:transparent;border:none;color:rgba(255,255,255,0.5);cursor:pointer;padding:0;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;">' + svgClose() + '</button>',
     '</div>',
     '<div id="ry-messages"></div>',
     '<div id="ry-quick-actions" style="display:none"></div>',
@@ -185,6 +205,15 @@
     }
   }
 
+  // ── Widget position (bottom-right default, or bottom-left) ──
+  function applyPosition(pos) {
+    var left = pos === 'bottom-left'
+    bubble.style.right = left ? 'auto' : '24px'
+    bubble.style.left  = left ? '24px' : 'auto'
+    win.style.right    = left ? 'auto' : '24px'
+    win.style.left     = left ? '24px' : 'auto'
+  }
+
   // ── Load bot config ────────────────────────────────────────
   function loadBotConfig() {
     fetch(API_BASE + '/api/bot-config?id=' + BOT_ID)
@@ -192,6 +221,7 @@
       .then(function (data) {
         if (!data) return
         config = Object.assign(config, data)
+        applyPosition(config.position)
         bubble.style.background = config.accentColor
         win.querySelector('#ry-avatar').style.background = config.accentColor
         win.querySelector('#ry-send').style.background   = config.accentColor
@@ -340,6 +370,8 @@
   function openChat() {
     isOpen = true
     win.classList.add('ry-open')
+    // Lets the mobile stylesheet hide the launcher bubble behind the full-screen sheet
+    widget.classList.add('ry-fullscreen')
     bubble.innerHTML = svgClose()
     bubble.setAttribute('aria-label', 'Close chat')
     setTimeout(function () { input.focus() }, 240)
@@ -348,6 +380,7 @@
   function closeChat() {
     isOpen = false
     win.classList.remove('ry-open')
+    widget.classList.remove('ry-fullscreen')
     bubble.innerHTML = svgChat()
     bubble.setAttribute('aria-label', 'Open chat')
   }

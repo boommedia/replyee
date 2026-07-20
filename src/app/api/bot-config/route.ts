@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
   const supabase = createAdminClient()
   const { data: bot } = await supabase
     .from('replyee_chatbots')
-    .select('name, accent_color, greeting_message, fallback_message, is_active, triggers, restaurant_address, restaurant_phone, restaurant_hours, restaurant_website')
+    .select('name, accent_color, greeting_message, fallback_message, widget_position, is_active, triggers, restaurant_address, restaurant_phone, restaurant_hours, restaurant_website')
     .eq('id', id)
     .maybeSingle()
 
@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
       accentColor: bot.accent_color,
       greeting: bot.greeting_message,
       fallback: bot.fallback_message,
+      position: bot.widget_position || 'bottom-right',
       handoff: true,
       triggers: bot.triggers || [],
       restaurantAddress: bot.restaurant_address || null,
