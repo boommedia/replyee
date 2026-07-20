@@ -102,7 +102,7 @@ export default function Home() {
     <main style={{ background: BG, minHeight: '100vh', color: '#fff', fontFamily: 'inherit', overflowX: 'hidden' }}>
 
       {/* ── Announcement Banner ── */}
-      <div style={{ background: '#050710', borderBottom: `1px solid ${BORDER}`, padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, fontSize: 13 }}>
+      <div style={{ background: '#141419', borderBottom: `1px solid ${BORDER}`, padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, fontSize: 13 }}>
         <span style={{ color: ACCENT, fontWeight: 800 }}>✦ Early Access Open</span>
         <span style={{ color: BODY }}>— 50% off for life · Code:</span>
         <span style={{ color: '#fff', fontWeight: 900, fontFamily: 'monospace', background: BORDER, padding: '2px 8px', borderRadius: 4 }}>REPLY50</span>
@@ -116,7 +116,7 @@ export default function Home() {
       </div>
 
       {/* ── Nav ── */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 48px', borderBottom: `1px solid ${BORDER}`, background: 'rgba(7,8,15,0.9)', backdropFilter: 'blur(16px)', position: 'sticky', top: 0, zIndex: 50 }}>
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 48px', borderBottom: `1px solid ${BORDER}`, background: 'rgba(11,11,15,0.9)', backdropFilter: 'blur(16px)', position: 'sticky', top: 0, zIndex: 50 }}>
         <Logo />
         <div style={{ display: 'flex', alignItems: 'center', gap: 28, fontSize: 13, color: BODY }}>
           <a href="#features" style={{ color: 'inherit', textDecoration: 'none' }}>Features</a>
@@ -186,7 +186,7 @@ export default function Home() {
               {/* Floating chat widget */}
               <div style={{ position: 'absolute', bottom: 20, right: 20 }}>
                 {/* Chat window */}
-                <div style={{ background: '#0f1420', border: `1px solid ${BORDER}`, borderRadius: 14, width: 260, marginBottom: 12, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+                <div style={{ background: '#141419', border: `1px solid ${BORDER}`, borderRadius: 14, width: 260, marginBottom: 12, overflow: 'hidden', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
                   <div style={{ background: PRIMARY, padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <div style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <MessageSquare size={13} color="#fff" />

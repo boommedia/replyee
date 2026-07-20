@@ -1,0 +1,268 @@
+/* ============================================================================
+   boom-theme.css — Boom Media shared brand layer ("Graphite Violet")
+   ----------------------------------------------------------------------------
+   Version:  1.0.0  (2026-07-20)
+   Docs:     SaaS/html/brand/saas-landing-pages-design-audit.html
+
+   ONE BRAND, FOURTEEN APPS.
+   Distributed by file copy, exactly like boom-responsive.css — that pattern is
+   proven across all 14 apps. Do not edit per app: change this file, re-copy.
+
+   HOW TO ENABLE
+     1. Copy to src/styles/boom-theme.css
+     2. Import from src/app/globals.css, immediately AFTER the tailwindcss
+        import and BEFORE boom-responsive.css:
+            @import "tailwindcss";
+            @import "../styles/boom-theme.css";
+            @import "../styles/boom-responsive.css";
+
+   WHY THE ORDER MATTERS
+     @import must precede other rules to be spec-valid. Theme before responsive
+     so the responsive layer's !important overrides always win on mobile.
+
+   ============================================================================ */
+
+
+/* ---------------------------------------------------------------------------
+   LAYER 1 — Tailwind violet/purple ramp remap
+   The single most valuable trick in the suite, lifted from Bloggy.
+   Remapping the ramp means every existing `violet-600` / `purple-500` class in
+   any app instantly renders the brand accent — no markup changes at all.
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-violet-50:  #f2f0fe;
+  --color-violet-100: #e6e2fd;
+  --color-violet-200: #cdc5fb;
+  --color-violet-300: #b3a8f8;
+  --color-violet-400: #a99bf5;
+  --color-violet-500: #8b7bf0;   /* brand accent */
+  --color-violet-600: #6d5ce0;
+  --color-violet-700: #5646c4;
+  --color-violet-800: #43369b;
+  --color-violet-900: #342a78;
+  --color-violet-950: #1f1849;
+
+  /* purple-* aliases so either family resolves to the brand */
+  --color-purple-50:  #f2f0fe;
+  --color-purple-100: #e6e2fd;
+  --color-purple-200: #cdc5fb;
+  --color-purple-300: #b3a8f8;
+  --color-purple-400: #a99bf5;
+  --color-purple-500: #8b7bf0;
+  --color-purple-600: #6d5ce0;
+  --color-purple-700: #5646c4;
+  --color-purple-800: #43369b;
+  --color-purple-900: #342a78;
+  --color-purple-950: #1f1849;
+}
+
+
+/* ---------------------------------------------------------------------------
+   LAYER 2 — Canonical tokens
+   Vocabulary follows Approvee's (--accent / --bg / --surface / --border): it
+   was the only app with a light-mode implementation and an alpha ramp.
+   Legacy per-app names are aliased in Layer 3 so nothing breaks mid-migration.
+   --------------------------------------------------------------------------- */
+/* NOTE ON `:root:root` — this is deliberate, not a typo.
+   @import must precede all other rules to be spec-valid, so this file always
+   loads BEFORE each app's own :root block. At equal specificity the later rule
+   wins, which would make every token here inert. Repeating the selector raises
+   specificity (0,2,0) over a plain :root (0,1,0), and specificity beats source
+   order — so the shared tokens govern without editing 13 apps.
+
+   An app can still deliberately override by using :root:root itself. When an
+   app's legacy :root block is finally deleted, this can drop back to :root. */
+:root:root {
+  /* brand */
+  --accent:        #8b7bf0;
+  --accent-light:  #a99bf5;
+  --accent-dark:   #6D5CE0;
+  --accent-glow:   rgba(139, 123, 240, 0.15);
+
+  /* alpha ramp — for borders, hovers, focus rings, tinted fills */
+  --accent-a04: rgba(139, 123, 240, 0.04);
+  --accent-a08: rgba(139, 123, 240, 0.08);
+  --accent-a12: rgba(139, 123, 240, 0.12);
+  --accent-a16: rgba(139, 123, 240, 0.16);
+  --accent-a24: rgba(139, 123, 240, 0.24);
+  --accent-a32: rgba(139, 123, 240, 0.32);
+  --accent-a48: rgba(139, 123, 240, 0.48);
+
+  /* neutrals */
+  --bg:          #0B0B0F;
+  --surface:     #141419;
+  --surface-2:   #1B1B22;
+  --surface-3:   #24242E;
+  --border:      #262631;
+  --border-accent: rgba(139, 123, 240, 0.32);
+
+  /* text */
+  --fg:          #ECECF1;
+  --fg-dim:      #C8C8D8;
+  --muted:       #8B8B99;
+  --muted-dim:   #6E6E85;
+
+  /* semantic */
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger:  #f87171;
+  --info:    #60a5fa;
+
+  /* type */
+  --font-sans: var(--font-geist-sans), 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), 'Cascadia Code', Consolas, monospace;
+
+  /* shape */
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+
+/* ---------------------------------------------------------------------------
+   LAYER 3 — Legacy alias bridge
+   Each app invented its own token vocabulary. Rather than a risky rename sweep,
+   point the old names at the canonical ones. An app is migrated when its own
+   names stop appearing — but nothing breaks in the meantime.
+
+   Delete an app's block once that app no longer references those names.
+   --------------------------------------------------------------------------- */
+:root:root {
+  /* Bloggy / Signnee / Dashee / Compliee */
+  --primary:        var(--accent);
+  --primary-light:  var(--accent-light);
+  --primary-dark:   var(--accent-dark);
+  --glow:           var(--accent-glow);
+  --background:     var(--bg);
+  --foreground:     var(--fg);
+  --card-bg:        var(--surface);
+
+  /* Displayee */
+  --di-accent:      var(--accent);
+  --di-bg:          var(--bg);
+  --di-surface:     var(--surface);
+  --di-surface-2:   var(--surface-2);
+  --di-border:      var(--border);
+  --di-muted:       var(--muted);
+
+  /* Replyee */
+  --ry-primary:     var(--accent);
+  --ry-bg:          var(--bg);
+  --ry-surface:     var(--surface);
+  --ry-border:      var(--border);
+  --ry-muted:       var(--muted);
+
+  /* Assistee */
+  --as-primary:     var(--accent);
+  --as-bg:          var(--bg);
+  --as-surface:     var(--surface);
+  --as-border:      var(--border);
+  --as-muted:       var(--muted);
+}
+
+
+/* ---------------------------------------------------------------------------
+   LAYER 4 — Base document
+   Fixes the Arial-overrides-Geist bug centrally. Any app importing this file
+   gets the correct font stack even if its own globals.css never did.
+   --------------------------------------------------------------------------- */
+/* `html body` (0,0,2) outranks a plain `body` (0,0,1) declared later in an
+   app's own globals.css. Same reasoning as :root:root above — this is what
+   makes the central Arial fix actually take effect. */
+html body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection { background: var(--accent-a32); color: var(--fg); }
+
+:where(a) { color: var(--accent); }
+
+:where(:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+
+/* ---------------------------------------------------------------------------
+   LAYER 5 — Component primitives
+   Opt-in classes. They do not restyle anything unless applied, so adding this
+   file to an app changes nothing structurally — safe to roll out everywhere
+   before any app actually adopts them.
+   --------------------------------------------------------------------------- */
+
+/* buttons */
+.boom-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 11px 20px;                 /* 44px = WCAG target */
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: 0.94rem; font-weight: 700;
+  border: 1px solid transparent; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+}
+.boom-btn:active { transform: translateY(1px); }
+
+.boom-btn-primary { background: var(--accent); color: #0B0B0F; }
+.boom-btn-primary:hover { background: var(--accent-light); }
+
+.boom-btn-secondary {
+  background: var(--surface-2); color: var(--fg); border-color: var(--border);
+}
+.boom-btn-secondary:hover { background: var(--surface-3); border-color: var(--border-accent); }
+
+.boom-btn-ghost { background: transparent; color: var(--muted); }
+.boom-btn-ghost:hover { color: var(--fg); background: var(--surface-2); }
+
+/* cards */
+.boom-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+}
+.boom-card-raised { background: var(--surface-2); }
+.boom-card-accent { border-color: var(--border-accent); background: linear-gradient(135deg, var(--accent-a08), transparent); }
+
+/* badges / pills */
+.boom-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+  background: var(--accent-a12); color: var(--accent-light);
+  border: 1px solid var(--accent-a24);
+}
+.boom-badge-success { background: rgba(52,211,153,.12); color: var(--success); border-color: rgba(52,211,153,.24); }
+.boom-badge-warning { background: rgba(251,191,36,.12); color: var(--warning); border-color: rgba(251,191,36,.24); }
+.boom-badge-danger  { background: rgba(248,113,113,.12); color: var(--danger);  border-color: rgba(248,113,113,.24); }
+
+/* form controls — 16px prevents iOS zoom, matching boom-responsive.css */
+.boom-input {
+  width: 100%; min-height: 44px; padding: 11px 14px;
+  background: var(--surface-2); color: var(--fg);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-family: var(--font-sans); font-size: 16px;
+}
+.boom-input::placeholder { color: var(--muted-dim); }
+.boom-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-a16); }
+
+/* surfaces */
+.boom-surface { background: var(--surface); }
+.boom-hairline { border-bottom: 1px solid var(--border); }
+
+/* the suite's signature gradient headline */
+.boom-gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}
+
+/* the ambient hero glow used across landing pages */
+.boom-glow {
+  position: absolute; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+  filter: blur(80px);
+}
