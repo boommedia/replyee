@@ -82,21 +82,23 @@ export async function buildAgentConfigForBot(
     .filter(Boolean)
     .join('\n\n---\n\n')
 
+  const botName = bot.name ?? 'Assistant'
+
   // Identical default to /api/chat, so voice and chat answer the same way.
   const systemPrompt =
     bot.system_prompt ??
-    `You are a helpful AI assistant for ${bot.name}. Answer questions based only on the provided context. ` +
+    `You are a helpful AI assistant for ${botName}. Answer questions based only on the provided context. ` +
       `If the answer is not in the context, say so honestly and offer to connect the caller with the team.`
 
   return {
     chatbotId: bot.id,
     userId: bot.user_id,
-    botName: bot.name,
+    botName,
     config: {
-      name: bot.name,
+      name: botName,
       systemPrompt,
       // The bot's own greeting, but spoken. Falls back to a phone-shaped hello.
-      greeting: bot.greeting_message || `Thanks for calling ${bot.name}. How can I help?`,
+      greeting: bot.greeting_message || `Thanks for calling ${botName}. How can I help?`,
       voiceId: opts.voiceId,
       language: opts.language,
       knowledgeContext: knowledgeContext || undefined,
