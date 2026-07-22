@@ -35,15 +35,28 @@ export async function buildAgentConfigForBot(
 ): Promise<BotAgentSource | null> {
   const supabase = createAdminClient()
 
-  const { data: bot, error } = await supabase
+  type ChatbotRow = {
+    id: string
+    user_id: string
+    name: string | null
+    system_prompt: string | null
+    greeting_message: string | null
+    fallback_message: string | null
+    restaurant_address: string | null
+    restaurant_phone: string | null
+    restaurant_hours: string | null
+    restaurant_website: string | null
+  }
+
+  const { data, error } = await supabase
     .from('replyee_chatbots')
-    .select(
-      'id, user_id, name, system_prompt, greeting_message, fallback_message, ' +
-        'restaurant_address, restaurant_phone, restaurant_hours, restaurant_website'
-    )
+    .select('id, user_id, name, system_prompt, greeting_message, fallback_message, restaurant_address, restaurant_phone, restaurant_hours, restaurant_website')
     .eq('id', botId)
     .maybeSingle()
 
+  // Admin client is untyped, so supabase-js collapses the row to GenericStringError.
+  // Cast to the known shape (runtime unaffected).
+  const bot = data as unknown as ChatbotRow | null
   if (error || !bot) return null
 
   const { data: chunks } = await supabase
