@@ -3,28 +3,43 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { embedText } from '@/lib/rag/embed'
 
+// The chat widget runs on client domains and calls this endpoint cross-origin.
+// bot-config/handoff already send these headers; chat did not, so the preflight
+// OPTIONS returned no Access-Control-Allow-Origin and every browser blocked the
+// POST — surfacing to visitors as "Sorry, something went wrong." No cookies are
+// used (auth is the public botId), so a wildcard origin is safe.
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
+
 export async function POST(req: NextRequest) {
   const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   try {
     const { botId, message, sessionId, orderContext } = await req.json()
 
     if (!botId || !message || typeof message !== 'string') {
-      return NextResponse.json({ error: 'Missing botId or message' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing botId or message' }, { status: 400, headers: CORS })
     }
 
     const supabase = createAdminClient()
 
     const { data: bot, error: botError } = await supabase
       .from('replyee_chatbots')
-      .select('id, name, system_prompt, accent_color, user_id, is_active')
+      .select('id, name, system_prompt, accent_color, user_id, is_active, restaurant_address, restaurant_phone, restaurant_hours, restaurant_website')
       .eq('id', botId)
       .single()
 
     if (botError || !bot) {
-      return NextResponse.json({ error: 'Chatbot not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Chatbot not found' }, { status: 404, headers: CORS })
     }
     if (!bot.is_active) {
-      return NextResponse.json({ error: 'Chatbot is inactive' }, { status: 403 })
+      return NextResponse.json({ error: 'Chatbot is inactive' }, { status: 403, headers: CORS })
     }
 
     // Live chat: if a human agent owns this conversation, store the message
@@ -45,7 +60,7 @@ export async function POST(req: NextRequest) {
           updated_at: new Date().toISOString(),
           unread_by_agent: (convo.unread_by_agent ?? 0) + 1,
         }).eq('session_id', sessionId)
-        return NextResponse.json({ human: true, sessionId })
+        return NextResponse.json({ human: true, sessionId }, { headers: CORS })
       }
     }
 
@@ -87,9 +102,25 @@ export async function POST(req: NextRequest) {
         }`
       : ''
 
+    // Business details the owner configured in the dashboard (address / phone /
+    // hours / website). These are authoritative facts — without them the bot
+    // could not answer "what time do you close?" even though the owner had
+    // filled the fields in. Injected ahead of the RAG context so the
+    // "only answer from context" instruction doesn't suppress them.
+    const businessInfo = [
+      bot.restaurant_address ? `Address: ${bot.restaurant_address}` : null,
+      bot.restaurant_phone   ? `Phone: ${bot.restaurant_phone}`     : null,
+      bot.restaurant_hours   ? `Hours: ${bot.restaurant_hours}`     : null,
+      bot.restaurant_website ? `Website: ${bot.restaurant_website}` : null,
+    ].filter(Boolean).join('\n')
+
+    const businessSection = businessInfo
+      ? `\n\nVerified business details for ${bot.name} (treat these as authoritative and answer directly from them):\n${businessInfo}`
+      : ''
+
     const fullSystem = context
-      ? `${systemPrompt}\n\nKnowledge base context:\n---\n${context}\n---\nOnly answer based on this context. If unsure, say you don't have that information.${orderContextSection}`
-      : `${systemPrompt}\n\nNote: No specific knowledge base content found for this question.${orderContextSection}`
+      ? `${systemPrompt}${businessSection}\n\nKnowledge base context:\n---\n${context}\n---\nAnswer from the business details above and this context. If unsure, say you don't have that information.${orderContextSection}`
+      : `${systemPrompt}${businessSection}\n\nNote: No specific knowledge base content found for this question.${orderContextSection}`
 
     let history: { role: 'user' | 'assistant'; content: string }[] = []
     if (sessionId) {
@@ -133,11 +164,11 @@ export async function POST(req: NextRequest) {
       { onConflict: 'session_id' }
     ).then(() => {})
 
-    return NextResponse.json({ answer, sessionId: conversationId })
+    return NextResponse.json({ answer, sessionId: conversationId }, { headers: CORS })
 
   } catch (err) {
     console.error('[/api/chat]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: CORS })
   }
 }
 

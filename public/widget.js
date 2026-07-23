@@ -8,7 +8,27 @@
   })()
 
   var BOT_ID   = script.getAttribute('data-bot-id')
-  var API_BASE = script.getAttribute('data-api-url') || 'https://replyee.online'
+
+  // Default the API origin to wherever widget.js was actually served from.
+  // The dashboard hands out an embed pointing at https://www.replyee.online,
+  // so a hardcoded https://replyee.online meant the config request crossed a
+  // host boundary (and failed outright on any preview/staging deploy) — the
+  // widget then silently kept its built-in defaults. An explicit
+  // data-api-url attribute still wins, so existing embeds are unaffected.
+  function scriptOrigin() {
+    try { return new URL(script.src, location.href).origin } catch (e) { return null }
+  }
+  var API_BASE = script.getAttribute('data-api-url') || scriptOrigin() || 'https://replyee.online'
+
+  // The production apex (replyee.online) 308-redirects to www. Browsers refuse
+  // to follow a redirect on a CORS preflight, so a bare-apex embed can never
+  // complete the chat POST. Canonicalize the apex to www so preflight + POST
+  // hit the real host directly. Staging/preview hosts (*.vercel.app, etc.) and
+  // any explicit data-api-url are left untouched.
+  try {
+    var _u = new URL(API_BASE)
+    if (_u.hostname === 'replyee.online') { _u.hostname = 'www.replyee.online'; API_BASE = _u.origin }
+  } catch (e) {}
 
   if (!BOT_ID) { console.warn('[Replyee] Missing data-bot-id attribute'); return }
 
@@ -169,7 +189,22 @@
 
   widget.appendChild(bubble)
   widget.appendChild(win)
+  // Hidden until the bot's config resolves, so visitors never see the built-in
+  // placeholder branding (purple bubble, "Assistant") instead of the owner's
+  // configured name/colour/position. revealWidget() below always runs.
+  widget.style.visibility = 'hidden'
   document.body.appendChild(widget)
+
+  var revealed = false
+  function revealWidget() {
+    if (revealed) return
+    revealed = true
+    widget.style.visibility = ''
+  }
+  function destroyWidget() {
+    if (widget.parentNode) widget.parentNode.removeChild(widget)
+    if (heartbeatTimer) clearInterval(heartbeatTimer)
+  }
 
   // ── References ────────────────────────────────────────────
   var msgs        = win.querySelector('#ry-messages')
@@ -215,27 +250,51 @@
   }
 
   // ── Load bot config ────────────────────────────────────────
+  function applyConfig(data) {
+    config = Object.assign(config, data)
+    applyPosition(config.position)
+    bubble.style.background = config.accentColor
+    win.querySelector('#ry-avatar').style.background = config.accentColor
+    win.querySelector('#ry-send').style.background   = config.accentColor
+    win.querySelector('#ry-bot-name').textContent    = config.name
+    // Explicit both ways — handoff is a real per-bot setting, so turning it off
+    // must actually hide the button, not just fail to show it.
+    humanBtn.style.display = config.handoff ? 'block' : 'none'
+    greet(config.greeting)
+    renderQuickActions()
+    // Evaluate triggers after config loads
+    evaluateTriggers()
+    // Start heartbeat and presence tracking
+    startHeartbeat()
+    subscribeToPresence()
+  }
+
   function loadBotConfig() {
+    // Safety net: if the config request hangs, still show the widget rather
+    // than leaving an invisible one on the page.
+    var revealTimer = setTimeout(function () {
+      if (!revealed) { greet(config.greeting); revealWidget() }
+    }, 6000)
+
     fetch(API_BASE + '/api/bot-config?id=' + BOT_ID)
-      .then(function (r) { return r.ok ? r.json() : null })
-      .then(function (data) {
-        if (!data) return
-        config = Object.assign(config, data)
-        applyPosition(config.position)
-        bubble.style.background = config.accentColor
-        win.querySelector('#ry-avatar').style.background = config.accentColor
-        win.querySelector('#ry-send').style.background   = config.accentColor
-        win.querySelector('#ry-bot-name').textContent    = config.name
-        if (config.handoff) humanBtn.style.display = 'block'
-        addBotMsg(config.greeting)
-        renderQuickActions()
-        // Evaluate triggers after config loads
-        evaluateTriggers()
-        // Start heartbeat and presence tracking
-        startHeartbeat()
-        subscribeToPresence()
+      .then(function (r) {
+        // 404 = bot deleted or deactivated in the dashboard. Chat would fail
+        // anyway, so remove the widget instead of showing default branding.
+        if (r.status === 404 || r.status === 403) return { __inactive: true }
+        return r.ok ? r.json() : null
       })
-      .catch(function () { addBotMsg(config.greeting) })
+      .then(function (data) {
+        clearTimeout(revealTimer)
+        if (data && data.__inactive) { destroyWidget(); return }
+        if (data) applyConfig(data)
+        else greet(config.greeting)
+        revealWidget()
+      })
+      .catch(function () {
+        clearTimeout(revealTimer)
+        greet(config.greeting)
+        revealWidget()
+      })
   }
   loadBotConfig()
 
@@ -389,6 +448,13 @@
   close.addEventListener('click', closeChat)
 
   // ── Messages ───────────────────────────────────────────────
+  var greeted = false
+  function greet(text) {
+    if (greeted) return
+    greeted = true
+    addBotMsg(text)
+  }
+
   function addBotMsg(text) {
     var el = document.createElement('div')
     el.className = 'ry-msg ry-bot'

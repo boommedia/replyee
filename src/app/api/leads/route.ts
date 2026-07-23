@@ -4,11 +4,22 @@ import { Resend } from 'resend'
 
 export const dynamic = 'force-dynamic'
 
+// Called cross-origin by the embedded widget's lead-capture form — needs CORS.
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
+
 export async function POST(req: NextRequest) {
   const resend = new Resend(process.env.RESEND_API_KEY)
   try {
     const { botId, email, question, sessionId } = await req.json()
-    if (!botId || !email) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!botId || !email) return NextResponse.json({ error: 'Missing required fields' }, { status: 400, headers: CORS })
 
     const supabase = createAdminClient()
 
@@ -18,7 +29,7 @@ export async function POST(req: NextRequest) {
       .eq('id', botId)
       .single()
 
-    if (!bot) return NextResponse.json({ error: 'Bot not found' }, { status: 404 })
+    if (!bot) return NextResponse.json({ error: 'Bot not found' }, { status: 404, headers: CORS })
 
     await supabase.from('replyee_leads').insert({
       chatbot_id: botId,
@@ -55,9 +66,9 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true }, { headers: CORS })
   } catch (err) {
     console.error('[/api/leads]', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: CORS })
   }
 }

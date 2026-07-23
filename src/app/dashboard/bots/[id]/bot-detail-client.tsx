@@ -11,6 +11,9 @@ interface Chatbot {
   id: string; name: string; website_url: string | null; accent_color: string
   system_prompt: string | null; greeting_message: string; fallback_message: string
   widget_position: string | null
+  handoff_enabled: boolean | null
+  restaurant_address: string | null; restaurant_phone: string | null
+  restaurant_hours: string | null; restaurant_website: string | null
   chunk_count: number; conversation_count: number; lead_count: number; is_active: boolean
   triggers: TriggerRule[]
 }
@@ -48,6 +51,11 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
     greeting_message: bot.greeting_message, fallback_message: bot.fallback_message,
     system_prompt: bot.system_prompt ?? '', accent_color: bot.accent_color,
     widget_position: bot.widget_position ?? 'bottom-right',
+    handoff_enabled: bot.handoff_enabled ?? true,
+    restaurant_address: bot.restaurant_address ?? '',
+    restaurant_phone: bot.restaurant_phone ?? '',
+    restaurant_hours: bot.restaurant_hours ?? '',
+    restaurant_website: bot.restaurant_website ?? '',
   })
   const [settingsSaving, setSettingsSaving] = useState(false)
   const [settingsMsg, setSettingsMsg] = useState('')
@@ -145,7 +153,19 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
     setSettingsSaving(true)
     setSettingsMsg('')
     const supabase = createClient()
-    const { error } = await supabase.from('replyee_chatbots').update(settings).eq('id', bot.id)
+    // Store blanks as NULL so /api/bot-config and the chat prompt treat an
+    // empty field as "not set" rather than an empty string.
+    const blankToNull = (v: string) => (v.trim() === '' ? null : v.trim())
+    const payload = {
+      ...settings,
+      website_url: blankToNull(settings.website_url),
+      system_prompt: blankToNull(settings.system_prompt),
+      restaurant_address: blankToNull(settings.restaurant_address),
+      restaurant_phone: blankToNull(settings.restaurant_phone),
+      restaurant_hours: blankToNull(settings.restaurant_hours),
+      restaurant_website: blankToNull(settings.restaurant_website),
+    }
+    const { error } = await supabase.from('replyee_chatbots').update(payload).eq('id', bot.id)
     setSettingsSaving(false)
     setSettingsMsg(error ? error.message : 'Saved!')
     if (!error) router.refresh()
@@ -376,6 +396,43 @@ export function BotDetailClient({ bot, knowledgeSources, leads, activeTab }: {
               </select>
               <p style={S.hint}>Which corner the chat bubble sits in on your site.</p>
             </div>
+            <div style={S.group}>
+              <label style={S.label}>Live Chat Handoff</label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                <input
+                  type="checkbox"
+                  checked={settings.handoff_enabled}
+                  onChange={e => setSettings(s => ({ ...s, handoff_enabled: e.target.checked }))}
+                  style={{ width: 16, height: 16, accentColor: '#8b7bf0', cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: 13, color: '#cbd5e1' }}>Show the “Talk to a human” button in the widget</span>
+              </label>
+              <p style={S.hint}>Turn this off if nobody is monitoring the Live Inbox — visitors will use email lead capture instead.</p>
+            </div>
+
+            <div style={{ borderTop: '1px solid #262631', margin: '24px 0 20px', paddingTop: 20 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#ECECF1', marginBottom: 4 }}>Business Info</div>
+              <p style={{ ...S.hint, marginTop: 0, marginBottom: 16 }}>
+                Used for the widget’s quick-action chips (Directions / Call / Hours) and given to the AI as authoritative facts, so it can answer “where are you?” and “what time do you close?” without a knowledge-base upload.
+              </p>
+              <div style={S.group}>
+                <label style={S.label}>Address</label>
+                <input style={S.input} value={settings.restaurant_address} onChange={e => setSettings(s => ({ ...s, restaurant_address: e.target.value }))} placeholder="123 Clematis St, West Palm Beach, FL 33401" />
+              </div>
+              <div style={S.group}>
+                <label style={S.label}>Phone</label>
+                <input style={S.input} value={settings.restaurant_phone} onChange={e => setSettings(s => ({ ...s, restaurant_phone: e.target.value }))} placeholder="(561) 555-0142" />
+              </div>
+              <div style={S.group}>
+                <label style={S.label}>Hours</label>
+                <textarea style={{ ...S.input, resize: 'vertical', minHeight: 72 }} value={settings.restaurant_hours} onChange={e => setSettings(s => ({ ...s, restaurant_hours: e.target.value }))} placeholder={'Mon–Thu 11am–9pm\nFri–Sat 11am–11pm\nSun 12pm–8pm'} />
+              </div>
+              <div style={S.group}>
+                <label style={S.label}>Public Website</label>
+                <input style={S.input} value={settings.restaurant_website} onChange={e => setSettings(s => ({ ...s, restaurant_website: e.target.value }))} placeholder="https://yourbusiness.com" />
+              </div>
+            </div>
+
             <div style={S.group}>
               <label style={S.label}>System Prompt <span style={{ color: '#8B8B99', fontWeight: 400 }}>(optional)</span></label>
               <textarea style={{ ...S.input, resize: 'vertical', minHeight: 100 }} value={settings.system_prompt} onChange={e => setSettings(s => ({ ...s, system_prompt: e.target.value }))} />

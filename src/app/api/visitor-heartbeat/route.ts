@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
+// Called cross-origin by the embedded widget on every page load — needs CORS.
+const CORS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS })
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { botId, visitorId, sessionId, page, referrer, utm, device } = await req.json()
 
     if (!botId || !visitorId) {
-      return NextResponse.json({ error: 'Missing botId or visitorId' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing botId or visitorId' }, { status: 400, headers: CORS })
     }
 
     const supabase = createAdminClient()
@@ -20,7 +31,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (botError || !bot) {
-      return NextResponse.json({ error: 'Chatbot not found or inactive' }, { status: 404 })
+      return NextResponse.json({ error: 'Chatbot not found or inactive' }, { status: 404, headers: CORS })
     }
 
     // Get existing session (if any)
@@ -62,12 +73,12 @@ export async function POST(req: NextRequest) {
 
     if (upsertError) {
       console.error('Visitor session upsert error:', upsertError)
-      return NextResponse.json({ error: 'Failed to track visitor' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to track visitor' }, { status: 500, headers: CORS })
     }
 
-    return NextResponse.json({ ok: true, pageViews: (existing?.page_views || 0) + pageViewsIncrement })
+    return NextResponse.json({ ok: true, pageViews: (existing?.page_views || 0) + pageViewsIncrement }, { headers: CORS })
   } catch (error) {
     console.error('Visitor heartbeat error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500, headers: CORS })
   }
 }
